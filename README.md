@@ -1,4 +1,32 @@
-# React + TypeScript + Vite
+# laplas-chat
+
+React-based chat application built with modern web technologies.
+
+## Tech Stack
+
+- React + TypeScript + Vite
+- Chakra UI v3 for UI components
+- TanStack Router for routing
+- Zustand for state management
+- ESLint for code quality
+
+## Development
+
+```bash
+# Install dependencies
+yarn install
+
+# Start development server
+yarn dev
+
+# Build for production
+yarn build
+
+# Run linting
+yarn lint
+```
+
+## Template Information
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
