@@ -1,21 +1,14 @@
-import { Box, Grid } from '@chakra-ui/react'
-import { Sidebar } from './components/layout'
+import { Box, Flex } from '@chakra-ui/react'
+import Sidebar from './components/layout/Sidebar/Sidebar';
 
 function App() {
   return (
-    <Grid 
-      templateColumns="300px 1fr" 
-      height="100vh" 
-      bg="white"
-    >
-      {/* Sidebar */}
+    <Flex height="100vh" bg="white">
       <Sidebar />
-      
-      {/* Main Content */}
-      <Box bg="white">
+      <Box as="main" flex={1} p={6}>
         Main Content
       </Box>
-    </Grid>
+    </Flex>
   )
 }
 
