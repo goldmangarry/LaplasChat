@@ -25,7 +25,7 @@ function App() {
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSendMessage = async (content: string) => {
+  const handleSendMessage = async (content: string, isSecure: boolean) => {
     const userMessage: Message = {
       id: Date.now().toString(),
       sender: 'User',
@@ -38,6 +38,8 @@ function App() {
     setIsLoading(true)
 
     try {
+      // Use isSecure parameter for future secure/normal mode logic
+      console.log('Secure mode:', isSecure)
       const response = await sendSecureMessage(content)
       
       const aiMessage: Message = {
@@ -51,7 +53,6 @@ function App() {
       setMessages(prev => [...prev, aiMessage])
     } catch (error) {
       console.error('Failed to send message:', error)
-      // Add error message
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         sender: 'System',

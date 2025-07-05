@@ -2,9 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-ALWAYS USE BOTH MCPs TO GET CODE AND INFO ABOUT FIGMA LINK
+## FIGMA WORKFLOW RULES
 
-USE CONTEXT7 MCP IF YOU NEED ANY DOCKS
+**IMPORTANT:** When working with Figma designs:
+
+1. **DO NOT use `get_code` from Figma MCP** - It generates confusing code that doesn't match our architecture
+2. **ALWAYS implement components using Chakra UI v3** - Follow our compositional patterns
+3. **Download assets using `download_figma_images`** - Store in appropriate project directories
+
+USE CONTEXT7 MCP IF YOU NEED ANY DOCS
 
 ## Project Overview
 
@@ -93,6 +99,7 @@ This is a React-based chat application called "laplas-chat" built with modern we
 - **[Development Guide](./docs/development-guide.md)** - Development patterns, best practices, and coding guidelines
 - **[Core Layer](./docs/core-layer.md)** - Core business logic layer without external dependencies
 - **[Progress Tracker Guide](./docs/progress-tracker-guide.md)** - Rules for working with TodoWrite/TodoRead system
+- **[Figma to Frontend Workflow](./docs/figma-to-frontend-workflow.md)** - Optimized process for developing frontend from Figma designs
 
 ## IMPORTANT for AI Assistants
 
@@ -100,6 +107,7 @@ This is a React-based chat application called "laplas-chat" built with modern we
 1. **[Progress Tracker Guide](./docs/progress-tracker-guide.md)** - Critical rules for todo management
 2. **[Architecture Overview](./docs/architecture-overview.md)** - Architecture principles  
 3. **[Development Guide](./docs/development-guide.md)** - Coding patterns and conventions
+4. **[Figma to Frontend Workflow](./docs/figma-to-frontend-workflow.md)** - Essential process for Figma-based development
 
 ### MANDATORY TODO WORKFLOW:
 - Use TodoRead() at start of EVERY session
@@ -139,3 +147,4 @@ Project is in initial setup phase with default Vite + React + TypeScript templat
 - Add appropriate tests (unit/integration)
 - Follow security best practices from documentation
 - Run `yarn lint` and `yarn build` before committing changes
+- **ALWAYS test UI components with Playwright** - Use `yarn dev` and Playwright MCP to verify implementation

@@ -1,6 +1,7 @@
 import { Box, Flex, Text, Input, Button, Stack, Avatar, IconButton } from '@chakra-ui/react'
 import { Send, Paperclip, MoreHorizontal, Copy, Download, ZoomIn } from 'lucide-react'
 import { useState } from 'react'
+import ChatHeader from './ChatHeader'
 
 type Message = {
   id: string
@@ -48,39 +49,13 @@ export default function ChatArea({ messages, onSendMessage, isLoading = false }:
   return (
     <Flex flex={1} direction="column" bg="white">
       {/* Header */}
-      <Stack 
-        direction="row"
-        p={4} 
-        borderBottom="1px solid" 
-        borderColor="gray.200"
-        justify="space-between"
-        align="center"
-      >
-        <Stack direction="row" gap={4}>
-          <Button
-            size="sm"
-            variant={secureMode ? "solid" : "ghost"}
-            colorPalette="pink"
-            onClick={() => setSecureMode(!secureMode)}
-          >
-            Secure mode
-          </Button>
-          <Button
-            size="sm"
-            variant={compareMode ? "solid" : "ghost"}
-            onClick={() => setCompareMode(!compareMode)}
-          >
-            Compare mode
-          </Button>
-        </Stack>
-        <Button 
-          size="sm" 
-          variant="ghost"
-        >
-          <MoreHorizontal size={16} style={{ marginRight: '4px' }} />
-          Chat settings
-        </Button>
-      </Stack>
+      <ChatHeader
+        secureMode={secureMode}
+        compareMode={compareMode}
+        onSecureModeChange={setSecureMode}
+        onCompareModeChange={setCompareMode}
+        onSettingsClick={() => console.log('Settings clicked')}
+      />
 
       {/* Messages Area */}
       <Box flex={1} overflowY="auto" px={8} py={6}>
