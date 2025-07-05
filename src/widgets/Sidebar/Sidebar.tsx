@@ -1,5 +1,5 @@
 import { Box, Flex, VStack, Spacer, Heading } from "@chakra-ui/react";
-import Logo from "./Logo";
+import { Logo } from "../../shared/ui";
 import Navigation from "./Navigation";
 import User from "./User";
 import ThemeSwitcher from "./ThemeSwitcher";

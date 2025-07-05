@@ -1,5 +1,5 @@
 import { Avatar, Flex, IconButton, Spacer, Text, VStack } from '@chakra-ui/react';
-import { FaCog } from 'react-icons/fa';
+import { Settings } from 'lucide-react';
 
 interface UserProps {
   avatarUrl: string;
@@ -28,7 +28,7 @@ const User: React.FC<UserProps> = ({ avatarUrl, name, email }) => {
         variant="ghost"
         size="sm"
       >
-        <FaCog />
+        <Settings size={16} />
       </IconButton>
     </Flex>
   );

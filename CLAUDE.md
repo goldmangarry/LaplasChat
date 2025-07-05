@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+ALWAYS USE BOTH MCPs TO GET CODE AND INFO ABOUT FIGMA LINK
+
+USE CONTEXT7 MCP IF YOU NEED ANY DOCKS
+
 ## Project Overview
 
 This is a React-based chat application called "laplas-chat" built with modern web technologies. The project uses Vite for fast development and building, with TypeScript for type safety.

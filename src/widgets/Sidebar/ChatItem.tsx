@@ -1,5 +1,5 @@
-import { Box, Flex, Icon, Text } from "@chakra-ui/react";
-import { FaComment, FaShare, FaEdit, FaTrash } from "react-icons/fa";
+import { Box, Flex, Text } from "@chakra-ui/react";
+import { MessageCircle, Share2, Edit3, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 interface ChatItemProps {
@@ -25,7 +25,7 @@ export const ChatItem = ({ title, isActive, isShared }: ChatItemProps) => {
     >
       <Flex justify="space-between" align="center">
         <Flex align="center" gap={2} overflow="hidden">
-          <Icon as={FaComment} color="gray.500" />
+          <MessageCircle size={16} color="#9CA3AF" />
           <Text
             fontSize="sm"
             fontWeight="400"
@@ -39,9 +39,9 @@ export const ChatItem = ({ title, isActive, isShared }: ChatItemProps) => {
         </Flex>
         {(isHovered || isActive) && (
           <Flex gap={2}>
-            {isShared && <Icon as={FaShare} color="gray.500" />}
-            <Icon as={FaEdit} color="gray.500" />
-            <Icon as={FaTrash} color="red.500" />
+            {isShared && <Share2 size={16} color="#9CA3AF" />}
+            <Edit3 size={16} color="#9CA3AF" />
+            <Trash2 size={16} color="#EF4444" />
           </Flex>
         )}
       </Flex>

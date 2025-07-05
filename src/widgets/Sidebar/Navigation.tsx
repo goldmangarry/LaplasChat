@@ -1,10 +1,10 @@
-import { Badge, Flex, Icon, Link, Text, VStack } from '@chakra-ui/react';
-import { FaComment, FaImage, FaVideo } from 'react-icons/fa';
+import { Badge, Flex, Link, Text, VStack } from '@chakra-ui/react';
+import { MessageCircle, Image, Video } from 'lucide-react';
 
 const navItems = [
-  { name: 'Chat', icon: FaComment, active: true },
-  { name: 'Image', icon: FaImage, soon: true },
-  { name: 'Video', icon: FaVideo, soon: true },
+  { name: 'Chat', icon: MessageCircle, active: true },
+  { name: 'Image', icon: Image, soon: true },
+  { name: 'Video', icon: Video, soon: true },
 ];
 
 const Navigation = () => {
@@ -26,7 +26,7 @@ const Navigation = () => {
             opacity={item.soon ? 0.4 : 1}
             cursor={item.soon ? 'not-allowed' : 'pointer'}
           >
-            <Icon as={item.icon} mr={3} color={item.active ? '#24262d' : '#606679'} />
+            <item.icon size={16} style={{ marginRight: '12px', color: item.active ? '#24262d' : '#606679' }} />
             <Text fontWeight="400" color={item.active ? '#24262d' : '#606679'}>
               {item.name}
             </Text>
