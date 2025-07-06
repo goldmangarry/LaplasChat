@@ -1,4 +1,4 @@
-import { Box, Flex, Text, Stack } from '@chakra-ui/react'
+import { Box, Flex, Stack } from '@chakra-ui/react'
 import { useState } from 'react'
 import ChatHeader from './ChatHeader'
 import { ChatMessage } from './ChatMessage'
@@ -51,7 +51,7 @@ export default function ChatArea({ messages, onSendMessage, isLoading = false }:
               userInitials={msg.avatar || msg.sender.slice(0, 2).toUpperCase()}
               message={msg.content}
               timestamp={msg.timestamp}
-              isAI={msg.isAI ?? (msg.sender.toLowerCase().includes('languagegui') || msg.sender.toLowerCase().includes('ai') || msg.sender.toLowerCase().includes('bot'))}
+              isAI={msg.isAI ?? (msg.sender.toLowerCase().includes('language') || msg.sender.toLowerCase().includes('ai') || msg.sender.toLowerCase().includes('bot'))}
               onEdit={() => console.log('Edit clicked for', msg.id)}
               onCopy={() => navigator.clipboard.writeText(msg.content)}
               onCheck={() => console.log('Check clicked for', msg.id)}
