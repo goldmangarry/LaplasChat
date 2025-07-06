@@ -43,10 +43,6 @@ export default function ChatArea({ messages, onSendMessage, isLoading = false }:
 
       {/* Messages Area */}
       <Box flex={1} overflowY="auto" px={8} py={6}>
-        <Text fontSize="sm" color="gray.500" textAlign="center" mb={6}>
-          Today 2:45 PM
-        </Text>
-        
         <Stack direction="column" gap={6} align="stretch">
           {messages.map((msg) => (
             <ChatMessage
