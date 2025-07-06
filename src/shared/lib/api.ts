@@ -1,43 +1,43 @@
-type ChatMessage = {
-  content: string
-  role: 'system' | 'user'
-}
-
 type SecureModeRequest = {
   model: string
-  messages: ChatMessage[]
+  message: string
   max_tokens: number
   temperature: number
+  dialog_id?: string
 }
 
 type Secret = {
   original: string
   replacement: string
+  type: string
 }
 
 type SecureModeResponse = {
-  llm_response: string
+  decrypted_response: string
   secrets: Secret[]
+  content_type: string
+  dialog_id?: string
 }
 
-export async function sendSecureMessage(message: string): Promise<SecureModeResponse> {
+export async function sendSecureMessage(message: string, dialogId?: string): Promise<SecureModeResponse> {
   try {
+    const requestBody: SecureModeRequest = {
+      model: 'gpt-4',
+      message: message,
+      max_tokens: 32000,
+      temperature: 0.3,
+    }
+
+    if (dialogId) {
+      requestBody.dialog_id = dialogId
+    }
+
     const response = await fetch('/api/secure-mode', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model: 'gpt-4',
-        messages: [
-          {
-            content: message,
-            role: 'user'
-          }
-        ],
-        max_tokens: 1024,
-        temperature: 0.3
-      } as SecureModeRequest)
+      body: JSON.stringify(requestBody)
     })
 
     if (!response.ok) {

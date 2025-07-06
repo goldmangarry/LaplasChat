@@ -24,6 +24,7 @@ function App() {
   const [selectedChat, setSelectedChat] = useState<string | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [dialogId, setDialogId] = useState<string | null>(null)
 
   const handleSendMessage = async (content: string, isSecure: boolean) => {
     const userMessage: Message = {
@@ -40,12 +41,17 @@ function App() {
     try {
       // Use isSecure parameter for future secure/normal mode logic
       console.log('Secure mode:', isSecure)
-      const response = await sendSecureMessage(content)
+      const response = await sendSecureMessage(content, dialogId || undefined)
+      
+      // If this is the first message in the chat, store the dialog_id
+      if (!dialogId && response.dialog_id) {
+        setDialogId(response.dialog_id)
+      }
       
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         sender: 'LanguageGUI',
-        content: response.llm_response,
+        content: response.decrypted_response,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         avatar: 'AI'
       }
