@@ -14,9 +14,12 @@ type Secret = {
 
 type SecureModeResponse = {
   decrypted_response: string
+  reply: string
   secrets: Secret[]
   content_type: string
   dialog_id?: string
+  dialogId?: string
+  encrypted_response: string
 }
 
 export async function sendSecureMessage(message: string, dialogId?: string): Promise<SecureModeResponse> {
@@ -45,6 +48,13 @@ export async function sendSecureMessage(message: string, dialogId?: string): Pro
     }
 
     const data = await response.json()
+    // Ensure backward compatibility with existing response format
+    if (data.decrypted_response && !data.reply) {
+      data.reply = data.decrypted_response
+    }
+    if (data.dialog_id && !data.dialogId) {
+      data.dialogId = data.dialog_id
+    }
     return data
   } catch (error) {
     console.error('Failed to send message:', error)

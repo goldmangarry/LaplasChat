@@ -1,33 +1,37 @@
-import { Box, Flex, Stack } from '@chakra-ui/react'
-import { useState } from 'react'
+import { Box, Flex, Stack, Center, Text } from '@chakra-ui/react'
+import { useState, useEffect, useRef, useMemo } from 'react'
+import { useChatStore } from '@/features/chat/store'
+import type { Message } from '@/core/types'
 import ChatHeader from './ChatHeader'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
+import { EncryptedResponseModal } from './EncryptedResponseModal'
 
-type Message = {
-  id: string
-  sender: string
-  content: string
-  timestamp: string
-  avatar?: string
-  isAI?: boolean
-}
-
-type ChatAreaProps = {
-  messages: Message[]
-  onSendMessage: (content: string, isSecure: boolean) => void
-  isLoading?: boolean
-}
-
-
-export default function ChatArea({ messages, onSendMessage, isLoading = false }: ChatAreaProps) {
+export default function ChatArea() {
+  const { currentChatId, messagesByChat, isLoadingChat } = useChatStore()
   const [secureMode, setSecureMode] = useState(true)
   const [compareMode, setCompareMode] = useState(false)
+  const [encryptedContent, setEncryptedContent] = useState<string | null>(null)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const handleSend = (message: string) => {
-    if (message.trim() && !isLoading) {
-      onSendMessage(message, secureMode)
-    }
+  const messages = useMemo(() => {
+    return currentChatId ? messagesByChat[currentChatId] || [] : []
+  }, [currentChatId, messagesByChat])
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages])
+
+  if (!currentChatId) {
+    return (
+      <Flex flex={1} direction="column" bg="white">
+        <Center flex={1}>
+          <Text color="gray.500" fontSize="lg">
+            Select a chat to start messaging
+          </Text>
+        </Center>
+      </Flex>
+    )
   }
 
   return (
@@ -44,22 +48,27 @@ export default function ChatArea({ messages, onSendMessage, isLoading = false }:
       {/* Messages Area */}
       <Box flex={1} overflowY="auto" px={8} py={6}>
         <Stack direction="column" gap={6} align="stretch">
-          {messages.map((msg) => (
+          {messages.map((msg: Message) => (
             <ChatMessage
               key={msg.id}
-              userName={msg.sender}
-              userInitials={msg.avatar || msg.sender.slice(0, 2).toUpperCase()}
+              userName={msg.author.name}
+              userInitials={msg.author.avatar || msg.author.name.slice(0, 2).toUpperCase()}
               message={msg.content}
-              timestamp={msg.timestamp}
-              isAI={msg.isAI ?? (msg.sender.toLowerCase().includes('language') || msg.sender.toLowerCase().includes('ai') || msg.sender.toLowerCase().includes('bot'))}
+              timestamp={new Date(msg.timestamp).toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+              })}
+              isAI={!msg.isOwnMessage}
               onEdit={() => console.log('Edit clicked for', msg.id)}
               onCopy={() => navigator.clipboard.writeText(msg.content)}
               onCheck={() => console.log('Check clicked for', msg.id)}
+              encryptedContent={msg.encryptedContent}
+              onShowEncrypted={() => setEncryptedContent(msg.encryptedContent || null)}
             />
           ))}
-          {isLoading && (
+          {isLoadingChat(currentChatId) && (
             <ChatMessage
-              userName="LanguageGUI"
+              userName="Assistant"
               userInitials="AI"
               message="Thinking..."
               timestamp="now"
@@ -69,6 +78,7 @@ export default function ChatArea({ messages, onSendMessage, isLoading = false }:
               onCheck={() => {}}
             />
           )}
+          <div ref={messagesEndRef} />
         </Stack>
       </Box>
 
@@ -76,10 +86,16 @@ export default function ChatArea({ messages, onSendMessage, isLoading = false }:
       <Box p={4}>
         <ChatInput
           placeholder="How can I help you?"
-          onSendMessage={handleSend}
-          disabled={isLoading}
+          disabled={isLoadingChat(currentChatId)}
         />
       </Box>
+
+      {/* Encrypted Response Modal */}
+      <EncryptedResponseModal
+        isOpen={!!encryptedContent}
+        onClose={() => setEncryptedContent(null)}
+        content={encryptedContent || ''}
+      />
     </Flex>
   )
 }

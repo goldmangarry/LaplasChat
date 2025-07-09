@@ -1,7 +1,12 @@
 import { Box, Input } from '@chakra-ui/react'
 import { Search } from 'lucide-react'
 
-export function SearchInput() {
+type SearchInputProps = {
+  value: string
+  onChange: (value: string) => void
+}
+
+export function SearchInput({ value, onChange }: SearchInputProps) {
   return (
     <Box position="relative" width="100%">
       <Box
@@ -22,6 +27,8 @@ export function SearchInput() {
       </Box>
       <Input
         placeholder="Search for chats..."
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         paddingLeft="36px"
         paddingRight="10px"
         height="36px"

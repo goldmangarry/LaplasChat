@@ -1,5 +1,6 @@
-import { Box, Text, HStack, IconButton } from '@chakra-ui/react'
-import { Share2, Edit3, Trash2 } from 'lucide-react'
+import { Box, Text, HStack, IconButton, VStack, Badge } from '@chakra-ui/react'
+import { Trash2 } from 'lucide-react'
+import { useChatStore } from '@/features/chat/store'
 import anthropicIcon from '../../assets/icons/anthropic.svg'
 import openaiIcon from '../../assets/icons/openai.svg'
 
@@ -10,9 +11,20 @@ type ChatItemProps = {
   isSelected: boolean
   hasActions?: boolean
   onClick: () => void
+  lastMessage?: string
+  timestamp?: string
+  unreadCount?: number
 }
 
-export function ChatItem({ title, type, isSelected, hasActions, onClick }: ChatItemProps) {
+export function ChatItem({ id, title, type, isSelected, hasActions, onClick, lastMessage, timestamp, unreadCount }: ChatItemProps) {
+  const { deleteChat } = useChatStore()
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (confirm('Are you sure you want to delete this chat?')) {
+      deleteChat(id)
+    }
+  }
   return (
     <Box
       px={2}
@@ -51,58 +63,80 @@ export function ChatItem({ title, type, isSelected, hasActions, onClick }: ChatI
           <img src={openaiIcon} alt="OpenAI" width="28" height="28" />
         )}
         
-        {/* Chat title */}
-        <Text 
-          fontSize="12px" 
-          lineHeight="16px"
-          fontWeight="400"
-          color="#000000"
-          flex={1}
-          overflow="hidden"
-          textOverflow="ellipsis"
-          whiteSpace="nowrap"
-          _groupHover={hasActions ? { 
-            maxWidth: "calc(100% - 125px)"
-          } : {}}
-        >
-          {title}
-        </Text>
+        {/* Chat content */}
+        <VStack align="start" flex={1} gap={0.5} overflow="hidden">
+          <HStack width="100%" justify="space-between">
+            <Text 
+              fontSize="12px" 
+              lineHeight="16px"
+              fontWeight="500"
+              color="#000000"
+              flex={1}
+              overflow="hidden"
+              textOverflow="ellipsis"
+              whiteSpace="nowrap"
+              _groupHover={hasActions ? { 
+                maxWidth: "calc(100% - 45px)"
+              } : {}}
+            >
+              {title}
+            </Text>
+            {timestamp && (
+              <Text
+                fontSize="10px"
+                color="gray.500"
+                flexShrink={0}
+              >
+                {timestamp}
+              </Text>
+            )}
+          </HStack>
+          {lastMessage && (
+            <Text
+              fontSize="11px"
+              color="gray.600"
+              overflow="hidden"
+              textOverflow="ellipsis"
+              whiteSpace="nowrap"
+              width="100%"
+            >
+              {lastMessage}
+            </Text>
+          )}
+        </VStack>
+        
+        {/* Unread badge */}
+        {unreadCount && unreadCount > 0 && (
+          <Badge
+            colorScheme="blue"
+            borderRadius="full"
+            px={2}
+            fontSize="10px"
+            position="absolute"
+            right={2}
+            top="50%"
+            transform="translateY(-50%)"
+          >
+            {unreadCount}
+          </Badge>
+        )}
 
         {/* Actions */}
         {hasActions && (
-          <HStack 
-            gap={0}
+          <IconButton
+            aria-label="Delete"
+            size="xs"
+            variant="ghost"
+            color="gray.500"
             position="absolute"
             right={2}
             opacity={0}
             transition="opacity 0.2s"
             _groupHover={{ opacity: 1 }}
+            onClick={handleDelete}
           >
-            <IconButton
-              aria-label="Share"
-              size="xs"
-              variant="ghost"
-              color="gray.500"
-            >
-              <Share2 size={16} />
-            </IconButton>
-            <IconButton
-              aria-label="Edit"
-              size="xs"
-              variant="ghost"
-              color="gray.500"
-            >
-              <Edit3 size={16} />
-            </IconButton>
-            <IconButton
-              aria-label="Delete"
-              size="xs"
-              variant="ghost"
-              color="gray.500"
-            >
-              <Trash2 size={16} />
-            </IconButton>
-          </HStack>
+            <Trash2 size={16} />
+          </IconButton>
         )}
       </HStack>
     </Box>

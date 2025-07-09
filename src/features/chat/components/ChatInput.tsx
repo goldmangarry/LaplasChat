@@ -1,33 +1,54 @@
-import { Box, Button, Input, VStack } from '@chakra-ui/react';
+import { Box, Button, Textarea, VStack } from '@chakra-ui/react';
 import { Send } from 'lucide-react';
-import { useState, type KeyboardEvent } from 'react';
+import { useState, useEffect, type KeyboardEvent } from 'react';
+import { useChatStore } from '@/features/chat/store';
+import { useAutoResize } from '@/features/chat/hooks';
+
 
 export type ChatInputProps = {
   placeholder?: string;
-  onSendMessage: (message: string) => void;
   disabled?: boolean;
 };
 
 export const ChatInput = ({
   placeholder = "How can I help you?",
-  onSendMessage,
   disabled = false,
 }: ChatInputProps) => {
-  const [message, setMessage] = useState('');
+  const { currentChatId, drafts, updateDraft, sendMessage, isLoadingChat } = useChatStore();
+  const [localValue, setLocalValue] = useState('');
+  
+  const draft = currentChatId ? drafts[currentChatId]?.content || '' : '';
+  const textareaRef = useAutoResize(localValue, { minHeight: 40, maxHeight: 160 });
+  
 
-  const handleSend = () => {
-    if (message.trim() && !disabled) {
-      onSendMessage(message.trim());
-      setMessage('');
+  useEffect(() => {
+    setLocalValue(draft);
+  }, [draft, currentChatId]);
+
+
+  const handleInputChange = (value: string) => {
+    setLocalValue(value);
+    if (currentChatId) {
+      updateDraft(currentChatId, value);
     }
   };
 
-  const handleKeyPress = (e: KeyboardEvent<HTMLInputElement>) => {
+  const handleSend = async () => {
+    if (localValue.trim() && !disabled && !isLoadingChat(currentChatId || '') && currentChatId) {
+      await sendMessage(currentChatId, localValue.trim());
+      setLocalValue('');
+    }
+  };
+
+  const handleKeyPress = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
+
+
+  const isDisabled = disabled || isLoadingChat(currentChatId || '') || !currentChatId;
 
   return (
     <Box
@@ -39,23 +60,31 @@ export const ChatInput = ({
       boxShadow="0px 2px 4px 0px rgba(24, 24, 27, 0.1), 0px 0px 1px 0px rgba(24, 24, 27, 0.3)"
     >
       <VStack gap={5} align="stretch">
-        <Input
-          placeholder={placeholder}
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={handleKeyPress}
-          border="none"
-          bg="transparent"
-          p={0}
-          fontSize="14px"
-          color="gray.600"
-          _placeholder={{ color: 'gray.500' }}
-          _focus={{ 
-            outline: 'none',
-            boxShadow: 'none'
-          }}
-          disabled={disabled}
-        />
+        <Box position="relative">
+          <Textarea
+            ref={textareaRef}
+            placeholder={placeholder}
+            value={localValue}
+            onChange={(e) => handleInputChange(e.target.value)}
+            onKeyDown={handleKeyPress}
+            border="none"
+            bg="transparent"
+            p={0}
+            fontSize="14px"
+            color="gray.600"
+            resize="none"
+            minH="40px"
+            overflow="hidden"
+            _placeholder={{ color: 'gray.500' }}
+            _focus={{ 
+              outline: 'none',
+              boxShadow: 'none'
+            }}
+            disabled={isDisabled}
+            aria-label="Message input"
+            style={{ transition: 'height 0.2s ease' }}
+          />
+        </Box>
         
         <Box 
           borderTop="1px solid"
@@ -63,6 +92,7 @@ export const ChatInput = ({
           pt={4}
           display="flex"
           justifyContent="flex-end"
+          alignItems="center"
         >
           <Button
             bg="gray.900"
@@ -74,7 +104,7 @@ export const ChatInput = ({
             fontSize="12px"
             fontWeight="500"
             onClick={handleSend}
-            disabled={disabled || !message.trim()}
+            disabled={isDisabled || !localValue.trim()}
             _hover={{ bg: 'gray.800' }}
             _disabled={{ 
               bg: 'gray.400',
@@ -86,6 +116,7 @@ export const ChatInput = ({
           </Button>
         </Box>
       </VStack>
+      
     </Box>
   );
 };

@@ -1,6 +1,8 @@
 import { Box, Button, Flex, HStack, Text, VStack } from '@chakra-ui/react';
 import { Avatar } from '@chakra-ui/react';
-import { Edit, Copy, Check } from 'lucide-react';
+import { Edit, Copy, Check, Lock } from 'lucide-react';
+import OpenAIIcon from '../../../assets/icons/openai.svg';
+import { parseMarkdown } from '../../../shared/lib/markdown.tsx';
 
 export type ChatMessageProps = {
   userName: string;
@@ -11,6 +13,8 @@ export type ChatMessageProps = {
   onEdit?: () => void;
   onCopy?: () => void;
   onCheck?: () => void;
+  encryptedContent?: string;
+  onShowEncrypted?: () => void;
 };
 
 export const ChatMessage = ({
@@ -22,7 +26,10 @@ export const ChatMessage = ({
   onEdit,
   onCopy,
   onCheck,
+  encryptedContent,
+  onShowEncrypted,
 }: ChatMessageProps) => {
+
   return (
     <VStack
       gap={2}
@@ -36,9 +43,21 @@ export const ChatMessage = ({
         <HStack gap={4.5}>
           <HStack gap={2}>
             <Avatar.Root size="xs" bg="gray.900" color="white">
-              <Avatar.Fallback fontSize="12px" fontWeight="500">
-                {userInitials}
-              </Avatar.Fallback>
+              {isAI ? (
+                <img
+                  src={OpenAIIcon}
+                  alt="OpenAI"
+                  width="32"
+                  height="32"
+                />
+              ) : (
+                <>
+                  <Avatar.Image src="/assets/user-avatar.png" alt={userName} />
+                  <Avatar.Fallback fontSize="12px" fontWeight="500">
+                    {userInitials}
+                  </Avatar.Fallback>
+                </>
+              )}
             </Avatar.Root>
             <Text fontSize="14px" fontWeight="600" color="gray.800">
               {userName}
@@ -85,12 +104,24 @@ export const ChatMessage = ({
               <Check size={16} color="#A1A1AA" />
             </Button>
           )}
+          {!isAI && encryptedContent && (
+            <Button
+              variant="ghost"
+              size="sm"
+              p={0}
+              minW="16px"
+              h="16px"
+              onClick={onShowEncrypted}
+            >
+              <Lock size={16} color="#A1A1AA" />
+            </Button>
+          )}
         </HStack>
       </Flex>
       
-      <Text fontSize="14px" color="gray.600" lineHeight="1.43">
-        {message}
-      </Text>
+      <Box fontSize="14px" color="gray.600" lineHeight="1.43">
+        {parseMarkdown(message)}
+      </Box>
     </VStack>
   );
 };

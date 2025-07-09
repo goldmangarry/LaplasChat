@@ -4,6 +4,11 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@': '/src',
+    },
+  },
   build: {
     rollupOptions: {
       output: {
@@ -18,10 +23,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://apilaplas-backend.onrender.com',
+        target: 'https://apilaplas-backend-yh03.onrender.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
-        secure: false
+        secure: false,
+        timeout: 300000, // 5 minutes
+        proxyTimeout: 300000 // 5 minutes
       }
     }
   }

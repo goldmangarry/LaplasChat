@@ -10,7 +10,7 @@
     }
   ],
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://apilaplas-backend.onrender.com/$1" },
+    { "source": "/api/(.*)", "destination": "https://apilaplas-backend-yh03.onrender.com/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

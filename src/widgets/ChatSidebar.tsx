@@ -10,31 +10,66 @@ import {
   Image, 
   Video
 } from 'lucide-react'
+import { useChatStore } from '@/features/chat/store'
 import { ChatItem } from './ChatSidebar/ChatItem'
 import { ChatTypeTab } from './ChatSidebar/ChatTypeTab'
 import { SearchInput } from './ChatSidebar/SearchInput'
 import { UserInfo } from './ChatSidebar/UserInfo'
+import { useState, useMemo } from 'react'
+import type { Chat } from '@/core/types'
 
-type ChatSidebarProps = {
-  selectedChat: string | null
-  onSelectChat: (chatId: string) => void
-}
+export default function ChatSidebar() {
+  const { chats, currentChatId, createChat, selectChat, messagesByChat } = useChatStore()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [selectedType, setSelectedType] = useState<'chat' | 'image' | 'video'>('chat')
 
-type Chat = {
-  id: string
-  title: string
-  type: 'anthropic' | 'openai' | 'both'
-  hasActions?: boolean
-}
+  const sortedChats = useMemo(() => {
+    const filtered = chats.filter((chat: Chat) => 
+      chat.title.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    
+    return filtered.sort((a: Chat, b: Chat) => {
+      const aTime = new Date(a.updatedAt).getTime()
+      const bTime = new Date(b.updatedAt).getTime()
+      return bTime - aTime
+    })
+  }, [chats, searchQuery])
 
-const mockChat: Chat = {
-  id: '1',
-  title: 'Help me build a React component',
-  type: 'anthropic',
-  hasActions: true
-}
+  const handleCreateChat = () => {
+    const newChatId = createChat()
+    selectChat(newChatId)
+  }
 
-export default function ChatSidebar({ selectedChat, onSelectChat }: ChatSidebarProps) {
+  const getLastMessage = (chatId: string) => {
+    const messages = messagesByChat[chatId] || []
+    if (messages.length === 0) return undefined
+    
+    const lastMessage = messages[messages.length - 1]
+    return {
+      content: lastMessage.content,
+      timestamp: lastMessage.timestamp
+    }
+  }
+
+  const formatRelativeTime = (timestamp: string) => {
+    const now = new Date()
+    const date = new Date(timestamp)
+    const diffMs = now.getTime() - date.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMs / 3600000)
+    const diffDays = Math.floor(diffMs / 86400000)
+
+    if (diffMins < 1) return 'Just now'
+    if (diffMins < 60) return `${diffMins}m ago`
+    if (diffHours < 24) return `${diffHours}h ago`
+    if (diffDays < 7) return `${diffDays}d ago`
+    
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric' 
+    })
+  }
+
   return (
     <Stack
       width="283px"
@@ -82,21 +117,24 @@ export default function ChatSidebar({ selectedChat, onSelectChat }: ChatSidebarP
             borderRadius="md"
             fontSize="14px"
             fontWeight="600"
+            onClick={handleCreateChat}
           >
             <Plus size={20} style={{ marginRight: '8px' }} />
             Start new chat
           </Button>
 
           {/* Search input */}
-          <SearchInput />
+          <Box width="100%">
+            <SearchInput value={searchQuery} onChange={setSearchQuery} />
+          </Box>
 
           {/* Chat type tabs */}
           <Stack direction="column" gap={1} alignSelf="stretch" position="relative">
             <ChatTypeTab
               icon={MessageCircle}
               label="Chat"
-              isSelected={selectedChat === '1'}
-              onClick={() => onSelectChat('1')}
+              isSelected={selectedType === 'chat'}
+              onClick={() => setSelectedType('chat')}
             />
             <ChatTypeTab
               icon={Image}
@@ -119,7 +157,7 @@ export default function ChatSidebar({ selectedChat, onSelectChat }: ChatSidebarP
           {/* Chats Container */}
           <Stack direction="column" gap={3} alignSelf="stretch" flex={1} overflow="hidden">
             <Text fontSize="16px" lineHeight="24px" fontWeight="400" color="#52525b">
-              Chats
+              Chats ({sortedChats.length})
             </Text>
             
             {/* Chat Items */}
@@ -144,15 +182,32 @@ export default function ChatSidebar({ selectedChat, onSelectChat }: ChatSidebarP
                 },
               }}
             >
-              <ChatItem
-                key={mockChat.id}
-                id={mockChat.id}
-                title={mockChat.title}
-                type={mockChat.type}
-                isSelected={selectedChat === mockChat.id}
-                hasActions={mockChat.hasActions}
-                onClick={() => onSelectChat(mockChat.id)}
-              />
+              {sortedChats.map((chat: Chat) => {
+                const lastMessage = getLastMessage(chat.id)
+                return (
+                  <ChatItem
+                    key={chat.id}
+                    id={chat.id}
+                    title={chat.title}
+                    type={chat.model === 'gpt-4' ? 'openai' : 'anthropic'}
+                    isSelected={currentChatId === chat.id}
+                    hasActions={true}
+                    onClick={() => selectChat(chat.id)}
+                    lastMessage={lastMessage?.content}
+                    timestamp={lastMessage ? formatRelativeTime(lastMessage.timestamp) : undefined}
+                  />
+                )
+              })}
+              {sortedChats.length === 0 && searchQuery && (
+                <Text 
+                  fontSize="14px" 
+                  color="gray.500" 
+                  textAlign="center" 
+                  py={4}
+                >
+                  No chats found
+                </Text>
+              )}
             </Stack>
           </Stack>
         </Stack>
