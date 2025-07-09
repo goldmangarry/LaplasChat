@@ -1,6 +1,6 @@
 import { Box, Button, Flex, HStack, Text, VStack } from '@chakra-ui/react';
 import { Avatar } from '@chakra-ui/react';
-import { Edit, Copy, Check, Lock } from 'lucide-react';
+import { Copy, Lock } from 'lucide-react';
 import OpenAIIcon from '../../../assets/icons/openai.svg';
 import { parseMarkdown } from '../../../shared/lib/markdown.tsx';
 
@@ -10,9 +10,7 @@ export type ChatMessageProps = {
   message: string;
   timestamp: string;
   isAI?: boolean;
-  onEdit?: () => void;
   onCopy?: () => void;
-  onCheck?: () => void;
   encryptedContent?: string;
   onShowEncrypted?: () => void;
 };
@@ -23,9 +21,7 @@ export const ChatMessage = ({
   message,
   timestamp,
   isAI = false,
-  onEdit,
   onCopy,
-  onCheck,
   encryptedContent,
   onShowEncrypted,
 }: ChatMessageProps) => {
@@ -80,30 +76,6 @@ export const ChatMessage = ({
           >
             <Copy size={16} color="#A1A1AA" />
           </Button>
-          {!isAI && (
-            <Button
-              variant="ghost"
-              size="sm"
-              p={0}
-              minW="16px"
-              h="16px"
-              onClick={onEdit}
-            >
-              <Edit size={16} color="#A1A1AA" />
-            </Button>
-          )}
-          {isAI && (
-            <Button
-              variant="ghost"
-              size="sm"
-              p={0}
-              minW="16px"
-              h="16px"
-              onClick={onCheck}
-            >
-              <Check size={16} color="#A1A1AA" />
-            </Button>
-          )}
           {!isAI && encryptedContent && (
             <Button
               variant="ghost"

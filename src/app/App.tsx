@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useChatStore } from '@/features/chat/store'
 import ChatSidebar from '../widgets/ChatSidebar'
 import ChatArea from '../features/chat/components/ChatArea'
+import { Toaster } from '@/components/ui/toaster'
 
 function App() {
   const { chats, currentChatId, selectChat } = useChatStore()
@@ -17,6 +18,7 @@ function App() {
     <Flex height="100vh" bg="gray.50">
       <ChatSidebar />
       <ChatArea />
+      <Toaster />
     </Flex>
   )
 }

@@ -6,6 +6,7 @@ import ChatHeader from './ChatHeader'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { EncryptedResponseModal } from './EncryptedResponseModal'
+import { toaster } from '@/components/ui/toast'
 
 export default function ChatArea() {
   const { currentChatId, messagesByChat, isLoadingChat } = useChatStore()
@@ -21,6 +22,15 @@ export default function ChatArea() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  const handleCopyMessage = (content: string) => {
+    navigator.clipboard.writeText(content)
+    toaster.create({
+      title: 'Message copied!',
+      type: 'success',
+      duration: 2000,
+    })
+  }
 
   if (!currentChatId) {
     return (
@@ -59,9 +69,7 @@ export default function ChatArea() {
                 minute: '2-digit' 
               })}
               isAI={!msg.isOwnMessage}
-              onEdit={() => console.log('Edit clicked for', msg.id)}
-              onCopy={() => navigator.clipboard.writeText(msg.content)}
-              onCheck={() => console.log('Check clicked for', msg.id)}
+              onCopy={() => handleCopyMessage(msg.content)}
               encryptedContent={msg.encryptedContent}
               onShowEncrypted={() => setEncryptedContent(msg.encryptedContent || null)}
             />
@@ -73,9 +81,7 @@ export default function ChatArea() {
               message="Thinking..."
               timestamp="now"
               isAI={true}
-              onEdit={() => {}}
               onCopy={() => {}}
-              onCheck={() => {}}
             />
           )}
           <div ref={messagesEndRef} />
