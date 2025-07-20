@@ -22,6 +22,15 @@ type SecureModeResponse = {
   encrypted_response: string
 }
 
+type FactCheckRequest = {
+  message: string
+}
+
+type FactCheckResponse = {
+  response: string
+  urls: string[]
+}
+
 export async function sendSecureMessage(message: string, dialogId?: string): Promise<SecureModeResponse> {
   try {
     const requestBody: SecureModeRequest = {
@@ -58,6 +67,32 @@ export async function sendSecureMessage(message: string, dialogId?: string): Pro
     return data
   } catch (error) {
     console.error('Failed to send message:', error)
+    throw error
+  }
+}
+
+export async function checkFacts(message: string): Promise<FactCheckResponse> {
+  try {
+    const requestBody: FactCheckRequest = {
+      message: message,
+    }
+
+    const response = await fetch('/api/fact-check', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody)
+    })
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`)
+    }
+
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error('Failed to check facts:', error)
     throw error
   }
 }

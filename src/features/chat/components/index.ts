@@ -3,5 +3,6 @@ export { default as ChatHeader } from './ChatHeader';
 export { ChatMessage } from './ChatMessage';
 export { ChatInput } from './ChatInput';
 export { EncryptedResponseModal } from './EncryptedResponseModal';
+export { FactCheckSidebar } from './FactCheckSidebar';
 export type { ChatMessageProps } from './ChatMessage';
 export type { ChatInputProps } from './ChatInput';

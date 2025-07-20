@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { v4 as uuidv4 } from 'uuid'
 import type { ChatStoreState, Chat, Message } from '@/core/types'
-import { sendSecureMessage } from '@/shared/lib/api'
+import { sendSecureMessage, checkFacts } from '@/shared/lib/api'
 
 const createDefaultChat = (): Chat => ({
   id: uuidv4(),
@@ -20,6 +20,10 @@ export const useChatStore = create<ChatStoreState>()(
       messagesByChat: {},
       drafts: {},
       loadingChats: new Set(),
+      factCheck: {
+        isOpen: false,
+        isLoading: false,
+      },
 
       createChat: () => {
         const newChat = createDefaultChat()
@@ -225,6 +229,61 @@ export const useChatStore = create<ChatStoreState>()(
             loadingChats: newLoadingChats,
           }
         })
+      },
+
+      openFactCheck: () => {
+        set((state: ChatStoreState) => ({
+          ...state,
+          factCheck: {
+            ...state.factCheck,
+            isOpen: true,
+          },
+        }))
+      },
+
+      closeFactCheck: () => {
+        set((state: ChatStoreState) => ({
+          ...state,
+          factCheck: {
+            isOpen: false,
+            isLoading: false,
+            data: undefined,
+          },
+        }))
+      },
+
+      checkFacts: async (message: string) => {
+        set((state: ChatStoreState) => ({
+          ...state,
+          factCheck: {
+            ...state.factCheck,
+            isOpen: true,
+            isLoading: true,
+            data: undefined,
+          },
+        }))
+
+        try {
+          const data = await checkFacts(message)
+          set((state: ChatStoreState) => ({
+            ...state,
+            factCheck: {
+              ...state.factCheck,
+              isLoading: false,
+              data,
+            },
+          }))
+        } catch (error) {
+          console.error('Failed to check facts:', error)
+          set((state: ChatStoreState) => ({
+            ...state,
+            factCheck: {
+              ...state.factCheck,
+              isLoading: false,
+              data: undefined,
+            },
+          }))
+        }
       },
     }),
     {

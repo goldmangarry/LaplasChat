@@ -49,6 +49,17 @@ export type Draft = {
   updatedAt: string
 }
 
+export type FactCheckData = {
+  response: string
+  urls: string[]
+}
+
+export type FactCheckState = {
+  isOpen: boolean
+  isLoading: boolean
+  data?: FactCheckData
+}
+
 
 export type ChatStore = {
   chats: Chat[]
@@ -56,6 +67,7 @@ export type ChatStore = {
   messagesByChat: Record<string, Message[]>
   drafts: Record<string, Draft>
   loadingChats: Set<string>
+  factCheck: FactCheckState
 }
 
 export type ChatStoreActions = {
@@ -69,6 +81,9 @@ export type ChatStoreActions = {
   updateChatTitle: (chatId: string, title: string) => void
   isLoadingChat: (chatId: string) => boolean
   setLoadingChat: (chatId: string, loading: boolean) => void
+  openFactCheck: () => void
+  closeFactCheck: () => void
+  checkFacts: (message: string) => Promise<void>
 }
 
 export type ChatStoreState = ChatStore & ChatStoreActions

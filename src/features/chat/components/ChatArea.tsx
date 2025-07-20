@@ -6,10 +6,11 @@ import ChatHeader from './ChatHeader'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { EncryptedResponseModal } from './EncryptedResponseModal'
+import { FactCheckSidebar } from './FactCheckSidebar'
 import { toaster } from '@/components/ui/toast'
 
 export default function ChatArea() {
-  const { currentChatId, messagesByChat, isLoadingChat } = useChatStore()
+  const { currentChatId, messagesByChat, isLoadingChat, factCheck, checkFacts, closeFactCheck } = useChatStore()
   const [secureMode, setSecureMode] = useState(true)
   const [compareMode, setCompareMode] = useState(false)
   const [encryptedContent, setEncryptedContent] = useState<string | null>(null)
@@ -56,7 +57,7 @@ export default function ChatArea() {
       />
 
       {/* Messages Area */}
-      <Box flex={1} overflowY="auto" px={8} py={6}>
+      <Box flex={1} overflowY="auto" px="228px" py={6}>
         <Stack direction="column" gap={6} align="stretch">
           {messages.map((msg: Message) => (
             <ChatMessage
@@ -72,6 +73,7 @@ export default function ChatArea() {
               onCopy={() => handleCopyMessage(msg.content)}
               encryptedContent={msg.encryptedContent}
               onShowEncrypted={() => setEncryptedContent(msg.encryptedContent || null)}
+              onFactCheck={!msg.isOwnMessage ? () => checkFacts(msg.content) : undefined}
             />
           ))}
           {isLoadingChat(currentChatId) && (
@@ -89,7 +91,7 @@ export default function ChatArea() {
       </Box>
 
       {/* Input Area */}
-      <Box p={4}>
+      <Box px="228px" py={4}>
         <ChatInput
           placeholder="How can I help you?"
           disabled={isLoadingChat(currentChatId)}
@@ -101,6 +103,14 @@ export default function ChatArea() {
         isOpen={!!encryptedContent}
         onClose={() => setEncryptedContent(null)}
         content={encryptedContent || ''}
+      />
+
+      {/* Fact Check Sidebar */}
+      <FactCheckSidebar
+        isOpen={factCheck.isOpen}
+        onClose={closeFactCheck}
+        data={factCheck.data}
+        isLoading={factCheck.isLoading}
       />
     </Flex>
   )
