@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { v4 as uuidv4 } from 'uuid'
-import type { ChatStoreState, Chat, Message } from '@/core/types'
+import type { ChatStoreState, Chat, Message, ChatModel } from '@/core/types'
 import { sendSecureMessage, checkFacts } from '@/shared/lib/api'
 
 const createDefaultChat = (): Chat => ({
@@ -221,7 +221,7 @@ export const useChatStore = create<ChatStoreState>()(
         }))
       },
 
-      updateChatSettings: (chatId: string, settings: { model?: string; temperature?: number; maxTokens?: number }) => {
+      updateChatSettings: (chatId: string, settings: { model?: ChatModel; temperature?: number; maxTokens?: number }) => {
         set((state: ChatStoreState) => ({
           ...state,
           chats: state.chats.map((chat: Chat) =>

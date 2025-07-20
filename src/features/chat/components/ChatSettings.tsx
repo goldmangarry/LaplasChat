@@ -1,21 +1,22 @@
 import { Box, Text, Stack, Flex, Icon, Menu, Button, Slider } from '@chakra-ui/react'
 import { HiInformationCircle, HiCog6Tooth, HiChevronDown } from 'react-icons/hi2'
 import { useCallback, useMemo, useState } from 'react'
+import type { ChatModel } from '@/core/types'
 import anthropicIcon from '@/assets/icons/anthropic.svg'
 import openaiIcon from '@/assets/icons/openai.svg'
 import googleIcon from '@/assets/icons/google.svg'
 import xaiIcon from '@/assets/icons/xai.svg'
 
 type ChatSettingsProps = {
-  model: string
+  model: ChatModel
   temperature: number
   maxTokens: number
-  onModelChange: (model: string) => void
+  onModelChange: (model: ChatModel) => void
   onTemperatureChange: (temperature: number) => void
   onMaxTokensChange: (tokens: number) => void
 }
 
-const models = [
+const models: { value: ChatModel; label: string; icon: string }[] = [
   // OpenAI Models
   { value: 'openai/o3', label: 'o3', icon: openaiIcon },
   { value: 'openai/o4-mini-high', label: 'o4 Mini High', icon: openaiIcon },

@@ -189,7 +189,7 @@ export default function ChatSidebar() {
                     key={chat.id}
                     id={chat.id}
                     title={chat.title}
-                    type={chat.model === 'gpt-4' ? 'openai' : 'anthropic'}
+                    type={chat.model.startsWith('openai/') ? 'openai' : 'anthropic'}
                     isSelected={currentChatId === chat.id}
                     hasActions={true}
                     onClick={() => selectChat(chat.id)}

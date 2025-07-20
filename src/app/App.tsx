@@ -5,6 +5,7 @@ import ChatSidebar from '../widgets/ChatSidebar'
 import ChatArea from '../features/chat/components/ChatArea'
 import { ChatSettings } from '../features/chat/components/ChatSettings'
 import { Toaster } from '@/components/ui/toaster'
+import type { ChatModel } from '@/core/types'
 
 function App() {
   const { chats, currentChatId, selectChat, updateChatSettings } = useChatStore()
@@ -18,7 +19,7 @@ function App() {
     }
   }, [chats, currentChatId, selectChat])
 
-  const handleModelChange = (model: string) => {
+  const handleModelChange = (model: ChatModel) => {
     if (currentChatId) {
       updateChatSettings(currentChatId, { model })
     }
