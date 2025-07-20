@@ -1,3 +1,4 @@
+import { parseMarkdown } from '@/shared/lib/markdown';
 import { Box, Button, Flex, HStack, Link, Skeleton, Text, VStack } from '@chakra-ui/react';
 import { X, ExternalLink, CheckCircle2 } from 'lucide-react';
 
@@ -40,7 +41,7 @@ export const FactCheckSidebar = ({
       <Flex
         justify="space-between"
         align="center"
-        p={4}
+        p={5}
         borderBottom="1px solid"
         borderColor="gray.200"
       >
@@ -80,7 +81,7 @@ export const FactCheckSidebar = ({
                 Результат проверки
               </Text>
               <Text fontSize="14px" color="gray.600" lineHeight="1.5">
-                {data.response}
+                {parseMarkdown(data.response)}
               </Text>
             </Box>
 

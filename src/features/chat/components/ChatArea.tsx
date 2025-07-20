@@ -53,7 +53,6 @@ export default function ChatArea() {
         compareMode={compareMode}
         onSecureModeChange={setSecureMode}
         onCompareModeChange={setCompareMode}
-        onSettingsClick={() => console.log('Settings clicked')}
       />
 
       {/* Messages Area */}

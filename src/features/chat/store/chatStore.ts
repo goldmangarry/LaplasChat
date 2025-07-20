@@ -7,7 +7,9 @@ import { sendSecureMessage, checkFacts } from '@/shared/lib/api'
 const createDefaultChat = (): Chat => ({
   id: uuidv4(),
   title: 'New Chat',
-  model: 'gpt-4',
+  model: 'openai/o3',
+  temperature: 0.7,
+  maxTokens: 4096,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 })
@@ -111,7 +113,12 @@ export const useChatStore = create<ChatStoreState>()(
           
           const response = await sendSecureMessage(
             content,
-            chat?.dialogId // Send undefined for first message, existing dialog_id for subsequent
+            chat?.dialogId, // Send undefined for first message, existing dialog_id for subsequent
+            {
+              model: chat?.model,
+              temperature: chat?.temperature,
+              maxTokens: chat?.maxTokens
+            }
           )
 
           const aiMessage: Message = {
@@ -209,6 +216,21 @@ export const useChatStore = create<ChatStoreState>()(
           chats: state.chats.map((chat: Chat) =>
             chat.id === chatId
               ? { ...chat, title, updatedAt: new Date().toISOString() }
+              : chat
+          ),
+        }))
+      },
+
+      updateChatSettings: (chatId: string, settings: { model?: string; temperature?: number; maxTokens?: number }) => {
+        set((state: ChatStoreState) => ({
+          ...state,
+          chats: state.chats.map((chat: Chat) =>
+            chat.id === chatId
+              ? { 
+                  ...chat, 
+                  ...settings,
+                  updatedAt: new Date().toISOString() 
+                }
               : chat
           ),
         }))

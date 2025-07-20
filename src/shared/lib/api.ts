@@ -31,13 +31,17 @@ type FactCheckResponse = {
   urls: string[]
 }
 
-export async function sendSecureMessage(message: string, dialogId?: string): Promise<SecureModeResponse> {
+export async function sendSecureMessage(
+  message: string, 
+  dialogId?: string, 
+  settings?: { model?: string; temperature?: number; maxTokens?: number }
+): Promise<SecureModeResponse> {
   try {
     const requestBody: SecureModeRequest = {
-      model: 'gpt-4',
+      model: settings?.model || 'openai/o3',
       message: message,
-      max_tokens: 32000,
-      temperature: 0.3,
+      max_tokens: settings?.maxTokens || 4096,
+      temperature: settings?.temperature || 0.7,
     }
 
     if (dialogId) {

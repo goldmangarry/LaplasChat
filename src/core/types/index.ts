@@ -1,4 +1,19 @@
-export type ChatModel = 'gpt-4'
+export type ChatModel = 
+  // OpenAI Models
+  | 'openai/o3'
+  | 'openai/o4-mini-high'
+  | 'openai/o4-mini'
+  | 'openai/gpt-4.1'
+  | 'openai/gpt-4.1-mini'
+  // xAI Models
+  | 'x-ai/grok-4'
+  // Anthropic Models
+  | 'anthropic/claude-opus-4'
+  | 'anthropic/claude-sonnet-4'
+  | 'anthropic/claude-3.5-haiku'
+  // Google Models
+  | 'google/gemini-2.5-flash'
+  | 'google/gemini-2.5-pro'
 
 export type Chat = {
   id: string
@@ -9,6 +24,8 @@ export type Chat = {
   avatar?: string
   isActive?: boolean
   model: ChatModel
+  temperature: number
+  maxTokens: number
   createdAt: string
   updatedAt: string
 }
@@ -79,6 +96,7 @@ export type ChatStoreActions = {
   sendMessage: (chatId: string, content: string) => Promise<void>
   deleteChat: (chatId: string) => void
   updateChatTitle: (chatId: string, title: string) => void
+  updateChatSettings: (chatId: string, settings: { model?: ChatModel; temperature?: number; maxTokens?: number }) => void
   isLoadingChat: (chatId: string) => boolean
   setLoadingChat: (chatId: string, loading: boolean) => void
   openFactCheck: () => void

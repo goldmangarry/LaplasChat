@@ -4,5 +4,7 @@ export { ChatMessage } from './ChatMessage';
 export { ChatInput } from './ChatInput';
 export { EncryptedResponseModal } from './EncryptedResponseModal';
 export { FactCheckSidebar } from './FactCheckSidebar';
+export { ChatSettings } from './ChatSettings';
 export type { ChatMessageProps } from './ChatMessage';
 export type { ChatInputProps } from './ChatInput';
+export type { ChatSettingsProps } from './ChatSettings';
