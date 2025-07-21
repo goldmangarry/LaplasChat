@@ -1,10 +1,12 @@
-import { Box, HStack, Text, Switch, Separator } from '@chakra-ui/react'
+import { Box, HStack, Text, Switch, Separator, IconButton } from '@chakra-ui/react'
+import { PanelRight } from 'lucide-react'
 
 type ChatHeaderProps = {
   secureMode?: boolean;
   compareMode?: boolean;
   onSecureModeChange?: (enabled: boolean) => void;
   onCompareModeChange?: (enabled: boolean) => void;
+  onOpenSettings?: () => void;
 };
 
 export default function ChatHeader({
@@ -12,6 +14,7 @@ export default function ChatHeader({
   compareMode = false,
   onSecureModeChange,
   onCompareModeChange,
+  onOpenSettings,
 }: ChatHeaderProps) {
   return (
     <Box 
@@ -56,6 +59,15 @@ export default function ChatHeader({
           </HStack>
         </HStack>
 
+        <IconButton
+          borderRadius='16px'
+          aria-label="Open settings"
+          variant="ghost"
+          size="sm"
+          onClick={onOpenSettings}
+        >
+          <PanelRight size={20} />
+        </IconButton>
       </HStack>
     </Box>
   );

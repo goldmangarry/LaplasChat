@@ -1,5 +1,5 @@
 import { Box, Text, Stack, Flex, Icon, Menu, Button, Slider } from '@chakra-ui/react'
-import { HiInformationCircle, HiCog6Tooth, HiChevronDown } from 'react-icons/hi2'
+import { HiInformationCircle, HiChevronDown } from 'react-icons/hi2'
 import { useCallback, useMemo, useState } from 'react'
 import type { ChatModel } from '@/core/types'
 import anthropicIcon from '@/assets/icons/anthropic.svg'
@@ -58,23 +58,12 @@ export function ChatSettings({
 
   return (
     <Box 
-      margin='16px'
-      borderRadius='16px'
-      width="280px"  
-      bg="white" 
-      borderLeft="1px solid" 
-      borderColor="gray.200"
-      p={4}
+      width="100%"
+      height="100%"
+      bg="white"
+      p={6}
     >
       <Stack gap={6} align="stretch">
-        {/* Header */}
-        <Flex align="center" gap={2}>
-          <Icon as={HiCog6Tooth} boxSize={5} color="gray.600" />
-          <Text fontSize="lg" fontWeight="semibold" color="gray.800">
-            Chat settings
-          </Text>
-        </Flex>
-
         {/* Model Selection */}
         <Stack gap={3} align="stretch">
           <Text fontSize="sm" fontWeight="medium" color="gray.600">

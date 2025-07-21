@@ -210,9 +210,9 @@ export default function ChatSidebar() {
 
       {/* User Info */}
       <UserInfo
-        name="Segun Adebayo"
-        email="segunadebayo@example.com"
-        avatarSrc="/assets/user-avatar.png"
+        name="Garry Goldman"
+        email="garrygodzilla@gmail.com"
+        avatarSrc="/assets/avatar.jpg"
       />
     </Stack>
   )

@@ -40,7 +40,7 @@ export const ChatMessage = ({
       <Flex justify="space-between" align="center" width="full">
         <HStack gap={4.5}>
           <HStack gap={2}>
-            <Avatar.Root size="xs" bg="gray.900" color="white">
+            <Avatar.Root size="xs" color="white">
               {isAI ? (
                 <img
                   src={OpenAIIcon}
@@ -50,7 +50,7 @@ export const ChatMessage = ({
                 />
               ) : (
                 <>
-                  <Avatar.Image src="/assets/user-avatar.png" alt={userName} />
+                  <Avatar.Image src="/assets/avatar.jpg" alt={userName} />
                   <Avatar.Fallback fontSize="12px" fontWeight="500">
                     {userInitials}
                   </Avatar.Fallback>

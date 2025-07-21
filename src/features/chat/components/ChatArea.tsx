@@ -9,7 +9,11 @@ import { EncryptedResponseModal } from './EncryptedResponseModal'
 import { FactCheckSidebar } from './FactCheckSidebar'
 import { toaster } from '@/components/ui/toast'
 
-export default function ChatArea() {
+type ChatAreaProps = {
+  onOpenSettings?: () => void
+}
+
+export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
   const { currentChatId, messagesByChat, isLoadingChat, factCheck, checkFacts, closeFactCheck } = useChatStore()
   const [secureMode, setSecureMode] = useState(true)
   const [compareMode, setCompareMode] = useState(false)
@@ -53,6 +57,7 @@ export default function ChatArea() {
         compareMode={compareMode}
         onSecureModeChange={setSecureMode}
         onCompareModeChange={setCompareMode}
+        onOpenSettings={onOpenSettings}
       />
 
       {/* Messages Area */}
