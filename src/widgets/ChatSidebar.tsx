@@ -18,7 +18,7 @@ import { useState, useMemo } from 'react'
 import type { Chat } from '@/core/types'
 
 export default function ChatSidebar() {
-  const { chats, currentChatId, createChat, selectChat, messagesByChat } = useChatStore()
+  const { chats, currentChatId, createChat, selectChat } = useChatStore()
   const [selectedType, setSelectedType] = useState<'chat' | 'image' | 'video'>('chat')
 
   const sortedChats = useMemo(() => {
