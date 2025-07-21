@@ -135,6 +135,19 @@ export const useChatStore = create<ChatStoreState>()(
 
           addMessage(chatId, aiMessage)
 
+          // Auto-generate chat title from first AI response
+          const currentChat = get().chats.find((c) => c.id === chatId)
+          const messagesCount = get().messagesByChat[chatId]?.length || 0
+          if (currentChat && currentChat.title === 'New Chat' && messagesCount <= 2) {
+            // Generate title from first 50 characters of AI response
+            const newTitle = response.reply.length > 50 
+              ? response.reply.substring(0, 50) + '...'
+              : response.reply
+            // Clean up the title (remove newlines, extra spaces)
+            const cleanTitle = newTitle.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim()
+            get().updateChatTitle(chatId, cleanTitle)
+          }
+
           // Update the user message with encrypted content if available
           if (response.encrypted_response) {
             set((state: ChatStoreState) => ({

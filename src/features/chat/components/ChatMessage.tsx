@@ -1,7 +1,8 @@
 import { Box, Button, Flex, HStack, Text, VStack } from '@chakra-ui/react';
 import { Avatar } from '@chakra-ui/react';
-import { Check, Copy, Lock } from 'lucide-react';
+import { Copy, Lock } from 'lucide-react';
 import OpenAIIcon from '../../../assets/icons/openai.svg';
+import SearchCheckIcon from '../../../assets/icons/search-check.svg';
 import { parseMarkdown } from '../../../shared/lib/markdown.tsx';
 
 export type ChatMessageProps = {
@@ -87,7 +88,7 @@ export const ChatMessage = ({
               h="16px"
               onClick={onFactCheck}
             >
-              <Check size={16} color="#A1A1AA" />
+              <img src={SearchCheckIcon} alt="Fact Check" width="16" height="16" />
             </Button>
           )}
           {!isAI && encryptedContent && (

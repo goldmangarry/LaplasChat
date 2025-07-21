@@ -188,8 +188,6 @@ export default function ChatSidebar() {
                     isSelected={currentChatId === chat.id}
                     hasActions={true}
                     onClick={() => selectChat(chat.id)}
-                    lastMessage={lastMessage?.content}
-                    timestamp={lastMessage ? formatRelativeTime(lastMessage.timestamp) : undefined}
                   />
                 )
               })}
