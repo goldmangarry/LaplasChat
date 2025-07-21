@@ -56,7 +56,7 @@ export default function ChatArea() {
       />
 
       {/* Messages Area */}
-      <Box flex={1} overflowY="auto" px="228px" py={6}>
+      <Box flex={1} overflowY="auto" px="10%" py={6}>
         <Stack direction="column" gap={6} align="stretch">
           {messages.map((msg: Message) => (
             <ChatMessage
@@ -90,7 +90,7 @@ export default function ChatArea() {
       </Box>
 
       {/* Input Area */}
-      <Box px="228px" py={4}>
+      <Box px="10%" py={4}>
         <ChatInput
           placeholder="How can I help you?"
           disabled={isLoadingChat(currentChatId)}
