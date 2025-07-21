@@ -34,35 +34,6 @@ export default function ChatSidebar() {
     selectChat(newChatId)
   }
 
-  const getLastMessage = (chatId: string) => {
-    const messages = messagesByChat[chatId] || []
-    if (messages.length === 0) return undefined
-    
-    const lastMessage = messages[messages.length - 1]
-    return {
-      content: lastMessage.content,
-      timestamp: lastMessage.timestamp
-    }
-  }
-
-  const formatRelativeTime = (timestamp: string) => {
-    const now = new Date()
-    const date = new Date(timestamp)
-    const diffMs = now.getTime() - date.getTime()
-    const diffMins = Math.floor(diffMs / 60000)
-    const diffHours = Math.floor(diffMs / 3600000)
-    const diffDays = Math.floor(diffMs / 86400000)
-
-    if (diffMins < 1) return 'Just now'
-    if (diffMins < 60) return `${diffMins}m ago`
-    if (diffHours < 24) return `${diffHours}h ago`
-    if (diffDays < 7) return `${diffDays}d ago`
-    
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric' 
-    })
-  }
 
   return (
     <Stack
@@ -171,9 +142,7 @@ export default function ChatSidebar() {
                 },
               }}
             >
-              {sortedChats.map((chat: Chat) => {
-                const lastMessage = getLastMessage(chat.id)
-                return (
+              {sortedChats.map((chat: Chat) => (
                   <ChatItem
                     key={chat.id}
                     id={chat.id}
@@ -189,9 +158,8 @@ export default function ChatSidebar() {
                     hasActions={true}
                     onClick={() => selectChat(chat.id)}
                   />
-                )
-              })}
-              {sortedChats.length === 0 && searchQuery && (
+              ))}
+              {sortedChats.length === 0 && (
                 <Text 
                   fontSize="14px" 
                   color="gray.500" 

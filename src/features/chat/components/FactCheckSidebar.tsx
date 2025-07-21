@@ -1,5 +1,5 @@
 import { parseMarkdown } from '@/shared/lib/markdown';
-import { Box, Drawer, Flex, HStack, Link, Skeleton, Text, VStack } from '@chakra-ui/react';
+import { Box, Drawer, Flex, Link, Skeleton, Text, VStack } from '@chakra-ui/react';
 import { ExternalLink, CheckCircle2 } from 'lucide-react';
 
 type FactCheckData = {

@@ -1,4 +1,4 @@
-import { Flex, Drawer, IconButton } from '@chakra-ui/react'
+import { Flex, Drawer } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { HiCog6Tooth } from 'react-icons/hi2'
 import { useChatStore } from '@/features/chat/store'
