@@ -46,7 +46,7 @@ export default function ChatArea() {
   }
 
   return (
-    <Flex flex={1} direction="column" bg="white">
+    <Flex flex={1} direction="column" bg="white" margin='16px' borderRadius='16px' >
       {/* Header */}
       <ChatHeader
         secureMode={secureMode}

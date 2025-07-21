@@ -5,7 +5,7 @@ import type { ChatModel } from '@/core/types'
 import anthropicIcon from '@/assets/icons/anthropic.svg'
 import openaiIcon from '@/assets/icons/openai.svg'
 import googleIcon from '@/assets/icons/google.svg'
-import xaiIcon from '@/assets/icons/xai.svg'
+import grokIcon from '@/assets/icons/grok.svg'
 
 type ChatSettingsProps = {
   model: ChatModel
@@ -18,17 +18,15 @@ type ChatSettingsProps = {
 
 const models: { value: ChatModel; label: string; icon: string }[] = [
   // OpenAI Models
-  { value: 'openai/o3', label: 'o3', icon: openaiIcon },
   { value: 'openai/o4-mini-high', label: 'o4 Mini High', icon: openaiIcon },
   { value: 'openai/o4-mini', label: 'o4 Mini', icon: openaiIcon },
   { value: 'openai/gpt-4.1', label: 'GPT-4.1', icon: openaiIcon },
   { value: 'openai/gpt-4.1-mini', label: 'GPT-4.1 Mini', icon: openaiIcon },
   
   // xAI Models
-  { value: 'x-ai/grok-4', label: 'Grok 4', icon: xaiIcon },
+  { value: 'x-ai/grok-4', label: 'Grok 4', icon: grokIcon },
   
   // Anthropic Models
-  { value: 'anthropic/claude-opus-4', label: 'Claude Opus 4', icon: anthropicIcon },
   { value: 'anthropic/claude-sonnet-4', label: 'Claude Sonnet 4', icon: anthropicIcon },
   { value: 'anthropic/claude-3.5-haiku', label: 'Claude 3.5 Haiku', icon: anthropicIcon },
   
@@ -60,8 +58,9 @@ export function ChatSettings({
 
   return (
     <Box 
-      width="280px" 
-      height="100vh" 
+      margin='16px'
+      borderRadius='16px'
+      width="280px"  
       bg="white" 
       borderLeft="1px solid" 
       borderColor="gray.200"

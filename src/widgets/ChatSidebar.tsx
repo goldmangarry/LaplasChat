@@ -13,27 +13,21 @@ import {
 import { useChatStore } from '@/features/chat/store'
 import { ChatItem } from './ChatSidebar/ChatItem'
 import { ChatTypeTab } from './ChatSidebar/ChatTypeTab'
-import { SearchInput } from './ChatSidebar/SearchInput'
 import { UserInfo } from './ChatSidebar/UserInfo'
 import { useState, useMemo } from 'react'
 import type { Chat } from '@/core/types'
 
 export default function ChatSidebar() {
   const { chats, currentChatId, createChat, selectChat, messagesByChat } = useChatStore()
-  const [searchQuery, setSearchQuery] = useState('')
   const [selectedType, setSelectedType] = useState<'chat' | 'image' | 'video'>('chat')
 
   const sortedChats = useMemo(() => {
-    const filtered = chats.filter((chat: Chat) => 
-      chat.title.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    
-    return filtered.sort((a: Chat, b: Chat) => {
+    return chats.sort((a: Chat, b: Chat) => {
       const aTime = new Date(a.updatedAt).getTime()
       const bTime = new Date(b.updatedAt).getTime()
       return bTime - aTime
     })
-  }, [chats, searchQuery])
+  }, [chats])
 
   const handleCreateChat = () => {
     const newChatId = createChat()
@@ -123,11 +117,6 @@ export default function ChatSidebar() {
             Start new chat
           </Button>
 
-          {/* Search input */}
-          <Box width="100%">
-            <SearchInput value={searchQuery} onChange={setSearchQuery} />
-          </Box>
-
           {/* Chat type tabs */}
           <Stack direction="column" gap={1} alignSelf="stretch" position="relative">
             <ChatTypeTab
@@ -189,7 +178,13 @@ export default function ChatSidebar() {
                     key={chat.id}
                     id={chat.id}
                     title={chat.title}
-                    type={chat.model.startsWith('openai/') ? 'openai' : 'anthropic'}
+                    type={
+                      chat.model.startsWith('openai/') ? 'openai' : 
+                      chat.model.startsWith('anthropic/') ? 'anthropic' :
+                      chat.model.startsWith('google/') ? 'google' :
+                      chat.model.startsWith('x-ai/') ? 'xai' :
+                      'openai'
+                    }
                     isSelected={currentChatId === chat.id}
                     hasActions={true}
                     onClick={() => selectChat(chat.id)}

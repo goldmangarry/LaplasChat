@@ -7,8 +7,8 @@ import { sendSecureMessage, checkFacts } from '@/shared/lib/api'
 const createDefaultChat = (): Chat => ({
   id: uuidv4(),
   title: 'New Chat',
-  model: 'openai/o3',
-  temperature: 0.7,
+  model: 'openai/o4-mini-high',
+  temperature: 0.5,
   maxTokens: 4096,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),

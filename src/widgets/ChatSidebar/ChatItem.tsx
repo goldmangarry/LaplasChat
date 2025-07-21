@@ -3,11 +3,13 @@ import { Trash2 } from 'lucide-react'
 import { useChatStore } from '@/features/chat/store'
 import anthropicIcon from '../../assets/icons/anthropic.svg'
 import openaiIcon from '../../assets/icons/openai.svg'
+import googleIcon from '../../assets/icons/google.svg'
+import grokIcon from '../../assets/icons/grok.svg'
 
 type ChatItemProps = {
   id: string
   title: string
-  type: 'anthropic' | 'openai' | 'both'
+  type: 'anthropic' | 'openai' | 'google' | 'xai' | 'both'
   isSelected: boolean
   hasActions?: boolean
   onClick: () => void
@@ -59,6 +61,10 @@ export function ChatItem({ id, title, type, isSelected, hasActions, onClick, las
           </Box>
         ) : type === 'anthropic' ? (
           <img src={anthropicIcon} alt="Anthropic" width="28" height="28" />
+        ) : type === 'google' ? (
+          <img src={googleIcon} alt="Google" width="28" height="28" />
+        ) : type === 'xai' ? (
+          <img src={grokIcon} alt="Grok" width="28" height="28" />
         ) : (
           <img src={openaiIcon} alt="OpenAI" width="28" height="28" />
         )}
@@ -127,7 +133,7 @@ export function ChatItem({ id, title, type, isSelected, hasActions, onClick, las
             aria-label="Delete"
             size="xs"
             variant="ghost"
-            color="gray.500"
+            color="gray.800"
             position="absolute"
             right={2}
             opacity={0}
