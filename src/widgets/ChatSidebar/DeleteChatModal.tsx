@@ -1,4 +1,5 @@
 import { Dialog, Button, Text, HStack } from '@chakra-ui/react'
+import { useEffect } from 'react'
 
 type DeleteChatModalProps = {
   isOpen: boolean
@@ -13,6 +14,22 @@ export const DeleteChatModal = ({
   onConfirm,
   onCancel
 }: DeleteChatModalProps) => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && isOpen) {
+        e.preventDefault()
+        onConfirm()
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown)
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isOpen, onConfirm])
   return (
     <Dialog.Root open={isOpen} onOpenChange={(e) => !e.open && onCancel()} size="sm">
       <Dialog.Backdrop />
