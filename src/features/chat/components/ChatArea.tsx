@@ -16,7 +16,6 @@ type ChatAreaProps = {
 export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
   const { currentChatId, messagesByChat, isLoadingChat, factCheck, checkFacts, closeFactCheck } = useChatStore()
   const [secureMode, setSecureMode] = useState(true)
-  const [compareMode, setCompareMode] = useState(false)
   const [encryptedContent, setEncryptedContent] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -54,9 +53,7 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
       {/* Header */}
       <ChatHeader
         secureMode={secureMode}
-        compareMode={compareMode}
         onSecureModeChange={setSecureMode}
-        onCompareModeChange={setCompareMode}
         onOpenSettings={onOpenSettings}
       />
 
