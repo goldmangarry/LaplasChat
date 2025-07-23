@@ -128,7 +128,7 @@ export async function checkFacts(message: string): Promise<FactCheckResponse> {
       message: message,
     }
 
-    const response = await fetch('/api/fact-check', {
+    const response = await fetch('/api/chat/fact-check', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
