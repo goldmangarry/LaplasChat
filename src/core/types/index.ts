@@ -26,6 +26,7 @@ export type Chat = {
   model: ChatModel
   temperature: number
   maxTokens: number
+  secureMode: boolean
   createdAt: string
   updatedAt: string
 }
@@ -96,7 +97,7 @@ export type ChatStoreActions = {
   sendMessage: (chatId: string, content: string) => Promise<void>
   deleteChat: (chatId: string) => void
   updateChatTitle: (chatId: string, title: string) => void
-  updateChatSettings: (chatId: string, settings: { model?: ChatModel; temperature?: number; maxTokens?: number }) => void
+  updateChatSettings: (chatId: string, settings: { model?: ChatModel; temperature?: number; maxTokens?: number; secureMode?: boolean }) => void
   isLoadingChat: (chatId: string) => boolean
   setLoadingChat: (chatId: string, loading: boolean) => void
   openFactCheck: () => void

@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { v4 as uuidv4 } from 'uuid'
 import type { ChatStoreState, Chat, Message, ChatModel } from '@/core/types'
-import { sendSecureMessage, checkFacts } from '@/shared/lib/api'
+import { sendSecureMessage, sendMessage, checkFacts } from '@/shared/lib/api'
 
 const createDefaultChat = (): Chat => ({
   id: uuidv4(),
@@ -10,6 +10,7 @@ const createDefaultChat = (): Chat => ({
   model: 'openai/o4-mini-high',
   temperature: 0.5,
   maxTokens: 4096,
+  secureMode: true,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 })
@@ -105,26 +106,50 @@ export const useChatStore = create<ChatStoreState>()(
 
         try {
           const chat = get().chats.find((c) => c.id === chatId)
+          if (!chat) {
+            throw new Error('Chat not found')
+          }
           
           // For first message: send without dialog_id (undefined)
           // For subsequent messages: send with existing dialog_id
-          const isFirstMessage = !chat?.dialogId
-          console.log('Sending message:', { chatId, isFirstMessage, existingDialogId: chat?.dialogId })
+          const isFirstMessage = !chat.dialogId
+          console.log('Sending message:', { chatId, isFirstMessage, existingDialogId: chat.dialogId, secureMode: chat.secureMode })
           
-          const response = await sendSecureMessage(
-            content,
-            chat?.dialogId, // Send undefined for first message, existing dialog_id for subsequent
-            {
-              model: chat?.model,
-              temperature: chat?.temperature,
-              maxTokens: chat?.maxTokens
-            }
-          )
+          let aiContent: string
+          let encryptedResponse: string | undefined
+          let dialogId: string | undefined
+          
+          if (chat.secureMode) {
+            const response = await sendSecureMessage(
+              content,
+              chat.dialogId,
+              {
+                model: chat.model,
+                temperature: chat.temperature,
+                maxTokens: chat.maxTokens
+              }
+            )
+            aiContent = response.reply
+            encryptedResponse = response.encrypted_response
+            dialogId = response.dialogId || response.dialog_id
+          } else {
+            const response = await sendMessage(
+              content,
+              chat.dialogId,
+              {
+                model: chat.model,
+                temperature: chat.temperature,
+                maxTokens: chat.maxTokens
+              }
+            )
+            aiContent = response.response
+            dialogId = response.dialog_id
+          }
 
           const aiMessage: Message = {
             id: uuidv4(),
             chatId,
-            content: response.reply,
+            content: aiContent,
             timestamp: new Date().toISOString(),
             author: {
               name: 'Assistant',
@@ -140,23 +165,23 @@ export const useChatStore = create<ChatStoreState>()(
           const messagesCount = get().messagesByChat[chatId]?.length || 0
           if (currentChat && currentChat.title === 'New Chat' && messagesCount <= 2) {
             // Generate title from first 50 characters of AI response
-            const newTitle = response.reply.length > 50 
-              ? response.reply.substring(0, 50) + '...'
-              : response.reply
+            const newTitle = aiContent.length > 50 
+              ? aiContent.substring(0, 50) + '...'
+              : aiContent
             // Clean up the title (remove newlines, extra spaces)
             const cleanTitle = newTitle.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim()
             get().updateChatTitle(chatId, cleanTitle)
           }
 
-          // Update the user message with encrypted content if available
-          if (response.encrypted_response) {
+          // Update the user message with encrypted content if available (only in secure mode)
+          if (chat.secureMode && encryptedResponse) {
             set((state: ChatStoreState) => ({
               ...state,
               messagesByChat: {
                 ...state.messagesByChat,
                 [chatId]: state.messagesByChat[chatId].map((msg: Message) =>
                   msg.id === userMessage.id
-                    ? { ...msg, encryptedContent: response.encrypted_response }
+                    ? { ...msg, encryptedContent: encryptedResponse }
                     : msg
                 ),
               },
@@ -164,8 +189,7 @@ export const useChatStore = create<ChatStoreState>()(
           }
 
           // Save dialog_id from server response (for first message or if updated)
-          const dialogId = response.dialogId || response.dialog_id
-          if (dialogId && !chat?.dialogId) {
+          if (dialogId && !chat.dialogId) {
             console.log('Saving dialog_id from server:', dialogId)
             set((state: ChatStoreState) => ({
               ...state,
@@ -234,7 +258,7 @@ export const useChatStore = create<ChatStoreState>()(
         }))
       },
 
-      updateChatSettings: (chatId: string, settings: { model?: ChatModel; temperature?: number; maxTokens?: number }) => {
+      updateChatSettings: (chatId: string, settings: { model?: ChatModel; temperature?: number; maxTokens?: number; secureMode?: boolean }) => {
         set((state: ChatStoreState) => ({
           ...state,
           chats: state.chats.map((chat: Chat) =>

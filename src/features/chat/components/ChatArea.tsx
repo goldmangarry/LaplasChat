@@ -1,5 +1,5 @@
 import { Box, Flex, Stack, Center, Text } from '@chakra-ui/react'
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useChatStore } from '@/features/chat/store'
 import type { Message } from '@/core/types'
 import ChatHeader from './ChatHeader'
@@ -14,10 +14,19 @@ type ChatAreaProps = {
 }
 
 export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
-  const { currentChatId, messagesByChat, isLoadingChat, factCheck, checkFacts, closeFactCheck } = useChatStore()
-  const [secureMode, setSecureMode] = useState(true)
+  const { currentChatId, messagesByChat, isLoadingChat, factCheck, checkFacts, closeFactCheck, chats, updateChatSettings } = useChatStore()
   const [encryptedContent, setEncryptedContent] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  
+  const currentChat = useMemo(() => {
+    return chats.find(chat => chat.id === currentChatId)
+  }, [currentChatId, chats])
+  
+  const handleSecureModeChange = useCallback((enabled: boolean) => {
+    if (currentChatId) {
+      updateChatSettings(currentChatId, { secureMode: enabled })
+    }
+  }, [currentChatId, updateChatSettings])
 
   const messages = useMemo(() => {
     return currentChatId ? messagesByChat[currentChatId] || [] : []
@@ -52,8 +61,8 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
     <Flex flex={1} direction="column" bg="white" margin='16px' borderRadius='16px' >
       {/* Header */}
       <ChatHeader
-        secureMode={secureMode}
-        onSecureModeChange={setSecureMode}
+        secureMode={currentChat?.secureMode ?? true}
+        onSecureModeChange={handleSecureModeChange}
         onOpenSettings={onOpenSettings}
       />
 

@@ -23,11 +23,11 @@ export default function ChatHeader({
         <HStack gap={2.5}>
           <Switch.Root
             checked={secureMode}
-            disabled
             onCheckedChange={(e) => onSecureModeChange?.(e.checked)}
             colorPalette="pink"
             size="sm"
           >
+            <Switch.HiddenInput />
             <Switch.Control>
               <Switch.Thumb />
             </Switch.Control>
