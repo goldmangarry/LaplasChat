@@ -8,13 +8,24 @@ import { ChatInput } from './ChatInput'
 import { EncryptedResponseModal } from './EncryptedResponseModal'
 import { FactCheckSidebar } from './FactCheckSidebar'
 import { toaster } from '@/components/ui/toast'
+import { ChatSuggestions } from './ChatSuggestions'
 
 type ChatAreaProps = {
   onOpenSettings?: () => void
 }
 
 export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
-  const { currentChatId, messagesByChat, isLoadingChat, factCheck, checkFacts, closeFactCheck, chats, updateChatSettings } = useChatStore()
+  const {
+    currentChatId,
+    messagesByChat,
+    isLoadingChat,
+    factCheck,
+    checkFacts,
+    closeFactCheck,
+    chats,
+    updateChatSettings,
+    sendMessage,
+  } = useChatStore()
   const [encryptedContent, setEncryptedContent] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   
@@ -33,7 +44,9 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
   }, [currentChatId, messagesByChat])
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (messages.length > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
   }, [messages])
 
   const handleCopyMessage = (content: string) => {
@@ -43,6 +56,12 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
       type: 'success',
       duration: 2000,
     })
+  }
+
+  const handleSuggestionClick = (text: string) => {
+    if (currentChatId) {
+      sendMessage(currentChatId, text)
+    }
   }
 
   if (!currentChatId) {
@@ -58,7 +77,7 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
   }
 
   return (
-    <Flex flex={1} direction="column" bg="white" margin='16px' borderRadius='16px' >
+    <Flex flex={1} direction="column" bg="white">
       {/* Header */}
       <ChatHeader
         secureMode={currentChat?.secureMode ?? true}
@@ -73,17 +92,23 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
             <ChatMessage
               key={msg.id}
               userName={msg.author.name}
-              userInitials={msg.author.avatar || msg.author.name.slice(0, 2).toUpperCase()}
+              userInitials={
+                msg.author.avatar || msg.author.name.slice(0, 2).toUpperCase()
+              }
               message={msg.content}
-              timestamp={new Date(msg.timestamp).toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
+              timestamp={new Date(msg.timestamp).toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
               })}
               isAI={!msg.isOwnMessage}
               onCopy={() => handleCopyMessage(msg.content)}
               encryptedContent={msg.encryptedContent}
-              onShowEncrypted={() => setEncryptedContent(msg.encryptedContent || null)}
-              onFactCheck={!msg.isOwnMessage ? () => checkFacts(msg.content) : undefined}
+              onShowEncrypted={() =>
+                setEncryptedContent(msg.encryptedContent || null)
+              }
+              onFactCheck={
+                !msg.isOwnMessage ? () => checkFacts(msg.content) : undefined
+              }
             />
           ))}
           {isLoadingChat(currentChatId) && (
@@ -100,8 +125,13 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
         </Stack>
       </Box>
 
-      {/* Input Area */}
+      {/* Suggestions and Input Area */}
       <Box px="10%" py={4}>
+        {messages.length === 0 && !isLoadingChat(currentChatId) && (
+          <Box mb={4}>
+            <ChatSuggestions onSuggestionClick={handleSuggestionClick} />
+          </Box>
+        )}
         <ChatInput
           placeholder="How can I help you?"
           disabled={isLoadingChat(currentChatId)}

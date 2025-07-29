@@ -1,4 +1,4 @@
-import { Flex, Drawer } from '@chakra-ui/react'
+import { Flex, Box, Text } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { HiCog6Tooth } from 'react-icons/hi2'
 import { useChatStore } from '@/features/chat/store'
@@ -10,7 +10,7 @@ import type { ChatModel } from '@/core/types'
 
 function App() {
   const { chats, currentChatId, selectChat, updateChatSettings } = useChatStore()
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [isSettingsOpen, setIsSettingsOpen] = useState(true)
   
   // Get current chat
   const currentChat = chats.find(chat => chat.id === currentChatId)
@@ -42,42 +42,39 @@ function App() {
   return (
     <Flex height="100vh" bg="gray.50">
       <ChatSidebar />
-      <ChatArea onOpenSettings={() => setIsSettingsOpen(true)} />
+      <Flex flex={1} bg="white" margin="16px" borderRadius="16px" overflow="hidden">
+        <ChatArea onOpenSettings={() => setIsSettingsOpen(!isSettingsOpen)} />
 
-      {/* Settings Drawer */}
-      {currentChat && (
-        <Drawer.Root
-          open={isSettingsOpen}
-          onOpenChange={(e) => setIsSettingsOpen(e.open)}
-          placement="end"
-        >
-          <Drawer.Backdrop />
-          <Drawer.Positioner>
-            <Drawer.Content maxWidth="320px" width="320px">
-              <Drawer.Header>
-                <Drawer.Title fontSize="lg" fontWeight="semibold">
-                  <Flex align="center" gap={2}>
-                    <HiCog6Tooth size={20} />
-                    Chat Settings
-                  </Flex>
-                </Drawer.Title>
-                <Drawer.CloseTrigger />
-              </Drawer.Header>
-              <Drawer.Body p={0}>
-                <ChatSettings
-                  key={currentChat.id}
-                  model={currentChat.model}
-                  temperature={currentChat.temperature}
-                  maxTokens={currentChat.maxTokens}
-                  onModelChange={handleModelChange}
-                  onTemperatureChange={handleTemperatureChange}
-                  onMaxTokensChange={handleMaxTokensChange}
-                />
-              </Drawer.Body>
-            </Drawer.Content>
-          </Drawer.Positioner>
-        </Drawer.Root>
-      )}
+        {currentChat && (
+          <Box
+            width={isSettingsOpen ? '320px' : '0'}
+            flexShrink={0}
+            overflow="hidden"
+            transition="width 0.3s ease-in-out"
+            borderLeftWidth={isSettingsOpen ? '1px' : '0'}
+            borderLeftStyle="solid"
+            borderColor="gray.200"
+          >
+            <Box width="320px" p={4} height="100%">
+              <Flex align="center" gap={2} mb={4}>
+                <HiCog6Tooth size={20} />
+                <Text fontSize="lg" fontWeight="semibold">
+                  Chat Settings
+                </Text>
+              </Flex>
+              <ChatSettings
+                key={currentChat.id}
+                model={currentChat.model}
+                temperature={currentChat.temperature}
+                maxTokens={currentChat.maxTokens}
+                onModelChange={handleModelChange}
+                onTemperatureChange={handleTemperatureChange}
+                onMaxTokensChange={handleMaxTokensChange}
+              />
+            </Box>
+          </Box>
+        )}
+      </Flex>
       <Toaster />
     </Flex>
   )

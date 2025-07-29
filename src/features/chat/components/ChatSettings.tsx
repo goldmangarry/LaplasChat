@@ -1,4 +1,4 @@
-import { Box, Text, Stack, Flex, Icon, Menu, Button, Slider } from '@chakra-ui/react'
+import { Box, Text, Stack, Flex, Icon, Menu, Button, Slider, Input } from '@chakra-ui/react'
 import { HiInformationCircle, HiChevronDown } from 'react-icons/hi2'
 import { useCallback, useMemo, useState } from 'react'
 import type { ChatModel } from '@/core/types'
@@ -46,7 +46,11 @@ export function ChatSettings({
 }: ChatSettingsProps) {
   const selectedModel = useMemo(() => models.find(m => m.value === model), [model])
   const [localTemperature, setLocalTemperature] = useState(temperature)
+  const [tempInputValue, setTempInputValue] = useState(temperature.toString())
+
   const [localMaxTokens, setLocalMaxTokens] = useState(maxTokens)
+  const [maxTokensInputValue, setMaxTokensInputValue] = useState(maxTokens.toString())
+
 
   const handleTemperatureChangeEnd = useCallback((details: { value: number[] }) => {
     onTemperatureChange(details.value[0])
@@ -56,12 +60,33 @@ export function ChatSettings({
     onMaxTokensChange(details.value[0])
   }, [onMaxTokensChange])
 
+  const handleTempInputCommit = () => {
+    let value = parseFloat(tempInputValue)
+    if (isNaN(value) || tempInputValue.trim() === '') {
+      value = 0
+    }
+    const clampedValue = Math.max(0, Math.min(1, value))
+    setLocalTemperature(clampedValue)
+    setTempInputValue(clampedValue.toString())
+    onTemperatureChange(clampedValue)
+  }
+
+  const handleMaxTokensInputCommit = () => {
+    let value = parseInt(maxTokensInputValue, 10)
+    if (isNaN(value) || maxTokensInputValue.trim() === '') {
+      value = 1024
+    }
+    const clampedValue = Math.max(1024, Math.min(100000, value))
+    setLocalMaxTokens(clampedValue)
+    setMaxTokensInputValue(clampedValue.toString())
+    onMaxTokensChange(clampedValue)
+  }
+
   return (
     <Box 
       width="100%"
       height="100%"
       bg="white"
-      p={6}
     >
       <Stack gap={6} align="stretch">
         {/* Model Selection */}
@@ -141,7 +166,11 @@ export function ChatSettings({
               max={1}
               step={0.01}
               value={[localTemperature]}
-              onValueChange={(value) => setLocalTemperature(value.value[0])}
+              onValueChange={(value) => {
+                const newValue = value.value[0]
+                setLocalTemperature(newValue)
+                setTempInputValue(newValue.toString())
+              }}
               onValueChangeEnd={handleTemperatureChangeEnd}
             >
               <Flex justify="space-between" align="center" mb={2}>
@@ -151,7 +180,23 @@ export function ChatSettings({
                   </Slider.Label>
                   <Icon as={HiInformationCircle} boxSize={4} color="gray.400" />
                 </Flex>
-                <Slider.ValueText fontSize="sm" color="gray.600" />
+                <Input
+                  width="64px"
+                  height="28px"
+                  textAlign="center"
+                  value={tempInputValue}
+                  onChange={(e) => setTempInputValue(e.target.value)}
+                  onBlur={handleTempInputCommit}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleTempInputCommit()
+                      ;(e.target as HTMLInputElement).blur()
+                    }
+                  }}
+                  size="sm"
+                  variant="outline"
+                  borderColor="gray.200"
+                />
               </Flex>
               
               <Slider.Control>
@@ -177,7 +222,11 @@ export function ChatSettings({
               max={100000}
               step={1024}
               value={[localMaxTokens]}
-              onValueChange={(value) => setLocalMaxTokens(value.value[0])}
+              onValueChange={(value) => {
+                const newValue = value.value[0]
+                setLocalMaxTokens(newValue)
+                setMaxTokensInputValue(newValue.toString())
+              }}
               onValueChangeEnd={handleMaxTokensChangeEnd}
             >
               <Flex justify="space-between" align="center" mb={2}>
@@ -187,7 +236,23 @@ export function ChatSettings({
                   </Slider.Label>
                   <Icon as={HiInformationCircle} boxSize={4} color="gray.400" />
                 </Flex>
-                <Slider.ValueText fontSize="sm" color="gray.600" />
+                <Input
+                  width="64px"
+                  height="28px"
+                  textAlign="center"
+                  value={maxTokensInputValue}
+                  onChange={(e) => setMaxTokensInputValue(e.target.value)}
+                  onBlur={handleMaxTokensInputCommit}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleMaxTokensInputCommit()
+                      ;(e.target as HTMLInputElement).blur()
+                    }
+                  }}
+                  size="sm"
+                  variant="outline"
+                  borderColor="gray.200"
+                />
               </Flex>
               
               <Slider.Control>
