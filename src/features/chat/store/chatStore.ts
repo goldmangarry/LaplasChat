@@ -10,7 +10,7 @@ const createDefaultChat = (customSettings?: { model?: ChatModel; temperature?: n
   model: customSettings?.model || 'openai/o4-mini-high',
   temperature: customSettings?.temperature || 0.5,
   maxTokens: customSettings?.maxTokens || 4096,
-  secureMode: true,
+  secureMode: false,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 })

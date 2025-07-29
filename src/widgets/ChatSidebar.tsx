@@ -1,13 +1,13 @@
-import { 
-  Box, 
-  Text, 
-  Button, 
+import {
+  Box,
+  Text,
+  Button,
   Stack
 } from '@chakra-ui/react'
-import { 
-  MessageCircle, 
-  Plus, 
-  Image, 
+import {
+  MessageCircle,
+  Plus,
+  Image,
   Video
 } from 'lucide-react'
 import { useChatStore } from '@/features/chat/store'
@@ -58,7 +58,7 @@ export default function ChatSidebar() {
         {/* Logo */}
         <Box width="148px" height="40px">
           <img
-            src="/assets/apilaplas-logo.svg"
+            src="/assets/logo-chat.svg"
             alt="apilaplas"
             width="148"
             height="40"
@@ -119,12 +119,12 @@ export default function ChatSidebar() {
             <Text fontSize="16px" lineHeight="24px" fontWeight="400" color="#52525b">
               Chats ({sortedChats.length})
             </Text>
-            
+
             {/* Chat Items */}
-            <Stack 
+            <Stack
               direction="column"
-              gap={1} 
-              flex={1} 
+              gap={1}
+              flex={1}
               overflowY="auto"
               css={{
                 '&::-webkit-scrollbar': {
@@ -148,7 +148,7 @@ export default function ChatSidebar() {
                     id={chat.id}
                     title={chat.title}
                     type={
-                      chat.model.startsWith('openai/') ? 'openai' : 
+                      chat.model.startsWith('openai/') ? 'openai' :
                       chat.model.startsWith('anthropic/') ? 'anthropic' :
                       chat.model.startsWith('google/') ? 'google' :
                       chat.model.startsWith('x-ai/') ? 'xai' :
@@ -160,10 +160,10 @@ export default function ChatSidebar() {
                   />
               ))}
               {sortedChats.length === 0 && (
-                <Text 
-                  fontSize="14px" 
-                  color="gray.500" 
-                  textAlign="center" 
+                <Text
+                  fontSize="14px"
+                  color="gray.500"
+                  textAlign="center"
                   py={4}
                 >
                   No chats found
@@ -176,8 +176,8 @@ export default function ChatSidebar() {
 
       {/* User Info */}
       <UserInfo
-        name="Garry Goldman"
-        email="garrygodzilla@gmail.com"
+        name="Elon Mask"
+        email="elon_mask@demo.com"
         avatarSrc="/assets/avatar.jpg"
       />
     </Stack>

@@ -16,15 +16,13 @@ export const ChatInput = ({
 }: ChatInputProps) => {
   const { currentChatId, drafts, updateDraft, sendMessage, isLoadingChat } = useChatStore();
   const [localValue, setLocalValue] = useState('');
-  
+
   const draft = currentChatId ? drafts[currentChatId]?.content || '' : '';
   const textareaRef = useAutoResize(localValue, { minHeight: 40, maxHeight: 160 });
-  
 
   useEffect(() => {
     setLocalValue(draft);
   }, [draft, currentChatId]);
-
 
   const handleInputChange = (value: string) => {
     setLocalValue(value);
@@ -76,7 +74,7 @@ export const ChatInput = ({
             minH="40px"
             overflow="hidden"
             _placeholder={{ color: 'gray.500' }}
-            _focus={{ 
+            _focus={{
               outline: 'none',
               boxShadow: 'none'
             }}
@@ -85,8 +83,8 @@ export const ChatInput = ({
             style={{ transition: 'height 0.2s ease' }}
           />
         </Box>
-        
-        <Box 
+
+        <Box
           borderTop="1px solid"
           borderColor="gray.200"
           pt={4}
@@ -106,7 +104,7 @@ export const ChatInput = ({
             onClick={handleSend}
             disabled={isDisabled || !localValue.trim()}
             _hover={{ bg: 'gray.800' }}
-            _disabled={{ 
+            _disabled={{
               bg: 'gray.400',
               cursor: 'not-allowed'
             }}
@@ -116,7 +114,7 @@ export const ChatInput = ({
           </Button>
         </Box>
       </VStack>
-      
+
     </Box>
   );
 };
