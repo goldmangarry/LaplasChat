@@ -23,23 +23,23 @@ export function ChatTypeTab({ icon: Icon, label, isSelected, isDisabled, badge, 
         opacity={isDisabled ? 0.5 : 1}
         _hover={{ bg: isDisabled ? undefined : '#e4e4e7' }}
       >
-        <HStack gap={1.5}>
-          <Icon size={16} />
+        <HStack gap={1}>
+          <Icon size={14} />
           <Text fontSize="14px" fontWeight="400" lineHeight="20px">{label}</Text>
         </HStack>
       </Box>
       {badge && (
         <Badge
           position="absolute"
-          top="8px"
-          right="16px"
+          top="6px"
+          left="75px"
           bg="#ec4899"
           color="#f5f5f5"
           fontSize="10px"
           fontWeight="700"
           lineHeight="14px"
-          px="7px"
-          pb="2px"
+          px="6px"
+          py="1px"
           borderRadius="16px"
         >
           {badge}

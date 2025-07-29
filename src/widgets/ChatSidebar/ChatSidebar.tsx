@@ -11,9 +11,9 @@ import {
   Video
 } from 'lucide-react'
 import { useChatStore } from '@/features/chat/store'
-import { ChatItem } from './ChatSidebar/ChatItem'
-import { ChatTypeTab } from './ChatSidebar/ChatTypeTab'
-import { UserInfo } from './ChatSidebar/UserInfo'
+import { ChatItem } from './ChatItem'
+import { ChatTypeTab } from './ChatTypeTab'
+import { UserInfo } from './UserInfo'
 import { useState, useMemo } from 'react'
 import type { Chat } from '@/core/types'
 
@@ -84,7 +84,7 @@ export default function ChatSidebar() {
             fontWeight="600"
             onClick={handleCreateChat}
           >
-            <Plus size={20} style={{ marginRight: '8px' }} />
+            <Plus size={16} style={{ marginRight: '6px' }} />
             Start new chat
           </Button>
 
@@ -142,7 +142,8 @@ export default function ChatSidebar() {
                 },
               }}
             >
-              {sortedChats.map((chat: Chat) => (
+              {sortedChats.length > 0 ? (
+                sortedChats.map((chat: Chat) => (
                   <ChatItem
                     key={chat.id}
                     id={chat.id}
@@ -158,16 +159,36 @@ export default function ChatSidebar() {
                     hasActions={true}
                     onClick={() => selectChat(chat.id)}
                   />
-              ))}
-              {sortedChats.length === 0 && (
-                <Text 
-                  fontSize="14px" 
-                  color="gray.500" 
-                  textAlign="center" 
-                  py={4}
+                ))
+              ) : (
+                <Stack 
+                  align="center" 
+                  justify="center" 
+                  flex={1} 
+                  gap={3}
+                  py={8}
                 >
-                  No chats found
-                </Text>
+                  <Box 
+                    width="48px" 
+                    height="48px" 
+                    borderRadius="full" 
+                    bg="gray.100" 
+                    display="flex" 
+                    alignItems="center" 
+                    justifyContent="center"
+                  >
+                    
+                    <img src="/assets/not-chats.svg" alt="chat" width="24" height="24" />
+                  </Box>
+                  <Text 
+                    fontSize="14px" 
+                    fontWeight="500"
+                    color="gray.900" 
+                    textAlign="center"
+                  >
+                    No chats
+                  </Text>
+                </Stack>
               )}
             </Stack>
           </Stack>

@@ -1,5 +1,6 @@
-import { Box, HStack, Text, Switch, IconButton } from '@chakra-ui/react'
+import { Box, HStack, Text, Switch, IconButton, Button } from '@chakra-ui/react'
 import { PanelRight } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
 
 type ChatHeaderProps = {
   secureMode?: boolean;
@@ -37,7 +38,14 @@ export default function ChatHeader({
           </Text>
         </HStack>
 
-        <IconButton
+        <HStack gap={2}>
+          <Button asChild variant="outline" size="sm">
+            <Link to="/login">
+              Вход
+            </Link>
+          </Button>
+          
+          <IconButton
           borderRadius='16px'
           aria-label="Open settings"
           variant="ghost"
@@ -46,6 +54,7 @@ export default function ChatHeader({
         >
           <PanelRight size={20} />
         </IconButton>
+        </HStack>
       </HStack>
     </Box>
   );

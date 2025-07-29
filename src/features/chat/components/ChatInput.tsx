@@ -14,8 +14,11 @@ export const ChatInput = ({
   placeholder = "How can I help you?",
   disabled = false,
 }: ChatInputProps) => {
-  const { currentChatId, drafts, updateDraft, sendMessage, isLoadingChat } = useChatStore();
+  const { currentChatId, drafts, updateDraft, sendMessage, isLoadingChat, chats } = useChatStore();
   const [localValue, setLocalValue] = useState('');
+  
+  // Проверяем, что текущий чат действительно существует
+  const currentChat = currentChatId ? chats.find(chat => chat.id === currentChatId) : null;
   
   const draft = currentChatId ? drafts[currentChatId]?.content || '' : '';
   const textareaRef = useAutoResize(localValue, { minHeight: 40, maxHeight: 160 });
@@ -28,15 +31,26 @@ export const ChatInput = ({
 
   const handleInputChange = (value: string) => {
     setLocalValue(value);
-    if (currentChatId) {
+    // Сохраняем драфт только если есть активный чат
+    if (currentChatId && currentChat) {
       updateDraft(currentChatId, value);
     }
   };
 
   const handleSend = async () => {
-    if (localValue.trim() && !disabled && !isLoadingChat(currentChatId || '') && currentChatId) {
-      await sendMessage(currentChatId, localValue.trim());
+    if (!localValue.trim() || disabled) return;
+    
+    try {
+      // Если нет текущего чата, создаем новый и отправляем сообщение
+      if (!currentChatId || !currentChat) {
+        // sendMessage создаст новый чат автоматически при первом сообщении
+        await sendMessage('temp-id', localValue.trim()); // ID будет заменен в sendMessage
+      } else {
+        await sendMessage(currentChatId, localValue.trim());
+      }
       setLocalValue('');
+    } catch (error) {
+      console.error('Failed to send message:', error);
     }
   };
 
@@ -48,7 +62,7 @@ export const ChatInput = ({
   };
 
 
-  const isDisabled = disabled || isLoadingChat(currentChatId || '') || !currentChatId;
+  const isDisabled = disabled || (currentChatId ? isLoadingChat(currentChatId) : false);
 
   return (
     <Box
@@ -115,8 +129,7 @@ export const ChatInput = ({
             <Send size={16} style={{ marginLeft: '4px' }} />
           </Button>
         </Box>
-      </VStack>
-      
+      </VStack>      
     </Box>
   );
 };

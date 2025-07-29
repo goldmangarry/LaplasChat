@@ -189,8 +189,8 @@ export function ChatSettings({
                   onBlur={handleTempInputCommit}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
-                      handleTempInputCommit()
-                      ;(e.target as HTMLInputElement).blur()
+                      handleTempInputCommit();
+                      (e.target as HTMLInputElement).blur()
                     }
                   }}
                   size="sm"

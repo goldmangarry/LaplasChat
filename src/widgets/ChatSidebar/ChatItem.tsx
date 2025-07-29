@@ -46,35 +46,35 @@ export function ChatItem({ id, title, type, isSelected, hasActions, onClick }: C
       position="relative"
       className="group"
     >
-      <HStack gap="8px" align="center" position="relative">
+      <HStack gap="6px" align="center" position="relative">
         {/* AI Logo */}
-        <Box width="28px" height="28px" flexShrink={0}>
+        <Box width="20px" height="20px" flexShrink={0}>
           {type === 'both' ? (
-            <Box position="relative" width="28px" height="28px">
-              <img src={anthropicIcon} alt="Anthropic" width="20" height="20" />
+            <Box position="relative" width="20px" height="20px">
+              <img src={anthropicIcon} alt="Anthropic" width="14" height="14" />
               <Box
                 position="absolute"
                 bottom={0}
                 right={0}
-                width="20px"
-                height="20px"
+                width="14px"
+                height="14px"
                 borderRadius="full"
                 overflow="hidden"
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
               >
-                <img src={openaiIcon} alt="OpenAI" width="20" height="20" />
+                <img src={openaiIcon} alt="OpenAI" width="14" height="14" />
               </Box>
             </Box>
           ) : type === 'anthropic' ? (
-            <img src={anthropicIcon} alt="Anthropic" width="28" height="28" />
+            <img src={anthropicIcon} alt="Anthropic" width="20" height="20" />
           ) : type === 'google' ? (
-            <img src={googleIcon} alt="Google" width="28" height="28" />
+            <img src={googleIcon} alt="Google" width="20" height="20" />
           ) : type === 'xai' ? (
-            <img src={grokIcon} alt="Grok" width="28" height="28" />
+            <img src={grokIcon} alt="Grok" width="20" height="20" />
           ) : (
-            <img src={openaiIcon} alt="OpenAI" width="28" height="28" />
+            <img src={openaiIcon} alt="OpenAI" width="20" height="20" />
           )}
         </Box>
         

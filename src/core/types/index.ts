@@ -78,6 +78,11 @@ export type FactCheckState = {
   data?: FactCheckData
 }
 
+export type ChatDraft = {
+  chatId: string
+  content: string
+  updatedAt: string
+}
 
 export type ChatStore = {
   chats: Chat[]
@@ -88,7 +93,7 @@ export type ChatStore = {
   factCheck: FactCheckState
 }
 
-export type ChatStoreActions = {
+interface ChatStoreActions {
   createChat: () => string
   selectChat: (chatId: string) => void
   updateDraft: (chatId: string, content: string) => void
@@ -98,6 +103,7 @@ export type ChatStoreActions = {
   deleteChat: (chatId: string) => void
   updateChatTitle: (chatId: string, title: string) => void
   updateChatSettings: (chatId: string, settings: { model?: ChatModel; temperature?: number; maxTokens?: number; secureMode?: boolean }) => void
+  setDefaultChatSettings: (settings: { model?: ChatModel; temperature?: number; maxTokens?: number }) => void
   isLoadingChat: (chatId: string) => boolean
   setLoadingChat: (chatId: string, loading: boolean) => void
   openFactCheck: () => void
