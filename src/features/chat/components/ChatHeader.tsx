@@ -38,13 +38,7 @@ export default function ChatHeader({
           </Text>
         </HStack>
 
-        <HStack gap={2}>
-          <Button asChild variant="outline" size="sm">
-            <Link to="/login">
-              Вход
-            </Link>
-          </Button>
-          
+        <HStack gap={2}>    
           <IconButton
           borderRadius='16px'
           aria-label="Open settings"

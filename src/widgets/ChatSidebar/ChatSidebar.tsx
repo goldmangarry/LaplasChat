@@ -11,9 +11,8 @@ import {
   Video
 } from 'lucide-react'
 import { useChatStore } from '@/features/chat/store'
-import { ChatItem } from './ChatItem'
-import { ChatTypeTab } from './ChatTypeTab'
-import { UserInfo } from './UserInfo'
+import { ChatItem } from './ChatSidebar/ChatItem'
+import { ChatTypeTab } from './ChatSidebar/ChatTypeTab'
 import { useState, useMemo } from 'react'
 import type { Chat } from '@/core/types'
 
@@ -160,30 +159,33 @@ export default function ChatSidebar() {
                     onClick={() => selectChat(chat.id)}
                   />
                 ))
-              ) : (
+              }
+              {sortedChats.length === 0 && (
                 <Stack 
+                  position="absolute"
+                  top="50%"
+                  left="5%"
                   align="center" 
                   justify="center" 
-                  flex={1} 
-                  gap={3}
-                  py={8}
+                  gap="0"
                 >
                   <Box 
                     width="48px" 
-                    height="48px" 
-                    borderRadius="full" 
-                    bg="gray.100" 
+                    height="48px"                     
                     display="flex" 
                     alignItems="center" 
                     justifyContent="center"
                   >
                     
-                    <img src="/assets/not-chats.svg" alt="chat" width="24" height="24" />
+                    <img src="/assets/not-chats.svg" alt="chat" 
+                      width="78"
+                      height="78"
+                      style={{ width: '78px', height: '78px' }} />
                   </Box>
                   <Text 
-                    fontSize="14px" 
-                    fontWeight="500"
-                    color="gray.900" 
+                    fontSize="18px" 
+                    fontWeight="700"
+                    color="#A1A1AA" 
                     textAlign="center"
                   >
                     No chats
