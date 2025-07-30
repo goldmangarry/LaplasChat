@@ -1,12 +1,15 @@
 import { Box, Text, Stack, Flex, Icon, Menu, Button, Slider, Input } from '@chakra-ui/react'
 import { HiInformationCircle, HiChevronDown } from 'react-icons/hi2'
-import { useCallback, useMemo, useState } from 'react'
-import type { ChatModel } from '@/core/types'
+import { useCallback, useMemo, useState, useEffect } from 'react'
+import type { ChatModel, ChatModelFromBackend } from '@/core/types'
+import { useChatStore } from '@/features/chat/store'
 import anthropicIcon from '@/assets/icons/anthropic.svg'
 import openaiIcon from '@/assets/icons/openai.svg'
 import googleIcon from '@/assets/icons/google.svg'
 import grokIcon from '@/assets/icons/grok.svg'
-
+// import llamaIcon from '@/assets/icons/llama.svg'
+// import qwenIcon from '@/assets/icons/qwen.svg'
+// import deepseekIcon from '@/assets/icons/deepseek.svg'
 type ChatSettingsProps = {
   model: ChatModel
   temperature: number
@@ -16,25 +19,16 @@ type ChatSettingsProps = {
   onMaxTokensChange: (tokens: number) => void
 }
 
-const models: { value: ChatModel; label: string; icon: string }[] = [
-  // OpenAI Models
-  { value: 'openai/o4-mini-high', label: 'o4 Mini High', icon: openaiIcon },
-  { value: 'openai/o4-mini', label: 'o4 Mini', icon: openaiIcon },
-  { value: 'openai/gpt-4.1', label: 'GPT-4.1', icon: openaiIcon },
-  { value: 'openai/gpt-4.1-mini', label: 'GPT-4.1 Mini', icon: openaiIcon },
-  
-  // xAI Models
-  { value: 'x-ai/grok-4', label: 'Grok 4', icon: grokIcon },
-  
-  // Anthropic Models
-  { value: 'anthropic/claude-sonnet-4', label: 'Claude Sonnet 4', icon: anthropicIcon },
-  { value: 'anthropic/claude-3.5-haiku', label: 'Claude 3.5 Haiku', icon: anthropicIcon },
-  
-  // Google Models
-  { value: 'google/gemini-2.5-flash', label: 'Gemini 2.5 Flash', icon: googleIcon },
-  { value: 'google/gemini-2.5-pro', label: 'Gemini 2.5 Pro', icon: googleIcon }
-]
-
+// Объект соответствия provider → иконка
+const providerIcons: Record<string, string> = {
+  openai: openaiIcon,
+  anthropic: anthropicIcon,
+  google: googleIcon,
+  'x-ai': grokIcon,
+  // llama: llamaIcon,
+  // qwen: qwenIcon,
+  // deepseek: deepseekIcon,
+}
 
 export function ChatSettings({
   model,
@@ -44,13 +38,55 @@ export function ChatSettings({
   onTemperatureChange,
   onMaxTokensChange
 }: ChatSettingsProps) {
-  const selectedModel = useMemo(() => models.find(m => m.value === model), [model])
+  const { models, isLoadingModels, fetchModels } = useChatStore()
   const [localTemperature, setLocalTemperature] = useState(temperature)
   const [tempInputValue, setTempInputValue] = useState(temperature.toString())
-
   const [localMaxTokens, setLocalMaxTokens] = useState(maxTokens)
   const [maxTokensInputValue, setMaxTokensInputValue] = useState(maxTokens.toString())
 
+  // Находим выбранную модель из данных с бэкенда
+  const selectedModel = useMemo(() => {
+    return models.find(m => m.id === model) || null
+  }, [models, model])
+
+  // Загружаем модели при монтировании компонента
+  useEffect(() => {
+    if (models.length === 0) {
+      fetchModels()
+    }
+  }, [models.length, fetchModels])
+
+  // Автоматически выбираем первую модель при загрузке, если модель не выбрана
+  useEffect(() => {
+    if (models.length > 0 && !selectedModel) {
+      const firstModel = models[0]
+      onModelChange(firstModel.id as ChatModel)
+    }
+  }, [models, selectedModel, onModelChange])
+
+  // Получаем max_output выбранной модели
+  const selectedModelMaxOutput = useMemo(() => {
+    return selectedModel?.max_output || 4096
+  }, [selectedModel])
+
+  // Обновляем maxTokens при изменении модели, если maxTokens больше max_output новой модели
+  useEffect(() => {
+    if (selectedModelMaxOutput && maxTokens > selectedModelMaxOutput) {
+      onMaxTokensChange(selectedModelMaxOutput)
+      setLocalMaxTokens(selectedModelMaxOutput)
+      setMaxTokensInputValue(selectedModelMaxOutput.toString())
+    }
+  }, [selectedModelMaxOutput, maxTokens, onMaxTokensChange])
+
+  // Формируем опции для селектора из данных с бэкенда
+  const modelOptions = useMemo(() => {
+    return models.map((modelData: ChatModelFromBackend) => ({
+      value: modelData.id,
+      label: modelData.name,
+      icon: providerIcons[modelData.provider] || openaiIcon, // fallback на openai иконку
+      max_output: modelData.max_output
+    }))
+  }, [models])
 
   const handleTemperatureChangeEnd = useCallback((details: { value: number[] }) => {
     onTemperatureChange(details.value[0])
@@ -76,7 +112,7 @@ export function ChatSettings({
     if (isNaN(value) || maxTokensInputValue.trim() === '') {
       value = 1024
     }
-    const clampedValue = Math.max(1024, Math.min(100000, value))
+    const clampedValue = Math.max(1024, Math.min(selectedModelMaxOutput, value))
     setLocalMaxTokens(clampedValue)
     setMaxTokensInputValue(clampedValue.toString())
     onMaxTokensChange(clampedValue)
@@ -107,19 +143,20 @@ export function ChatSettings({
                 justifyContent="space-between"
                 alignItems="center"
                 aria-label="Select AI model"
+                loading={isLoadingModels}
               >
                 <Flex align="center" gap={2} width="100%" justifyContent="space-between">
                   <Flex align="center" gap={2}>
                     {selectedModel && (
                       <Box w={6} h={6}>
                         <img 
-                          src={selectedModel.icon} 
-                          alt={selectedModel.label}
+                          src={providerIcons[selectedModel.provider] || openaiIcon} 
+                          alt={selectedModel.name}
                           style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                         />
                       </Box>
                     )}
-                    <Text>{selectedModel?.label || 'Select model'}</Text>
+                    <Text>{selectedModel?.name || 'Select model'}</Text>
                   </Flex>
                   <Icon as={HiChevronDown} />
                 </Flex>
@@ -128,13 +165,13 @@ export function ChatSettings({
             
             <Menu.Positioner>
               <Menu.Content zIndex={10}>
-                {models.map((modelOption) => (
+                {modelOptions.map((modelOption) => (
                   <Menu.Item
                     key={modelOption.value}
                     value={modelOption.value}
                     _hover={{ bg: "gray.50" }}
                     cursor="pointer"
-                    onClick={() => onModelChange(modelOption.value)}
+                    onClick={() => onModelChange(modelOption.value as ChatModel)}
                   >
                     <Flex align="center" gap={2} p={1}>
                       <Box w={6} h={6}>
@@ -219,7 +256,7 @@ export function ChatSettings({
           <Stack gap={3} align="stretch">
             <Slider.Root
               min={1024}
-              max={100000}
+              max={selectedModelMaxOutput}
               step={1024}
               value={[localMaxTokens]}
               onValueChange={(value) => {
@@ -267,7 +304,7 @@ export function ChatSettings({
             
             <Flex justify="space-between">
               <Text fontSize="xs" color="gray.500">1K</Text>
-              <Text fontSize="xs" color="gray.500">100K</Text>
+              <Text fontSize="xs" color="gray.500">{Math.floor(selectedModelMaxOutput / 1000)}K</Text>
             </Flex>
           </Stack>
         </Stack>

@@ -15,6 +15,19 @@ export type ChatModel =
   | 'google/gemini-2.5-flash'
   | 'google/gemini-2.5-pro'
 
+// Новые типы для моделей с бэкенда
+export type ChatModelFromBackend = {
+  id: string
+  name: string
+  provider: string
+  context_window: number
+  max_output: number
+}
+
+export type ModelsResponse = {
+  models: ChatModelFromBackend[]
+}
+
 export type Chat = {
   id: string
   dialogId?: string
@@ -90,6 +103,8 @@ export type ChatStore = {
   messagesByChat: Record<string, Message[]>
   drafts: Record<string, Draft>
   loadingChats: Set<string>
+  models: ChatModelFromBackend[] // Новое поле для моделей с бэкенда
+  isLoadingModels: boolean // Состояние загрузки моделей
   factCheck: FactCheckState
 }
 
@@ -109,6 +124,7 @@ interface ChatStoreActions {
   openFactCheck: () => void
   closeFactCheck: () => void
   checkFacts: (message: string) => Promise<void>
+  fetchModels: () => Promise<void> // Новый метод для загрузки моделей
 }
 
 export type ChatStoreState = ChatStore & ChatStoreActions

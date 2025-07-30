@@ -11,8 +11,9 @@ import {
   Video
 } from 'lucide-react'
 import { useChatStore } from '@/features/chat/store'
-import { ChatItem } from './ChatSidebar/ChatItem'
-import { ChatTypeTab } from './ChatSidebar/ChatTypeTab'
+import { ChatItem } from './ChatItem'
+import { ChatTypeTab } from './ChatTypeTab'
+import { UserInfo } from './UserInfo'
 import { useState, useMemo } from 'react'
 import type { Chat } from '@/core/types'
 
@@ -159,8 +160,8 @@ export default function ChatSidebar() {
                     onClick={() => selectChat(chat.id)}
                   />
                 ))
-              }
-              {sortedChats.length === 0 && (
+              ) : (
+              
                 <Stack 
                   position="absolute"
                   top="50%"

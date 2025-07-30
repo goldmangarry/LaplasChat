@@ -9,7 +9,7 @@ import { ChatSettings } from '../features/chat/components/ChatSettings'
 import type { ChatModel } from '@/core/types'
 
 function App() {
-  const { chats, currentChatId, selectChat, updateChatSettings } = useChatStore()
+  const { chats, currentChatId, selectChat, updateChatSettings, fetchModels, models } = useChatStore()
   const [isSettingsOpen, setIsSettingsOpen] = useState(true)
   
   // Get current chat
@@ -25,6 +25,24 @@ function App() {
   // Передаем дефолтные настройки в store при изменении
   const { setDefaultChatSettings } = useChatStore()
 
+  // Загружаем модели при инициализации приложения
+  useEffect(() => {
+    fetchModels()
+  }, [fetchModels])
+
+  // Обновляем дефолтные настройки при загрузке моделей
+  useEffect(() => {
+    if (models.length > 0) {
+      const firstModel = models[0]
+      const newDefaultSettings = {
+        model: firstModel.id as ChatModel,
+        temperature: defaultSettings.temperature,
+        maxTokens: firstModel.max_output
+      }
+      setDefaultSettings(newDefaultSettings)
+    }
+  }, [models])
+
   useEffect(() => {
     if (chats.length > 0 && !currentChatId) {
       selectChat(chats[0].id)
@@ -36,11 +54,15 @@ function App() {
   }, [defaultSettings, setDefaultChatSettings])
 
   const handleModelChange = (model: ChatModel) => {
+    // Находим выбранную модель в данных с бэкенда
+    const selectedModel = models.find(m => m.id === model)
+    const newMaxTokens = selectedModel?.max_output || 4096
+
     if (currentChatId) {
-      updateChatSettings(currentChatId, { model })
+      updateChatSettings(currentChatId, { model, maxTokens: newMaxTokens })
     } else {
       // Сохраняем в дефолтные настройки для будущих чатов
-      setDefaultSettings(prev => ({ ...prev, model }))
+      setDefaultSettings(prev => ({ ...prev, model, maxTokens: newMaxTokens }))
     }
   }
 
@@ -62,40 +84,43 @@ function App() {
     }
   }
 
-
   return (
     <Flex height="100vh" bg="gray.50">
       <ChatSidebar />
-      <Flex flex={1} bg="white" margin="16px" borderRadius="16px" overflow="hidden">
-        <ChatArea onOpenSettings={() => setIsSettingsOpen(!isSettingsOpen)} />
+      <Flex flex={1} bg="white" margin="16px" borderRadius="16px" overflow="hidden" direction="column">      
 
-        <Box
-          width={isSettingsOpen ? '320px' : '0'}
-          flexShrink={0}
-          overflow="hidden"
-          transition="width 0.3s ease-in-out"
-          borderLeftWidth={isSettingsOpen ? '1px' : '0'}
-          borderLeftStyle="solid"
-          borderColor="gray.200"
-        >
-          <Box width="320px" p={4} height="100%">
-            <Flex align="center" gap={2} mb={4}>
-              <HiCog6Tooth size={20} />
-              <Text fontSize="lg" fontWeight="semibold">
-                Chat Settings
-              </Text>
-            </Flex>
-            <ChatSettings
-              key={currentChat?.id || 'default'}
-              model={currentChat?.model || defaultSettings.model}
-              temperature={currentChat?.temperature || defaultSettings.temperature}
-              maxTokens={currentChat?.maxTokens || defaultSettings.maxTokens}
-              onModelChange={handleModelChange}
-              onTemperatureChange={handleTemperatureChange}
-              onMaxTokensChange={handleMaxTokensChange}
-            />
+        {/* Main content */}
+        <Flex flex={1} overflow="hidden">
+          <ChatArea onOpenSettings={() => setIsSettingsOpen(!isSettingsOpen)} />
+
+          <Box
+            width={isSettingsOpen ? '320px' : '0'}
+            flexShrink={0}
+            overflow="hidden"
+            transition="width 0.3s ease-in-out"
+            borderLeftWidth={isSettingsOpen ? '1px' : '0'}
+            borderLeftStyle="solid"
+            borderColor="gray.200"
+          >
+            <Box width="320px" p={4} height="100%">
+              <Flex align="center" gap={2} mb={4}>
+                <HiCog6Tooth size={20} />
+                <Text fontSize="lg" fontWeight="semibold">
+                  Chat Settings
+                </Text>
+              </Flex>
+              <ChatSettings
+                key={currentChat?.id || 'default'}
+                model={currentChat?.model || defaultSettings.model}
+                temperature={currentChat?.temperature || defaultSettings.temperature}
+                maxTokens={currentChat?.maxTokens || defaultSettings.maxTokens}
+                onModelChange={handleModelChange}
+                onTemperatureChange={handleTemperatureChange}
+                onMaxTokensChange={handleMaxTokensChange}
+              />
+            </Box>
           </Box>
-        </Box>
+        </Flex>
       </Flex>
     </Flex>
   )

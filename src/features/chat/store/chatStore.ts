@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { v4 as uuidv4 } from 'uuid'
 import type { ChatStoreState, Chat, Message, ChatModel } from '@/core/types'
-import { sendSecureMessage, sendMessage, checkFacts } from '@/shared/lib/api'
+import { sendSecureMessage, sendMessage, checkFacts, fetchModels } from '@/shared/lib/api'
 
 const createDefaultChat = (customSettings?: { model?: ChatModel; temperature?: number; maxTokens?: number }): Chat => ({
   id: uuidv4(),
@@ -30,9 +30,48 @@ export const useChatStore = create<ChatStoreState>()(
         messagesByChat: {},
         drafts: {},
         loadingChats: new Set(),
+        models: [], // Новое состояние для моделей с бэкенда
+        isLoadingModels: false, // Состояние загрузки моделей
         factCheck: {
           isOpen: false,
           isLoading: false,
+        },
+
+        // Функция для загрузки моделей с бэкенда
+        fetchModels: async () => {
+          set((state: ChatStoreState) => ({
+            ...state,
+            isLoadingModels: true,
+          }))
+
+          try {
+            const response = await fetchModels()
+            const models = response.models
+            
+            // Устанавливаем первую модель как дефолтную, если модели загружены и нет текущего чата
+            let newDefaultSettings = defaultChatSettings
+            if (models.length > 0) {
+              const firstModel = models[0]
+              newDefaultSettings = {
+                model: firstModel.id as ChatModel,
+                temperature: defaultChatSettings.temperature,
+                maxTokens: firstModel.max_output
+              }
+              defaultChatSettings = newDefaultSettings
+            }
+            
+            set((state: ChatStoreState) => ({
+              ...state,
+              models: models,
+              isLoadingModels: false,
+            }))
+          } catch (error) {
+            console.error('Failed to fetch models:', error)
+            set((state: ChatStoreState) => ({
+              ...state,
+              isLoadingModels: false,
+            }))
+          }
         },
 
         createChat: () => {
