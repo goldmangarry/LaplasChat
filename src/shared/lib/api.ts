@@ -1,23 +1,5 @@
-import axios from 'axios'
+import { apiClient } from '@/core/api'
 import type { ModelsResponse } from '@/core/types'
-
-// Базовая конфигурация axios
-const apiClient = axios.create({
-  baseURL: '/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  timeout: 30000, // 30 секунд таймаут
-})
-
-// Интерцептор для обработки ошибок
-apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error('API Error:', error.response?.data || error.message)
-    return Promise.reject(error)
-  }
-)
 
 type SecureModeRequest = {
   model: string
@@ -74,7 +56,7 @@ export async function sendSecureMessage(
       requestBody.dialog_id = dialogId
     }
 
-    const response = await apiClient.post('/chat/secure-mode', requestBody)
+    const response = await apiClient.post('/api/chat/secure-mode', requestBody)
 
     const data = response.data
     // Ensure backward compatibility with existing response format
@@ -108,7 +90,7 @@ export async function sendMessage(
       requestBody.dialog_id = dialogId
     }
 
-    const response = await apiClient.post('/chat', requestBody)
+    const response = await apiClient.post('/api/chat', requestBody)
 
     const data: ChatResponse = response.data
     console.log('Chat response received:', { 
@@ -128,7 +110,7 @@ export async function checkFacts(message: string): Promise<FactCheckResponse> {
       message: message,
     }
 
-    const response = await apiClient.post('/chat/fact-check', requestBody)
+    const response = await apiClient.post('/api/chat/fact-check', requestBody)
 
     return response.data
   } catch (error) {
@@ -140,7 +122,7 @@ export async function checkFacts(message: string): Promise<FactCheckResponse> {
 // Функция для получения моделей с бэкенда
 export async function fetchModels(): Promise<ModelsResponse> {
   try {
-    const response = await apiClient.get('/models')
+    const response = await apiClient.get('/api/models')
 
     return response.data
   } catch (error) {

@@ -1,5 +1,5 @@
-import { Box, Flex, Stack, Center, Text } from '@chakra-ui/react'
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import { Box, Flex, Stack } from '@chakra-ui/react'
+import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react'
 import { useChatStore } from '@/features/chat/store'
 import type { Message } from '@/core/types'
 import ChatHeader from './ChatHeader'
@@ -25,20 +25,13 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
     chats,
     updateChatSettings,
     sendMessage,
-    selectChat,
   } = useChatStore()
   const [encryptedContent, setEncryptedContent] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const prevMessagesCountRef = useRef(0)
   
   const currentChat = chats.find(chat => chat.id === currentChatId)
   
-  // Проверяем корректность currentChatId и исправляем при необходимости
-  useEffect(() => {
-    if (currentChatId && !currentChat && chats.length > 0) {
-      console.warn('Current chat not found, selecting first available chat')
-      selectChat(chats[0].id)
-    }
-  }, [currentChatId, currentChat, chats, selectChat])
   
   const handleSecureModeChange = useCallback((enabled: boolean) => {
     if (currentChatId && currentChat) {
@@ -51,10 +44,20 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
     return currentChatId ? messagesByChat[currentChatId] || [] : []
   }, [currentChatId, messagesByChat])
 
-  useEffect(() => {
+  // Используем useLayoutEffect для немедленного скролла без анимации при загрузке сообщений
+  useLayoutEffect(() => {
     if (messages.length > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'instant' })
+    }
+  }, [currentChatId, messages.length])
+
+  // Плавный скролл при добавлении новых сообщений (не при смене чата)
+  useEffect(() => {
+    if (messages.length > prevMessagesCountRef.current && prevMessagesCountRef.current > 0) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
+    
+    prevMessagesCountRef.current = messages.length
   }, [messages])
 
   const handleCopyMessage = (content: string) => {
@@ -76,11 +79,11 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
     }
   }
 
-  // Если нет чатов вообще, показываем экран с предложениями
-  if (chats.length === 0) {
+  // Если нет выбранного чата (независимо от того, есть ли чаты), показываем экран с предложениями
+  if (!currentChatId || !currentChat) {
     return (
       <Flex flex={1} direction="column" bg="white">
-        {/* Header для состояния без чатов */}
+        {/* Header для состояния без выбранного чата */}
         <ChatHeader
           secureMode={true}
           onSecureModeChange={handleSecureModeChange}
@@ -94,10 +97,10 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
           justifyContent="center"
           overflowY="auto"
         >
-          <Box px="10%" pb={6} flexShrink={0}>
+          <Box px="5%" pb={6} flexShrink={0}>
             <Box
               mx="auto"
-              width={{ base: '100%', md: '80%', lg: '75%' }}
+              width={{ base: '100%', '2xl': '75%' }}
             >
               <Box mb={4}>
                 <ChatSuggestions onSuggestionClick={handleSuggestionClick} />
@@ -109,19 +112,6 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
             </Box>
           </Box>
         </Flex>
-      </Flex>
-    )
-  }
-
-  // Если чат выбран неправильно, но чаты есть
-  if (!currentChatId || !currentChat) {
-    return (
-      <Flex flex={1} direction="column" bg="white">
-        <Center flex={1}>
-          <Text color="gray.500" fontSize="lg">
-            Select a chat to start messaging
-          </Text>
-        </Center>
       </Flex>
     )
   }
@@ -150,7 +140,7 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
         <Box
           flex={messages.length > 0 || isLoadingChat(currentChatId) ? 1 : 0}
           overflowY="auto"
-          px="10%"
+          px="5%"
           py={6}
         >
           <Stack direction="column" gap={6} align="stretch">
@@ -192,13 +182,13 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
         </Box>
 
         {/* Suggestions and Input Area */}
-        <Box px="10%" pt={4} pb={6} flexShrink={0}>
+        <Box px="5%" pt={4} pb={6} flexShrink={0}>
           <Box
             mx="auto"
             width={
               messages.length > 0 || isLoadingChat(currentChatId)
                 ? '100%'
-                : { base: '100%', md: '80%', lg: '75%' }
+                : { base: '100%'}
             }
           >
             {messages.length === 0 && !isLoadingChat(currentChatId) && (

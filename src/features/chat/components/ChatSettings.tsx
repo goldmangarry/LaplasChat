@@ -69,14 +69,15 @@ export function ChatSettings({
     return selectedModel?.max_output || 4096
   }, [selectedModel])
 
-  // Обновляем maxTokens при изменении модели, если maxTokens больше max_output новой модели
+  // Обновляем maxTokens при изменении модели, если текущее значение больше max_output новой модели
   useEffect(() => {
-    if (selectedModelMaxOutput && maxTokens > selectedModelMaxOutput) {
-      onMaxTokensChange(selectedModelMaxOutput)
-      setLocalMaxTokens(selectedModelMaxOutput)
-      setMaxTokensInputValue(selectedModelMaxOutput.toString())
+    if (selectedModelMaxOutput && localMaxTokens > selectedModelMaxOutput) {
+      const newValue = selectedModelMaxOutput
+      onMaxTokensChange(newValue)
+      setLocalMaxTokens(newValue)
+      setMaxTokensInputValue(newValue.toString())
     }
-  }, [selectedModelMaxOutput, maxTokens, onMaxTokensChange])
+  }, [selectedModelMaxOutput, localMaxTokens, onMaxTokensChange])
 
   // Формируем опции для селектора из данных с бэкенда
   const modelOptions = useMemo(() => {
@@ -101,7 +102,7 @@ export function ChatSettings({
     if (isNaN(value) || tempInputValue.trim() === '') {
       value = 0
     }
-    const clampedValue = Math.max(0, Math.min(1, value))
+    const clampedValue = Math.max(0, Math.min(2, value))
     setLocalTemperature(clampedValue)
     setTempInputValue(clampedValue.toString())
     onTemperatureChange(clampedValue)
@@ -200,7 +201,7 @@ export function ChatSettings({
           <Stack gap={3} align="stretch">
             <Slider.Root
               min={0}
-              max={1}
+              max={2}
               step={0.01}
               value={[localTemperature]}
               onValueChange={(value) => {

@@ -40,8 +40,16 @@ export type Chat = {
   temperature: number
   maxTokens: number
   secureMode: boolean
-  createdAt: string
-  updatedAt: string
+  provider?: string // Провайдер из API для отображения иконки
+}
+
+// Тип для хранения настроек чата в localStorage
+export type ChatSettings = {
+  dialogId: string
+  model: ChatModel
+  temperature: number
+  maxTokens: number
+  secureMode: boolean
 }
 
 export type Message = {
@@ -105,18 +113,19 @@ export type ChatStore = {
   loadingChats: Set<string>
   models: ChatModelFromBackend[] // Новое поле для моделей с бэкенда
   isLoadingModels: boolean // Состояние загрузки моделей
+  isLoadingHistory: boolean // Состояние загрузки истории
   factCheck: FactCheckState
 }
 
 interface ChatStoreActions {
   createChat: () => string
-  selectChat: (chatId: string) => void
+  selectChat: (chatId: string) => Promise<void>
   updateDraft: (chatId: string, content: string) => void
   clearDraft: (chatId: string) => void
   addMessage: (chatId: string, message: Message) => void
   sendMessage: (chatId: string, content: string) => Promise<void>
-  deleteChat: (chatId: string) => void
-  updateChatTitle: (chatId: string, title: string) => void
+  deleteChat: (chatId: string) => Promise<void>
+  updateChatTitle: (chatId: string, title: string) => Promise<void>
   updateChatSettings: (chatId: string, settings: { model?: ChatModel; temperature?: number; maxTokens?: number; secureMode?: boolean }) => void
   setDefaultChatSettings: (settings: { model?: ChatModel; temperature?: number; maxTokens?: number }) => void
   isLoadingChat: (chatId: string) => boolean
@@ -125,6 +134,8 @@ interface ChatStoreActions {
   closeFactCheck: () => void
   checkFacts: (message: string) => Promise<void>
   fetchModels: () => Promise<void> // Новый метод для загрузки моделей
+  fetchChatHistory: () => Promise<void> // Новый метод для загрузки истории чатов
+  fetchChatMessages: (chatId: string) => Promise<void> // Новый метод для загрузки сообщений чата
 }
 
 export type ChatStoreState = ChatStore & ChatStoreActions

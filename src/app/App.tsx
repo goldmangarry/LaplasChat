@@ -9,7 +9,7 @@ import { ChatSettings } from '../features/chat/components/ChatSettings'
 import type { ChatModel } from '@/core/types'
 
 function App() {
-  const { chats, currentChatId, selectChat, updateChatSettings, fetchModels, models } = useChatStore()
+  const { chats, currentChatId, updateChatSettings, fetchModels, models, fetchChatHistory } = useChatStore()
   const [isSettingsOpen, setIsSettingsOpen] = useState(true)
   
   // Get current chat
@@ -25,10 +25,11 @@ function App() {
   // Передаем дефолтные настройки в store при изменении
   const { setDefaultChatSettings } = useChatStore()
 
-  // Загружаем модели при инициализации приложения
+  // Загружаем модели и историю чатов при инициализации приложения
   useEffect(() => {
     fetchModels()
-  }, [fetchModels])
+    fetchChatHistory()
+  }, [fetchModels, fetchChatHistory])
 
   // Обновляем дефолтные настройки при загрузке моделей
   useEffect(() => {
@@ -43,11 +44,6 @@ function App() {
     }
   }, [models])
 
-  useEffect(() => {
-    if (chats.length > 0 && !currentChatId) {
-      selectChat(chats[0].id)
-    }
-  }, [chats, currentChatId, selectChat])
 
   useEffect(() => {
     setDefaultChatSettings(defaultSettings)

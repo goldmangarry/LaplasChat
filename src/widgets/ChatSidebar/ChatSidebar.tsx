@@ -22,11 +22,9 @@ export default function ChatSidebar() {
   const [selectedType, setSelectedType] = useState<'chat' | 'image' | 'video'>('chat')
 
   const sortedChats = useMemo(() => {
-    return chats.sort((a: Chat, b: Chat) => {
-      const aTime = new Date(a.updatedAt).getTime()
-      const bTime = new Date(b.updatedAt).getTime()
-      return bTime - aTime
-    })
+    // Возвращаем чаты как есть, без сортировки по времени
+    // так как updatedAt больше нет
+    return chats
   }, [chats])
 
   const handleCreateChat = () => {
@@ -148,13 +146,6 @@ export default function ChatSidebar() {
                     key={chat.id}
                     id={chat.id}
                     title={chat.title}
-                    type={
-                      chat.model.startsWith('openai/') ? 'openai' : 
-                      chat.model.startsWith('anthropic/') ? 'anthropic' :
-                      chat.model.startsWith('google/') ? 'google' :
-                      chat.model.startsWith('x-ai/') ? 'xai' :
-                      'openai'
-                    }
                     isSelected={currentChatId === chat.id}
                     hasActions={true}
                     onClick={() => selectChat(chat.id)}
