@@ -15,12 +15,13 @@ import { useUserStore } from '@/core/store/user/store'
 import { ChatItem } from './ChatItem'
 import { ChatTypeTab } from './ChatTypeTab'
 import { UserInfo } from './UserInfo'
+import { ChatListSkeleton, UserProfileSkeleton } from '@/shared/ui'
 import { useState, useMemo } from 'react'
 import type { Chat } from '@/core/types'
 
 export default function ChatSidebar() {
-  const { chats, currentChatId, createChat, selectChat } = useChatStore()
-  const { user } = useUserStore()
+  const { chats, currentChatId, createChat, selectChat, isLoadingHistory } = useChatStore()
+  const { user, isLoading: isLoadingUser } = useUserStore()
   const [selectedType, setSelectedType] = useState<'chat' | 'image' | 'video'>('chat')
 
   const sortedChats = useMemo(() => {
@@ -142,7 +143,9 @@ export default function ChatSidebar() {
                 },
               }}
             >
-              {sortedChats.length > 0 ? (
+              {isLoadingHistory ? (
+                <ChatListSkeleton count={6} />
+              ) : sortedChats.length > 0 ? (
                 sortedChats.map((chat: Chat) => (
                   <ChatItem
                     key={chat.id}
@@ -154,7 +157,6 @@ export default function ChatSidebar() {
                   />
                 ))
               ) : (
-
                 <Stack
                   position="absolute"
                   top="50%"
@@ -170,7 +172,6 @@ export default function ChatSidebar() {
                     alignItems="center"
                     justifyContent="center"
                   >
-
                     <img src="/assets/not-chats.svg" alt="chat"
                       width="78"
                       height="78"
@@ -192,11 +193,15 @@ export default function ChatSidebar() {
       </Stack>
 
       {/* User Info */}
-      <UserInfo
-        name={user ? `${user.first_name} ${user.last_name}` : 'Loading...'}
-        email={user?.email || ''}
-        avatarSrc={user?.avatar_url}
-      />
+      {isLoadingUser ? (
+        <UserProfileSkeleton />
+      ) : (
+        <UserInfo
+          name={user ? `${user.first_name} ${user.last_name}` : 'Loading...'}
+          email={user?.email || ''}
+          avatarSrc={user?.avatar_url}
+        />
+      )}
     </Stack>
   )
 }
