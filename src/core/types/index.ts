@@ -127,7 +127,8 @@ interface ChatStoreActions {
   deleteChat: (chatId: string) => Promise<void>
   updateChatTitle: (chatId: string, title: string) => Promise<void>
   updateChatSettings: (chatId: string, settings: { model?: ChatModel; temperature?: number; maxTokens?: number; secureMode?: boolean }) => void
-  setDefaultChatSettings: (settings: { model?: ChatModel; temperature?: number; maxTokens?: number }) => void
+  setDefaultChatSettings: (settings: { model?: ChatModel; temperature?: number; maxTokens?: number; secureMode?: boolean }) => void
+  getDefaultSecureMode: () => boolean
   isLoadingChat: (chatId: string) => boolean
   setLoadingChat: (chatId: string, loading: boolean) => void
   openFactCheck: () => void

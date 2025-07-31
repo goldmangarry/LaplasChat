@@ -2,6 +2,7 @@ import { Flex, Box, Text } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { HiCog6Tooth } from 'react-icons/hi2'
 import { useChatStore } from '@/features/chat/store'
+import { useUserStore } from '@/core/store/user/store'
 import ChatSidebar from '../widgets/ChatSidebar/ChatSidebar'
 import ChatArea from '../features/chat/components/ChatArea'
 import { ChatSettings } from '../features/chat/components/ChatSettings'
@@ -10,6 +11,7 @@ import type { ChatModel } from '@/core/types'
 
 function App() {
   const { chats, currentChatId, updateChatSettings, fetchModels, models, fetchChatHistory } = useChatStore()
+  const { fetchUserProfile } = useUserStore()
   const [isSettingsOpen, setIsSettingsOpen] = useState(true)
   
   // Get current chat
@@ -25,11 +27,12 @@ function App() {
   // Передаем дефолтные настройки в store при изменении
   const { setDefaultChatSettings } = useChatStore()
 
-  // Загружаем модели и историю чатов при инициализации приложения
+  // Загружаем модели, историю чатов и профиль пользователя при инициализации приложения
   useEffect(() => {
     fetchModels()
     fetchChatHistory()
-  }, [fetchModels, fetchChatHistory])
+    fetchUserProfile()
+  }, [fetchModels, fetchChatHistory, fetchUserProfile])
 
   // Обновляем дефолтные настройки при загрузке моделей
   useEffect(() => {

@@ -11,6 +11,7 @@ import {
   Video
 } from 'lucide-react'
 import { useChatStore } from '@/features/chat/store'
+import { useUserStore } from '@/core/store/user/store'
 import { ChatItem } from './ChatItem'
 import { ChatTypeTab } from './ChatTypeTab'
 import { UserInfo } from './UserInfo'
@@ -19,6 +20,7 @@ import type { Chat } from '@/core/types'
 
 export default function ChatSidebar() {
   const { chats, currentChatId, createChat, selectChat } = useChatStore()
+  const { user } = useUserStore()
   const [selectedType, setSelectedType] = useState<'chat' | 'image' | 'video'>('chat')
 
   const sortedChats = useMemo(() => {
@@ -191,9 +193,9 @@ export default function ChatSidebar() {
 
       {/* User Info */}
       <UserInfo
-        name="Elon Mask"
-        email="elon_mask@demo.com"
-        avatarSrc="/assets/avatar.jpg"
+        name={user ? `${user.first_name} ${user.last_name}` : 'Loading...'}
+        email={user?.email || ''}
+        avatarSrc={user?.avatar_url}
       />
     </Stack>
   )

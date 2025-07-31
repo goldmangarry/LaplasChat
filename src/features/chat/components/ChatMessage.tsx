@@ -4,6 +4,7 @@ import { Copy, Lock } from 'lucide-react';
 import OpenAIIcon from '../../../assets/icons/openai.svg';
 import SearchCheckIcon from '../../../assets/icons/search-check.svg';
 import { parseMarkdown } from '../../../shared/lib/markdown.tsx';
+import { useUserStore } from '@/core/store/user/store';
 
 export type ChatMessageProps = {
   userName: string;
@@ -28,6 +29,7 @@ export const ChatMessage = ({
   onShowEncrypted,
   onFactCheck,
 }: ChatMessageProps) => {
+  const { user } = useUserStore()
 
   return (
     <VStack
@@ -51,8 +53,8 @@ export const ChatMessage = ({
                 />
               ) : (
                 <>
-                  <Avatar.Image src="/assets/avatar.jpg" alt={userName} />
-                  <Avatar.Fallback fontSize="12px" fontWeight="500">
+                  <Avatar.Image src={user?.avatar_url} alt={userName} />
+                  <Avatar.Fallback fontSize="12px" fontWeight="500" color="black">
                     {userInitials}
                   </Avatar.Fallback>
                 </>

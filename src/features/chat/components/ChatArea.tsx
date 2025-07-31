@@ -1,6 +1,7 @@
 import { Box, Flex, Stack } from '@chakra-ui/react'
 import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react'
 import { useChatStore } from '@/features/chat/store'
+import { useUserStore } from '@/core/store/user/store'
 import type { Message } from '@/core/types'
 import ChatHeader from './ChatHeader'
 import { ChatMessage } from './ChatMessage'
@@ -25,20 +26,31 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
     chats,
     updateChatSettings,
     sendMessage,
+    setDefaultChatSettings,
+    getDefaultSecureMode,
   } = useChatStore()
+  const { user } = useUserStore()
   const [encryptedContent, setEncryptedContent] = useState<string | null>(null)
+  const [defaultSecureMode, setDefaultSecureMode] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const prevMessagesCountRef = useRef(0)
   
   const currentChat = chats.find(chat => chat.id === currentChatId)
   
+  // Синхронизируем локальное состояние с дефолтным значением из store
+  useEffect(() => {
+    setDefaultSecureMode(getDefaultSecureMode())
+  }, [getDefaultSecureMode])
   
   const handleSecureModeChange = useCallback((enabled: boolean) => {
     if (currentChatId && currentChat) {
       updateChatSettings(currentChatId, { secureMode: enabled })
+    } else {
+      // Если нет активного чата, сохраняем как настройку по умолчанию для новых чатов
+      setDefaultChatSettings({ secureMode: enabled })
+      setDefaultSecureMode(enabled)
     }
-    // Если нет активного чата, ничего не делаем - настройка применится к новому чату
-  }, [currentChatId, currentChat, updateChatSettings])
+  }, [currentChatId, currentChat, updateChatSettings, setDefaultChatSettings])
 
   const messages = useMemo(() => {
     return currentChatId ? messagesByChat[currentChatId] || [] : []
@@ -85,7 +97,7 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
       <Flex flex={1} direction="column" bg="white">
         {/* Header для состояния без выбранного чата */}
         <ChatHeader
-          secureMode={true}
+          secureMode={defaultSecureMode}
           onSecureModeChange={handleSecureModeChange}
           onOpenSettings={onOpenSettings}
         />
@@ -147,9 +159,11 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
             {messages.map((msg: Message) => (
               <ChatMessage
                 key={msg.id}
-                userName={msg.author.name}
+                userName={msg.isOwnMessage ? 'You' : msg.author.name}
                 userInitials={
-                  msg.author.avatar || msg.author.name.slice(0, 2).toUpperCase()
+                  msg.isOwnMessage && user 
+                    ? user.first_name.charAt(0).toUpperCase()
+                    : (msg.author.avatar || msg.author.name.slice(0, 2).toUpperCase())
                 }
                 message={msg.content}
                 timestamp={new Date(msg.timestamp).toLocaleTimeString('en-US', {

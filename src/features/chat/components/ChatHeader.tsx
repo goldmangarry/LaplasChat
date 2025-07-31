@@ -8,7 +8,7 @@ type ChatHeaderProps = {
 };
 
 export default function ChatHeader({
-  secureMode = true,
+  secureMode = false,
   onSecureModeChange,
   onOpenSettings,
 }: ChatHeaderProps) {

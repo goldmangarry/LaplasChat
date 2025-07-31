@@ -5,13 +5,13 @@ import type { ChatStoreState, Chat, Message, ChatModel, ChatSettings } from '@/c
 import { sendSecureMessage, sendMessage, checkFacts, fetchModels } from '@/shared/lib/api'
 import { chatApi, type ChatMessage } from '@/core/api'
 
-const createDefaultChat = (customSettings?: { model?: ChatModel; temperature?: number; maxTokens?: number }): Chat => ({
+const createDefaultChat = (customSettings?: { model?: ChatModel; temperature?: number; maxTokens?: number; secureMode?: boolean }): Chat => ({
   id: uuidv4(),
   title: 'New Chat',
   model: customSettings?.model || 'openai/o4-mini-high',
   temperature: customSettings?.temperature || 0.5,
   maxTokens: customSettings?.maxTokens || 4096,
-  secureMode: false,
+  secureMode: customSettings?.secureMode ?? false,
 })
 
 export const useChatStore = create<ChatStoreState>()(
@@ -20,7 +20,8 @@ export const useChatStore = create<ChatStoreState>()(
       let defaultChatSettings = {
         model: 'openai/o4-mini-high' as ChatModel,
         temperature: 0.5,
-        maxTokens: 4096
+        maxTokens: 4096,
+        secureMode: false
       }
       
       return {
@@ -55,7 +56,8 @@ export const useChatStore = create<ChatStoreState>()(
               newDefaultSettings = {
                 model: firstModel.id as ChatModel,
                 temperature: defaultChatSettings.temperature,
-                maxTokens: firstModel.max_output
+                maxTokens: firstModel.max_output,
+                secureMode: defaultChatSettings.secureMode
               }
               defaultChatSettings = newDefaultSettings
             }
@@ -176,8 +178,12 @@ export const useChatStore = create<ChatStoreState>()(
           return newChat.id
         },
 
-        setDefaultChatSettings: (settings: { model?: ChatModel; temperature?: number; maxTokens?: number }) => {
+        setDefaultChatSettings: (settings: { model?: ChatModel; temperature?: number; maxTokens?: number; secureMode?: boolean }) => {
           defaultChatSettings = { ...defaultChatSettings, ...settings }
+        },
+
+        getDefaultSecureMode: () => {
+          return defaultChatSettings.secureMode
         },
 
         selectChat: async (chatId: string) => {

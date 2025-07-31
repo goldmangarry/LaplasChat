@@ -7,6 +7,7 @@ import type {
 	RefreshTokenRequest,
 	RefreshTokenResponse,
 	RegisterRequest,
+	UserProfile,
 } from "./types";
 
 export const authApi = {
@@ -60,6 +61,11 @@ export const authApi = {
 				"Content-Type": "application/json",
 			},
 		});
+	},
+
+	async getMe(): Promise<UserProfile> {
+		const response = await apiClient.get<UserProfile>(AUTH_ENDPOINTS.ME);
+		return response.data;
 	},
 };
 

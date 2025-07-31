@@ -3,6 +3,7 @@ export const AUTH_ENDPOINTS = {
 	REFRESH: "/api/auth/refresh",
 	REGISTER: "/api/auth/register",
 	CHANGE_PASSWORD: "/api/auth/change-password",
+	ME: "/api/auth/me",
 } as const;
 
 export const LOGIN_FORM_CONFIG = {
