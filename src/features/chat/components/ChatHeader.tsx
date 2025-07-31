@@ -1,6 +1,5 @@
-import { Box, HStack, Text, Switch, IconButton, Button } from '@chakra-ui/react'
+import { Box, HStack, Text, Switch, IconButton } from '@chakra-ui/react'
 import { PanelRight } from 'lucide-react'
-import { Link } from '@tanstack/react-router'
 
 type ChatHeaderProps = {
   secureMode?: boolean;

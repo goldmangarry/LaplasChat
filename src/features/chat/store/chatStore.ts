@@ -11,7 +11,7 @@ const createDefaultChat = (customSettings?: { model?: ChatModel; temperature?: n
   model: customSettings?.model || 'openai/o4-mini-high',
   temperature: customSettings?.temperature || 0.5,
   maxTokens: customSettings?.maxTokens || 4096,
-  secureMode: true,
+  secureMode: false,
 })
 
 export const useChatStore = create<ChatStoreState>()(
@@ -86,7 +86,7 @@ export const useChatStore = create<ChatStoreState>()(
             const dialogs = response.dialogs
             
             // Получаем сохранённые настройки чатов
-            const savedChatSettings = (get() as any).savedChatSettings || {}
+            const savedChatSettings = (get() as ChatStoreState & { savedChatSettings?: Record<string, ChatSettings> }).savedChatSettings || {}
             
             // Преобразуем диалоги из API в формат чатов
             const chats: Chat[] = dialogs.map(dialog => {
@@ -396,16 +396,13 @@ export const useChatStore = create<ChatStoreState>()(
 
         deleteChat: async (chatId: string) => {
           const chat = get().chats.find(c => c.id === chatId)
-          if (!chat || !chat.dialogId) {
-            console.error('Chat not found or no dialogId:', chatId)
+          if (!chat) {
+            console.error('Chat not found:', chatId)
             return
           }
 
-          try {
-            // Отправляем запрос на удаление
-            await chatApi.deleteChat(chat.dialogId)
-
-            // Удаляем чат из локального состояния
+          // Функция для удаления чата из локального состояния
+          const deleteLocalChat = () => {
             set((state: ChatStoreState) => {
               const { [chatId]: _1, ...restMessages } = state.messagesByChat
               const { [chatId]: _2, ...restDrafts } = state.drafts
@@ -440,9 +437,24 @@ export const useChatStore = create<ChatStoreState>()(
                 drafts: restDrafts,
               }
             })
+          }
+
+          // Если у чата нет dialogId (он создан локально, но еще не синхронизирован с бэкендом)
+          if (!chat.dialogId) {
+            console.log('Deleting local-only chat:', chatId)
+            deleteLocalChat()
+            return
+          }
+
+          try {
+            // Отправляем запрос на удаление
+            await chatApi.deleteChat(chat.dialogId)
+            // Если успешно, удаляем локально
+            deleteLocalChat()
           } catch (error) {
-            console.error('Failed to delete chat:', error)
-            throw error
+            console.error('Failed to delete chat on backend:', error)
+            // Если ошибка "чат не найден" или любая другая, все равно удаляем локально
+            deleteLocalChat()
           }
         },
 
@@ -612,7 +624,7 @@ export const useChatStore = create<ChatStoreState>()(
               // Восстанавливаем настройки чатов в отдельное поле для последующего использования
               if (persistedState?.chatSettings) {
                 // Сохраняем настройки для использования при загрузке истории
-                (state as any).savedChatSettings = persistedState.chatSettings
+                (state as ChatStoreState & { savedChatSettings?: Record<string, ChatSettings> }).savedChatSettings = persistedState.chatSettings
               }
               
               // Восстанавливаем drafts

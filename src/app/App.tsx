@@ -42,7 +42,7 @@ function App() {
       }
       setDefaultSettings(newDefaultSettings)
     }
-  }, [models])
+  }, [models, defaultSettings.temperature])
 
 
   useEffect(() => {
