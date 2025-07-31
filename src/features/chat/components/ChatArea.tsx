@@ -2,7 +2,7 @@ import { Box, Flex, Stack } from '@chakra-ui/react'
 import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react'
 import { useChatStore } from '@/features/chat/store'
 import { useUserStore } from '@/core/store/user/store'
-import type { Message } from '@/core/types'
+import type { Message, ChatModel } from '@/core/types'
 import ChatHeader from './ChatHeader'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
@@ -28,10 +28,13 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
     sendMessage,
     setDefaultChatSettings,
     getDefaultSecureMode,
+    models,
+    isLoadingModels,
   } = useChatStore()
   const { user } = useUserStore()
   const [encryptedContent, setEncryptedContent] = useState<string | null>(null)
   const [defaultSecureMode, setDefaultSecureMode] = useState(false)
+  const [defaultModel, setDefaultModel] = useState<ChatModel>('openai/o4-mini-high')
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const prevMessagesCountRef = useRef(0)
   
@@ -49,6 +52,16 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
       // Если нет активного чата, сохраняем как настройку по умолчанию для новых чатов
       setDefaultChatSettings({ secureMode: enabled })
       setDefaultSecureMode(enabled)
+    }
+  }, [currentChatId, currentChat, updateChatSettings, setDefaultChatSettings])
+
+  const handleModelChange = useCallback((model: ChatModel) => {
+    if (currentChatId && currentChat) {
+      updateChatSettings(currentChatId, { model })
+    } else {
+      // Если нет активного чата, сохраняем как настройку по умолчанию для новых чатов
+      setDefaultChatSettings({ model })
+      setDefaultModel(model)
     }
   }, [currentChatId, currentChat, updateChatSettings, setDefaultChatSettings])
 
@@ -100,6 +113,10 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
           secureMode={defaultSecureMode}
           onSecureModeChange={handleSecureModeChange}
           onOpenSettings={onOpenSettings}
+          model={defaultModel}
+          models={models}
+          isLoadingModels={isLoadingModels}
+          onModelChange={handleModelChange}
         />
 
         {/* Центрированный контент с предложениями и инпутом */}
@@ -135,6 +152,10 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
         secureMode={currentChat?.secureMode ?? true}
         onSecureModeChange={handleSecureModeChange}
         onOpenSettings={onOpenSettings}
+        model={currentChat?.model}
+        models={models}
+        isLoadingModels={isLoadingModels}
+        onModelChange={handleModelChange}
       />
 
       {/* Messages and Input Area */}

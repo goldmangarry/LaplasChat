@@ -1,4 +1,4 @@
-import { Flex, Box, Text } from '@chakra-ui/react'
+import { Flex, Drawer } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { HiCog6Tooth } from 'react-icons/hi2'
 import { useChatStore } from '@/features/chat/store'
@@ -52,18 +52,6 @@ function App() {
     setDefaultChatSettings(defaultSettings)
   }, [defaultSettings, setDefaultChatSettings])
 
-  const handleModelChange = (model: ChatModel) => {
-    // Находим выбранную модель в данных с бэкенда
-    const selectedModel = models.find(m => m.id === model)
-    const newMaxTokens = selectedModel?.max_output || 4096
-
-    if (currentChatId) {
-      updateChatSettings(currentChatId, { model, maxTokens: newMaxTokens })
-    } else {
-      // Сохраняем в дефолтные настройки для будущих чатов
-      setDefaultSettings(prev => ({ ...prev, model, maxTokens: newMaxTokens }))
-    }
-  }
 
   const handleTemperatureChange = (temperature: number) => {
     if (currentChatId) {
@@ -90,36 +78,36 @@ function App() {
 
         {/* Main content */}
         <Flex flex={1} overflow="hidden">
-          <ChatArea onOpenSettings={() => setIsSettingsOpen(!isSettingsOpen)} />
-
-          <Box
-            width={isSettingsOpen ? '320px' : '0'}
-            flexShrink={0}
-            overflow="hidden"
-            transition="width 0.3s ease-in-out"
-            borderLeftWidth={isSettingsOpen ? '1px' : '0'}
-            borderLeftStyle="solid"
-            borderColor="gray.200"
-          >
-            <Box width="320px" p={4} height="100%">
-              <Flex align="center" gap={2} mb={4}>
-                <HiCog6Tooth size={20} />
-                <Text fontSize="lg" fontWeight="semibold">
-                  Chat Settings
-                </Text>
-              </Flex>
-              <ChatSettings
-                key={currentChat?.id || 'default'}
-                model={currentChat?.model || defaultSettings.model}
-                temperature={currentChat?.temperature || defaultSettings.temperature}
-                maxTokens={currentChat?.maxTokens || defaultSettings.maxTokens}
-                onModelChange={handleModelChange}
-                onTemperatureChange={handleTemperatureChange}
-                onMaxTokensChange={handleMaxTokensChange}
-              />
-            </Box>
-          </Box>
+          <ChatArea onOpenSettings={() => setIsSettingsOpen(true)} />
         </Flex>
+
+        {/* Settings Drawer */}
+        <Drawer.Root open={isSettingsOpen} onOpenChange={(e) => setIsSettingsOpen(e.open)} placement="end" size="xs">
+          <Drawer.Backdrop />
+          <Drawer.Positioner>
+            <Drawer.Content>
+              <Drawer.Header>
+                <Flex align="center" gap={2}>
+                  <HiCog6Tooth size={20} />
+                  <Drawer.Title fontSize="lg" fontWeight="semibold">
+                    Chat Settings
+                  </Drawer.Title>
+                </Flex>
+                <Drawer.CloseTrigger />
+              </Drawer.Header>
+              <Drawer.Body>
+                <ChatSettings
+                  key={currentChat?.id || 'default'}
+                  model={currentChat?.model || defaultSettings.model}
+                  temperature={currentChat?.temperature || defaultSettings.temperature}
+                  maxTokens={currentChat?.maxTokens || defaultSettings.maxTokens}
+                  onTemperatureChange={handleTemperatureChange}
+                  onMaxTokensChange={handleMaxTokensChange}
+                />
+              </Drawer.Body>
+            </Drawer.Content>
+          </Drawer.Positioner>
+        </Drawer.Root>
       </Flex>
     </Flex>
   )

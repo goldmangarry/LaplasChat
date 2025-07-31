@@ -1,17 +1,41 @@
-import { Box, HStack, Text, Switch, IconButton } from '@chakra-ui/react'
+import { Box, HStack, Text, Switch, IconButton, Menu, Button, Flex, Icon } from '@chakra-ui/react'
 import { PanelRight } from 'lucide-react'
+import { HiChevronDown } from 'react-icons/hi2'
+import type { ChatModel, ChatModelFromBackend } from '@/core/types'
+import anthropicIcon from '@/assets/icons/anthropic.svg'
+import openaiIcon from '@/assets/icons/openai.svg'
+import googleIcon from '@/assets/icons/google.svg'
+import grokIcon from '@/assets/icons/grok.svg'
+
+// Объект соответствия provider → иконка
+const providerIcons: Record<string, string> = {
+  openai: openaiIcon,
+  anthropic: anthropicIcon,
+  google: googleIcon,
+  'x-ai': grokIcon,
+}
 
 type ChatHeaderProps = {
   secureMode?: boolean;
   onSecureModeChange?: (enabled: boolean) => void;
   onOpenSettings?: () => void;
+  model?: ChatModel;
+  models?: ChatModelFromBackend[];
+  isLoadingModels?: boolean;
+  onModelChange?: (model: ChatModel) => void;
 };
 
 export default function ChatHeader({
   secureMode = false,
   onSecureModeChange,
   onOpenSettings,
+  model,
+  models = [],
+  isLoadingModels = false,
+  onModelChange,
 }: ChatHeaderProps) {
+  // Находим выбранную модель из данных с бэкенда
+  const selectedModel = models.find(m => m.id === model) || null
   return (
     <Box 
       borderBottom="1px solid" 
@@ -20,21 +44,85 @@ export default function ChatHeader({
       py={4}
     >
       <HStack justify="space-between" align="center">
-        <HStack gap={2.5}>
-          <Switch.Root
-            checked={secureMode}
-            onCheckedChange={(e) => onSecureModeChange?.(e.checked)}
-            colorPalette="pink"
-            size="sm"
-          >
-            <Switch.HiddenInput />
-            <Switch.Control>
-              <Switch.Thumb />
-            </Switch.Control>
-          </Switch.Root>
-          <Text fontSize="xs" fontWeight="normal" color="black">
-            Secure mode
-          </Text>
+        <HStack gap={4}>
+          {/* Model Selection */}
+          {models.length > 0 && (
+            <Menu.Root>
+              <Menu.Trigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  bg="transparent"
+                  _hover={{ bg: "gray.50" }}
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  aria-label="Select AI model"
+                  loading={isLoadingModels}
+                  px={2}
+                >
+                  <Flex align="center" gap={2}>
+                    {selectedModel && (
+                      <Box w={4} h={4}>
+                        <img 
+                          src={providerIcons[selectedModel.provider] || openaiIcon} 
+                          alt={selectedModel.name}
+                          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                        />
+                      </Box>
+                    )}
+                    <Text fontSize="xs" fontWeight="medium">
+                      {selectedModel?.name || 'Select model'}
+                    </Text>
+                    <Icon as={HiChevronDown} boxSize={3} />
+                  </Flex>
+                </Button>
+              </Menu.Trigger>
+              
+              <Menu.Positioner>
+                <Menu.Content zIndex={10} maxHeight="200px" overflowY="auto">
+                  {models.map((modelOption) => (
+                    <Menu.Item
+                      key={modelOption.id}
+                      value={modelOption.id}
+                      _hover={{ bg: "gray.50" }}
+                      cursor="pointer"
+                      onClick={() => onModelChange?.(modelOption.id as ChatModel)}
+                    >
+                      <Flex align="center" gap={2} p={1}>
+                        <Box w={4} h={4}>
+                          <img 
+                            src={providerIcons[modelOption.provider] || openaiIcon} 
+                            alt={modelOption.name}
+                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                          />
+                        </Box>
+                        <Text fontSize="xs">{modelOption.name}</Text>
+                      </Flex>
+                    </Menu.Item>
+                  ))}
+                </Menu.Content>
+              </Menu.Positioner>
+            </Menu.Root>
+          )}
+          
+          {/* Secure Mode */}
+          <HStack gap={2}>
+            <Switch.Root
+              checked={secureMode}
+              onCheckedChange={(e) => onSecureModeChange?.(e.checked)}
+              colorPalette="pink"
+              size="sm"
+            >
+              <Switch.HiddenInput />
+              <Switch.Control>
+                <Switch.Thumb />
+              </Switch.Control>
+            </Switch.Root>
+            <Text fontSize="xs" fontWeight="normal" color="black">
+              Secure mode
+            </Text>
+          </HStack>
         </HStack>
 
         <HStack gap={2}>    
