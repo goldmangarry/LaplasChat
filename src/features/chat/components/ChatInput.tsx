@@ -16,18 +16,16 @@ export const ChatInput = ({
 }: ChatInputProps) => {
   const { currentChatId, drafts, updateDraft, sendMessage, isLoadingChat, chats } = useChatStore();
   const [localValue, setLocalValue] = useState('');
-  
+
   // Проверяем, что текущий чат действительно существует
   const currentChat = currentChatId ? chats.find(chat => chat.id === currentChatId) : null;
-  
+
   const draft = currentChatId ? drafts[currentChatId]?.content || '' : '';
   const textareaRef = useAutoResize(localValue, { minHeight: 40, maxHeight: 160 });
-  
 
   useEffect(() => {
     setLocalValue(draft);
   }, [draft, currentChatId]);
-
 
   const handleInputChange = (value: string) => {
     setLocalValue(value);
@@ -39,7 +37,7 @@ export const ChatInput = ({
 
   const handleSend = async () => {
     if (!localValue.trim() || disabled) return;
-    
+
     try {
       // Если нет текущего чата, создаем новый и отправляем сообщение
       if (!currentChatId || !currentChat) {
@@ -90,7 +88,7 @@ export const ChatInput = ({
             minH="40px"
             overflow="hidden"
             _placeholder={{ color: 'gray.500' }}
-            _focus={{ 
+            _focus={{
               outline: 'none',
               boxShadow: 'none'
             }}
@@ -99,8 +97,8 @@ export const ChatInput = ({
             style={{ transition: 'height 0.2s ease' }}
           />
         </Box>
-        
-        <Box 
+
+        <Box
           borderTop="1px solid"
           borderColor="gray.200"
           pt={4}
@@ -120,7 +118,7 @@ export const ChatInput = ({
             onClick={handleSend}
             disabled={isDisabled || !localValue.trim()}
             _hover={{ bg: 'gray.800' }}
-            _disabled={{ 
+            _disabled={{
               bg: 'gray.400',
               cursor: 'not-allowed'
             }}
@@ -129,7 +127,7 @@ export const ChatInput = ({
             <Send size={16} style={{ marginLeft: '4px' }} />
           </Button>
         </Box>
-      </VStack>      
+      </VStack>
     </Box>
   );
 };

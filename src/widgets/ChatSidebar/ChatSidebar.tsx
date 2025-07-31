@@ -1,13 +1,13 @@
-import { 
-  Box, 
-  Text, 
-  Button, 
+import {
+  Box,
+  Text,
+  Button,
   Stack
 } from '@chakra-ui/react'
-import { 
-  MessageCircle, 
-  Plus, 
-  Image, 
+import {
+  MessageCircle,
+  Plus,
+  Image,
   Video
 } from 'lucide-react'
 import { useChatStore } from '@/features/chat/store'
@@ -56,7 +56,7 @@ export default function ChatSidebar() {
         {/* Logo */}
         <Box width="148px" height="40px">
           <img
-            src="/assets/apilaplas-logo.svg"
+            src="/assets/logo-chat.svg"
             alt="apilaplas"
             width="148"
             height="40"
@@ -117,12 +117,12 @@ export default function ChatSidebar() {
             <Text fontSize="16px" lineHeight="24px" fontWeight="400" color="#52525b">
               Chats ({sortedChats.length})
             </Text>
-            
+
             {/* Chat Items */}
-            <Stack 
+            <Stack
               direction="column"
-              gap={1} 
-              flex={1} 
+              gap={1}
+              flex={1}
               overflowY="auto"
               css={{
                 '&::-webkit-scrollbar': {
@@ -152,32 +152,32 @@ export default function ChatSidebar() {
                   />
                 ))
               ) : (
-              
-                <Stack 
+
+                <Stack
                   position="absolute"
                   top="50%"
                   left="5%"
-                  align="center" 
-                  justify="center" 
+                  align="center"
+                  justify="center"
                   gap="0"
                 >
-                  <Box 
-                    width="48px" 
-                    height="48px"                     
-                    display="flex" 
-                    alignItems="center" 
+                  <Box
+                    width="48px"
+                    height="48px"
+                    display="flex"
+                    alignItems="center"
                     justifyContent="center"
                   >
-                    
-                    <img src="/assets/not-chats.svg" alt="chat" 
+
+                    <img src="/assets/not-chats.svg" alt="chat"
                       width="78"
                       height="78"
                       style={{ width: '78px', height: '78px' }} />
                   </Box>
-                  <Text 
-                    fontSize="18px" 
+                  <Text
+                    fontSize="18px"
                     fontWeight="700"
-                    color="#A1A1AA" 
+                    color="#A1A1AA"
                     textAlign="center"
                   >
                     No chats
@@ -191,8 +191,8 @@ export default function ChatSidebar() {
 
       {/* User Info */}
       <UserInfo
-        name="Garry Goldman"
-        email="garrygodzilla@gmail.com"
+        name="Elon Mask"
+        email="elon_mask@demo.com"
         avatarSrc="/assets/avatar.jpg"
       />
     </Stack>
