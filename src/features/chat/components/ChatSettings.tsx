@@ -1,52 +1,49 @@
-import { Box, Text, Stack, Flex, Icon, Menu, Button, Slider } from '@chakra-ui/react'
-import { HiInformationCircle, HiChevronDown } from 'react-icons/hi2'
-import { useCallback, useMemo, useState } from 'react'
+import { Box, Text, Stack, Flex, Icon, Slider, Input } from '@chakra-ui/react'
+import { HiInformationCircle } from 'react-icons/hi2'
+import { useCallback, useState, useEffect, useMemo } from 'react'
 import type { ChatModel } from '@/core/types'
-import anthropicIcon from '@/assets/icons/anthropic.svg'
-import openaiIcon from '@/assets/icons/openai.svg'
-import googleIcon from '@/assets/icons/google.svg'
-import grokIcon from '@/assets/icons/grok.svg'
+import { useChatStore } from '@/features/chat/store'
 
 type ChatSettingsProps = {
   model: ChatModel
   temperature: number
   maxTokens: number
-  onModelChange: (model: ChatModel) => void
   onTemperatureChange: (temperature: number) => void
   onMaxTokensChange: (tokens: number) => void
 }
-
-const models: { value: ChatModel; label: string; icon: string }[] = [
-  // OpenAI Models
-  { value: 'openai/o4-mini-high', label: 'o4 Mini High', icon: openaiIcon },
-  { value: 'openai/o4-mini', label: 'o4 Mini', icon: openaiIcon },
-  { value: 'openai/gpt-4.1', label: 'GPT-4.1', icon: openaiIcon },
-  { value: 'openai/gpt-4.1-mini', label: 'GPT-4.1 Mini', icon: openaiIcon },
-  
-  // xAI Models
-  { value: 'x-ai/grok-4', label: 'Grok 4', icon: grokIcon },
-  
-  // Anthropic Models
-  { value: 'anthropic/claude-sonnet-4', label: 'Claude Sonnet 4', icon: anthropicIcon },
-  { value: 'anthropic/claude-3.5-haiku', label: 'Claude 3.5 Haiku', icon: anthropicIcon },
-  
-  // Google Models
-  { value: 'google/gemini-2.5-flash', label: 'Gemini 2.5 Flash', icon: googleIcon },
-  { value: 'google/gemini-2.5-pro', label: 'Gemini 2.5 Pro', icon: googleIcon }
-]
-
 
 export function ChatSettings({
   model,
   temperature,
   maxTokens,
-  onModelChange,
   onTemperatureChange,
   onMaxTokensChange
 }: ChatSettingsProps) {
-  const selectedModel = useMemo(() => models.find(m => m.value === model), [model])
+  const { models } = useChatStore()
   const [localTemperature, setLocalTemperature] = useState(temperature)
+  const [tempInputValue, setTempInputValue] = useState(temperature.toString())
   const [localMaxTokens, setLocalMaxTokens] = useState(maxTokens)
+  const [maxTokensInputValue, setMaxTokensInputValue] = useState(maxTokens.toString())
+
+  // Находим выбранную модель из данных с бэкенда
+  const selectedModel = useMemo(() => {
+    return models.find(m => m.id === model) || null
+  }, [models, model])
+
+  // Получаем max_output выбранной модели
+  const maxTokensLimit = useMemo(() => {
+    return selectedModel?.max_output || 8192
+  }, [selectedModel])
+
+  // Обновляем maxTokens при изменении модели, если текущее значение больше max_output новой модели
+  useEffect(() => {
+    if (maxTokensLimit && localMaxTokens > maxTokensLimit) {
+      const newValue = maxTokensLimit
+      onMaxTokensChange(newValue)
+      setLocalMaxTokens(newValue)
+      setMaxTokensInputValue(newValue.toString())
+    }
+  }, [maxTokensLimit, localMaxTokens, onMaxTokensChange])
 
   const handleTemperatureChangeEnd = useCallback((details: { value: number[] }) => {
     onTemperatureChange(details.value[0])
@@ -56,78 +53,35 @@ export function ChatSettings({
     onMaxTokensChange(details.value[0])
   }, [onMaxTokensChange])
 
+  const handleTempInputCommit = () => {
+    let value = parseFloat(tempInputValue)
+    if (isNaN(value) || tempInputValue.trim() === '') {
+      value = 0
+    }
+    const clampedValue = Math.max(0, Math.min(2, value))
+    setLocalTemperature(clampedValue)
+    setTempInputValue(clampedValue.toString())
+    onTemperatureChange(clampedValue)
+  }
+
+  const handleMaxTokensInputCommit = () => {
+    let value = parseInt(maxTokensInputValue, 10)
+    if (isNaN(value) || maxTokensInputValue.trim() === '') {
+      value = 1024
+    }
+    const clampedValue = Math.max(1024, Math.min(maxTokensLimit, value))
+    setLocalMaxTokens(clampedValue)
+    setMaxTokensInputValue(clampedValue.toString())
+    onMaxTokensChange(clampedValue)
+  }
+
   return (
     <Box 
       width="100%"
       height="100%"
       bg="white"
-      p={6}
     >
       <Stack gap={6} align="stretch">
-        {/* Model Selection */}
-        <Stack gap={3} align="stretch">
-          <Text fontSize="sm" fontWeight="medium" color="gray.600">
-            Model
-          </Text>
-          
-          <Menu.Root>
-            <Menu.Trigger asChild>
-              <Button
-                variant="outline"
-                width="100%"
-                bg="white"
-                borderColor="gray.200"
-                _hover={{ borderColor: "gray.300" }}
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                aria-label="Select AI model"
-              >
-                <Flex align="center" gap={2} width="100%" justifyContent="space-between">
-                  <Flex align="center" gap={2}>
-                    {selectedModel && (
-                      <Box w={6} h={6}>
-                        <img 
-                          src={selectedModel.icon} 
-                          alt={selectedModel.label}
-                          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                        />
-                      </Box>
-                    )}
-                    <Text>{selectedModel?.label || 'Select model'}</Text>
-                  </Flex>
-                  <Icon as={HiChevronDown} />
-                </Flex>
-              </Button>
-            </Menu.Trigger>
-            
-            <Menu.Positioner>
-              <Menu.Content zIndex={10}>
-                {models.map((modelOption) => (
-                  <Menu.Item
-                    key={modelOption.value}
-                    value={modelOption.value}
-                    _hover={{ bg: "gray.50" }}
-                    cursor="pointer"
-                    onClick={() => onModelChange(modelOption.value)}
-                  >
-                    <Flex align="center" gap={2} p={1}>
-                      <Box w={6} h={6}>
-                        <img 
-                          src={modelOption.icon} 
-                          alt={modelOption.label}
-                          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                        />
-                      </Box>
-                      <Text>{modelOption.label}</Text>
-                    </Flex>
-                  </Menu.Item>
-                ))}
-              </Menu.Content>
-            </Menu.Positioner>
-          </Menu.Root>
-        </Stack>
-
         {/* Parameters */}
         <Stack gap={6} align="stretch">
           <Text fontSize="sm" fontWeight="medium" color="gray.600">
@@ -138,10 +92,14 @@ export function ChatSettings({
           <Stack gap={3} align="stretch">
             <Slider.Root
               min={0}
-              max={1}
+              max={2}
               step={0.01}
               value={[localTemperature]}
-              onValueChange={(value) => setLocalTemperature(value.value[0])}
+              onValueChange={(value) => {
+                const newValue = value.value[0]
+                setLocalTemperature(newValue)
+                setTempInputValue(newValue.toString())
+              }}
               onValueChangeEnd={handleTemperatureChangeEnd}
             >
               <Flex justify="space-between" align="center" mb={2}>
@@ -151,7 +109,23 @@ export function ChatSettings({
                   </Slider.Label>
                   <Icon as={HiInformationCircle} boxSize={4} color="gray.400" />
                 </Flex>
-                <Slider.ValueText fontSize="sm" color="gray.600" />
+                <Input
+                  width="64px"
+                  height="28px"
+                  textAlign="center"
+                  value={tempInputValue}
+                  onChange={(e) => setTempInputValue(e.target.value)}
+                  onBlur={handleTempInputCommit}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleTempInputCommit();
+                      (e.target as HTMLInputElement).blur()
+                    }
+                  }}
+                  size="sm"
+                  variant="outline"
+                  borderColor="gray.200"
+                />
               </Flex>
               
               <Slider.Control>
@@ -174,10 +148,14 @@ export function ChatSettings({
           <Stack gap={3} align="stretch">
             <Slider.Root
               min={1024}
-              max={100000}
+              max={maxTokensLimit}
               step={1024}
               value={[localMaxTokens]}
-              onValueChange={(value) => setLocalMaxTokens(value.value[0])}
+              onValueChange={(value) => {
+                const newValue = value.value[0]
+                setLocalMaxTokens(newValue)
+                setMaxTokensInputValue(newValue.toString())
+              }}
               onValueChangeEnd={handleMaxTokensChangeEnd}
             >
               <Flex justify="space-between" align="center" mb={2}>
@@ -187,7 +165,23 @@ export function ChatSettings({
                   </Slider.Label>
                   <Icon as={HiInformationCircle} boxSize={4} color="gray.400" />
                 </Flex>
-                <Slider.ValueText fontSize="sm" color="gray.600" />
+                <Input
+                  width="64px"
+                  height="28px"
+                  textAlign="center"
+                  value={maxTokensInputValue}
+                  onChange={(e) => setMaxTokensInputValue(e.target.value)}
+                  onBlur={handleMaxTokensInputCommit}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleMaxTokensInputCommit()
+                      ;(e.target as HTMLInputElement).blur()
+                    }
+                  }}
+                  size="sm"
+                  variant="outline"
+                  borderColor="gray.200"
+                />
               </Flex>
               
               <Slider.Control>
@@ -202,7 +196,7 @@ export function ChatSettings({
             
             <Flex justify="space-between">
               <Text fontSize="xs" color="gray.500">1K</Text>
-              <Text fontSize="xs" color="gray.500">100K</Text>
+              <Text fontSize="xs" color="gray.500">{Math.floor(maxTokensLimit / 1000)}K</Text>
             </Flex>
           </Stack>
         </Stack>

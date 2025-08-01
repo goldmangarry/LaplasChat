@@ -15,6 +15,19 @@ export type ChatModel =
   | 'google/gemini-2.5-flash'
   | 'google/gemini-2.5-pro'
 
+// Новые типы для моделей с бэкенда
+export type ChatModelFromBackend = {
+  id: string
+  name: string
+  provider: string
+  context_window: number
+  max_output: number
+}
+
+export type ModelsResponse = {
+  models: ChatModelFromBackend[]
+}
+
 export type Chat = {
   id: string
   dialogId?: string
@@ -27,8 +40,16 @@ export type Chat = {
   temperature: number
   maxTokens: number
   secureMode: boolean
-  createdAt: string
-  updatedAt: string
+  provider?: string // Провайдер из API для отображения иконки
+}
+
+// Тип для хранения настроек чата в localStorage
+export type ChatSettings = {
+  dialogId: string
+  model: ChatModel
+  temperature: number
+  maxTokens: number
+  secureMode: boolean
 }
 
 export type Message = {
@@ -78,6 +99,11 @@ export type FactCheckState = {
   data?: FactCheckData
 }
 
+export type ChatDraft = {
+  chatId: string
+  content: string
+  updatedAt: string
+}
 
 export type ChatStore = {
   chats: Chat[]
@@ -85,24 +111,32 @@ export type ChatStore = {
   messagesByChat: Record<string, Message[]>
   drafts: Record<string, Draft>
   loadingChats: Set<string>
+  models: ChatModelFromBackend[] // Новое поле для моделей с бэкенда
+  isLoadingModels: boolean // Состояние загрузки моделей
+  isLoadingHistory: boolean // Состояние загрузки истории
   factCheck: FactCheckState
 }
 
-export type ChatStoreActions = {
+interface ChatStoreActions {
   createChat: () => string
-  selectChat: (chatId: string) => void
+  selectChat: (chatId: string) => Promise<void>
   updateDraft: (chatId: string, content: string) => void
   clearDraft: (chatId: string) => void
   addMessage: (chatId: string, message: Message) => void
   sendMessage: (chatId: string, content: string) => Promise<void>
-  deleteChat: (chatId: string) => void
-  updateChatTitle: (chatId: string, title: string) => void
+  deleteChat: (chatId: string) => Promise<void>
+  updateChatTitle: (chatId: string, title: string) => Promise<void>
   updateChatSettings: (chatId: string, settings: { model?: ChatModel; temperature?: number; maxTokens?: number; secureMode?: boolean }) => void
+  setDefaultChatSettings: (settings: { model?: ChatModel; temperature?: number; maxTokens?: number; secureMode?: boolean }) => void
+  getDefaultSecureMode: () => boolean
   isLoadingChat: (chatId: string) => boolean
   setLoadingChat: (chatId: string, loading: boolean) => void
   openFactCheck: () => void
   closeFactCheck: () => void
   checkFacts: (message: string) => Promise<void>
+  fetchModels: () => Promise<void> // Новый метод для загрузки моделей
+  fetchChatHistory: () => Promise<void> // Новый метод для загрузки истории чатов
+  fetchChatMessages: (chatId: string) => Promise<void> // Новый метод для загрузки сообщений чата
 }
 
 export type ChatStoreState = ChatStore & ChatStoreActions

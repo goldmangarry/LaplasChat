@@ -1,15 +1,26 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ChakraProvider, createSystem, defaultConfig } from '@chakra-ui/react'
-import './index.css'
-import App from './app/App.tsx'
+import { createRouter, RouterProvider } from '@tanstack/react-router'
+import { routeTree } from '@/routeTree.gen'
+import './routes/index.css'
+
+// Create a new router instance
+const router = createRouter({ routeTree })
+
+// Register the router instance for type safety
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router
+  }
+}
 
 const system = createSystem(defaultConfig)
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ChakraProvider value={system}>
-      <App />
+      <RouterProvider router={router} />
     </ChakraProvider>
   </StrictMode>,
-)
+) 

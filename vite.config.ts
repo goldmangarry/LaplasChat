@@ -1,9 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { tanstackRouter } from '@tanstack/router-plugin/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [tanstackRouter({
+    target: 'react',
+    autoCodeSplitting: true,
+  }), react()],
   resolve: {
     alias: {
       '@': '/src',
@@ -23,7 +27,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://apilaplas-backend-yh03.onrender.com',
+        target: 'https://dev-apilaplas-backend.onrender.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
         secure: false,

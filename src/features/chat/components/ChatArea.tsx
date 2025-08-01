@@ -1,39 +1,89 @@
-import { Box, Flex, Stack, Center, Text } from '@chakra-ui/react'
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import { Box, Flex, Stack } from '@chakra-ui/react'
+import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react'
 import { useChatStore } from '@/features/chat/store'
-import type { Message } from '@/core/types'
+import { useUserStore } from '@/core/store/user/store'
+import type { Message, ChatModel } from '@/core/types'
 import ChatHeader from './ChatHeader'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { EncryptedResponseModal } from './EncryptedResponseModal'
 import { FactCheckSidebar } from './FactCheckSidebar'
 import { toaster } from '@/components/ui/toast'
+import { ChatSuggestions } from './ChatSuggestions'
 
 type ChatAreaProps = {
   onOpenSettings?: () => void
+  onOpenSidebar?: () => void
 }
 
-export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
-  const { currentChatId, messagesByChat, isLoadingChat, factCheck, checkFacts, closeFactCheck, chats, updateChatSettings } = useChatStore()
+export default function ChatArea({ onOpenSettings, onOpenSidebar }: ChatAreaProps) {
+  const {
+    currentChatId,
+    messagesByChat,
+    isLoadingChat,
+    factCheck,
+    checkFacts,
+    closeFactCheck,
+    chats,
+    updateChatSettings,
+    sendMessage,
+    setDefaultChatSettings,
+    getDefaultSecureMode,
+    models,
+    isLoadingModels,
+  } = useChatStore()
+  const { user } = useUserStore()
   const [encryptedContent, setEncryptedContent] = useState<string | null>(null)
+  const [defaultSecureMode, setDefaultSecureMode] = useState(false)
+  const [defaultModel, setDefaultModel] = useState<ChatModel>('openai/o4-mini-high')
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const prevMessagesCountRef = useRef(0)
   
-  const currentChat = useMemo(() => {
-    return chats.find(chat => chat.id === currentChatId)
-  }, [currentChatId, chats])
+  const currentChat = chats.find(chat => chat.id === currentChatId)
+  
+  // Синхронизируем локальное состояние с дефолтным значением из store
+  useEffect(() => {
+    setDefaultSecureMode(getDefaultSecureMode())
+  }, [getDefaultSecureMode])
   
   const handleSecureModeChange = useCallback((enabled: boolean) => {
-    if (currentChatId) {
+    if (currentChatId && currentChat) {
       updateChatSettings(currentChatId, { secureMode: enabled })
+    } else {
+      // Если нет активного чата, сохраняем как настройку по умолчанию для новых чатов
+      setDefaultChatSettings({ secureMode: enabled })
+      setDefaultSecureMode(enabled)
     }
-  }, [currentChatId, updateChatSettings])
+  }, [currentChatId, currentChat, updateChatSettings, setDefaultChatSettings])
+
+  const handleModelChange = useCallback((model: ChatModel) => {
+    if (currentChatId && currentChat) {
+      updateChatSettings(currentChatId, { model })
+    } else {
+      // Если нет активного чата, сохраняем как настройку по умолчанию для новых чатов
+      setDefaultChatSettings({ model })
+      setDefaultModel(model)
+    }
+  }, [currentChatId, currentChat, updateChatSettings, setDefaultChatSettings])
 
   const messages = useMemo(() => {
     return currentChatId ? messagesByChat[currentChatId] || [] : []
   }, [currentChatId, messagesByChat])
 
+  // Используем useLayoutEffect для немедленного скролла без анимации при загрузке сообщений
+  useLayoutEffect(() => {
+    if (messages.length > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'instant' })
+    }
+  }, [currentChatId, messages.length])
+
+  // Плавный скролл при добавлении новых сообщений (не при смене чата)
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (messages.length > prevMessagesCountRef.current && prevMessagesCountRef.current > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
+    
+    prevMessagesCountRef.current = messages.length
   }, [messages])
 
   const handleCopyMessage = (content: string) => {
@@ -45,68 +95,152 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
     })
   }
 
-  if (!currentChatId) {
+  const handleSuggestionClick = (text: string) => {
+    // Отправляем сообщение даже если нет активного чата (будет создан автоматически)
+    if (currentChatId && currentChat) {
+      sendMessage(currentChatId, text)
+    } else {
+      // Если нет чата, sendMessage создаст новый автоматически
+      sendMessage('temp-id', text)
+    }
+  }
+
+  // Если нет выбранного чата (независимо от того, есть ли чаты), показываем экран с предложениями
+  if (!currentChatId || !currentChat) {
     return (
       <Flex flex={1} direction="column" bg="white">
-        <Center flex={1}>
-          <Text color="gray.500" fontSize="lg">
-            Select a chat to start messaging
-          </Text>
-        </Center>
+        {/* Header для состояния без выбранного чата */}
+        <ChatHeader
+          secureMode={defaultSecureMode}
+          onSecureModeChange={handleSecureModeChange}
+          onOpenSettings={onOpenSettings}
+          onOpenSidebar={onOpenSidebar}
+          model={defaultModel}
+          models={models}
+          isLoadingModels={isLoadingModels}
+          onModelChange={handleModelChange}
+        />
+
+        {/* Центрированный контент с предложениями и инпутом */}
+        <Flex
+          flex={1}
+          direction="column"
+          justifyContent="center"
+          overflowY="auto"
+        >
+          <Box px={{ base: "4%", md: "5%" }} pb={{ base: 4, md: 6 }} flexShrink={0}>
+            <Box
+              mx="auto"
+              width={{ base: '100%', '2xl': '75%' }}
+            >
+              <Box mb={4}>
+                <ChatSuggestions onSuggestionClick={handleSuggestionClick} />
+              </Box>
+              <ChatInput
+                placeholder="How can I help you?"
+                disabled={false}
+              />
+            </Box>
+          </Box>
+        </Flex>
       </Flex>
     )
   }
 
   return (
-    <Flex flex={1} direction="column" bg="white" margin='16px' borderRadius='16px' >
+    <Flex flex={1} direction="column" bg="white">
       {/* Header */}
       <ChatHeader
         secureMode={currentChat?.secureMode ?? true}
         onSecureModeChange={handleSecureModeChange}
         onOpenSettings={onOpenSettings}
+        onOpenSidebar={onOpenSidebar}
+        model={currentChat?.model}
+        models={models}
+        isLoadingModels={isLoadingModels}
+        onModelChange={handleModelChange}
       />
 
-      {/* Messages Area */}
-      <Box flex={1} overflowY="auto" px="10%" py={6}>
-        <Stack direction="column" gap={6} align="stretch">
-          {messages.map((msg: Message) => (
-            <ChatMessage
-              key={msg.id}
-              userName={msg.author.name}
-              userInitials={msg.author.avatar || msg.author.name.slice(0, 2).toUpperCase()}
-              message={msg.content}
-              timestamp={new Date(msg.timestamp).toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              })}
-              isAI={!msg.isOwnMessage}
-              onCopy={() => handleCopyMessage(msg.content)}
-              encryptedContent={msg.encryptedContent}
-              onShowEncrypted={() => setEncryptedContent(msg.encryptedContent || null)}
-              onFactCheck={!msg.isOwnMessage ? () => checkFacts(msg.content) : undefined}
-            />
-          ))}
-          {isLoadingChat(currentChatId) && (
-            <ChatMessage
-              userName="Assistant"
-              userInitials="AI"
-              message="Thinking..."
-              timestamp="now"
-              isAI={true}
-              onCopy={() => {}}
-            />
-          )}
-          <div ref={messagesEndRef} />
-        </Stack>
-      </Box>
+      {/* Messages and Input Area */}
+      <Flex
+        flex={1}
+        direction="column"
+        justifyContent={
+          messages.length > 0 || isLoadingChat(currentChatId)
+            ? 'space-between'
+            : 'center'
+        }
+        overflowY="auto"
+      >
+        {/* Messages Area */}
+        <Box
+          flex={messages.length > 0 || isLoadingChat(currentChatId) ? 1 : 0}
+          overflowY="auto"
+          px={{ base: "4%", md: "5%" }}
+          py={{ base: 4, md: 6 }}
+        >
+          <Stack direction="column" gap={{ base: 4, md: 6 }} align="stretch">
+            {messages.map((msg: Message) => (
+              <ChatMessage
+                key={msg.id}
+                userName={msg.isOwnMessage ? 'You' : msg.author.name}
+                userInitials={
+                  msg.isOwnMessage && user 
+                    ? user.first_name.charAt(0).toUpperCase()
+                    : (msg.author.avatar || msg.author.name.slice(0, 2).toUpperCase())
+                }
+                message={msg.content}
+                timestamp={new Date(msg.timestamp).toLocaleTimeString('en-US', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+                isAI={!msg.isOwnMessage}
+                onCopy={() => handleCopyMessage(msg.content)}
+                encryptedContent={msg.encryptedContent}
+                onShowEncrypted={() =>
+                  setEncryptedContent(msg.encryptedContent || null)
+                }
+                onFactCheck={
+                  !msg.isOwnMessage ? () => checkFacts(msg.content) : undefined
+                }
+              />
+            ))}
+            {isLoadingChat(currentChatId) && (
+              <ChatMessage
+                userName="Assistant"
+                userInitials="AI"
+                message="Thinking..."
+                timestamp="now"
+                isAI={true}
+                onCopy={() => {}}
+              />
+            )}
+            <div ref={messagesEndRef} />
+          </Stack>
+        </Box>
 
-      {/* Input Area */}
-      <Box px="10%" py={4}>
-        <ChatInput
-          placeholder="How can I help you?"
-          disabled={isLoadingChat(currentChatId)}
-        />
-      </Box>
+        {/* Suggestions and Input Area */}
+        <Box px={{ base: "4%", md: "5%" }} pt={4} pb={{ base: 4, md: 6 }} flexShrink={0}>
+          <Box
+            mx="auto"
+            width={
+              messages.length > 0 || isLoadingChat(currentChatId)
+                ? '100%'
+                : { base: '100%'}
+            }
+          >
+            {messages.length === 0 && !isLoadingChat(currentChatId) && (
+              <Box mb={4}>
+                <ChatSuggestions onSuggestionClick={handleSuggestionClick} />
+              </Box>
+            )}
+            <ChatInput
+              placeholder="How can I help you?"
+              disabled={isLoadingChat(currentChatId)}
+            />
+          </Box>
+        </Box>
+      </Flex>
 
       {/* Encrypted Response Modal */}
       <EncryptedResponseModal

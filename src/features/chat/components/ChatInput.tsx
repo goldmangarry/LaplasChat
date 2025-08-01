@@ -14,8 +14,11 @@ export const ChatInput = ({
   placeholder = "How can I help you?",
   disabled = false,
 }: ChatInputProps) => {
-  const { currentChatId, drafts, updateDraft, sendMessage, isLoadingChat } = useChatStore();
+  const { currentChatId, drafts, updateDraft, sendMessage, isLoadingChat, chats } = useChatStore();
   const [localValue, setLocalValue] = useState('');
+
+  // Проверяем, что текущий чат действительно существует
+  const currentChat = currentChatId ? chats.find(chat => chat.id === currentChatId) : null;
 
   const draft = currentChatId ? drafts[currentChatId]?.content || '' : '';
   const textareaRef = useAutoResize(localValue, { minHeight: 40, maxHeight: 160 });
@@ -26,15 +29,26 @@ export const ChatInput = ({
 
   const handleInputChange = (value: string) => {
     setLocalValue(value);
-    if (currentChatId) {
+    // Сохраняем драфт только если есть активный чат
+    if (currentChatId && currentChat) {
       updateDraft(currentChatId, value);
     }
   };
 
   const handleSend = async () => {
-    if (localValue.trim() && !disabled && !isLoadingChat(currentChatId || '') && currentChatId) {
-      await sendMessage(currentChatId, localValue.trim());
+    if (!localValue.trim() || disabled) return;
+
+    try {
+      // Если нет текущего чата, создаем новый и отправляем сообщение
+      if (!currentChatId || !currentChat) {
+        // sendMessage создаст новый чат автоматически при первом сообщении
+        await sendMessage('temp-id', localValue.trim()); // ID будет заменен в sendMessage
+      } else {
+        await sendMessage(currentChatId, localValue.trim());
+      }
       setLocalValue('');
+    } catch (error) {
+      console.error('Failed to send message:', error);
     }
   };
 
@@ -46,7 +60,7 @@ export const ChatInput = ({
   };
 
 
-  const isDisabled = disabled || isLoadingChat(currentChatId || '') || !currentChatId;
+  const isDisabled = disabled || (currentChatId ? isLoadingChat(currentChatId) : false);
 
   return (
     <Box
@@ -54,7 +68,7 @@ export const ChatInput = ({
       border="1px solid"
       borderColor="gray.200"
       borderRadius="12px"
-      p={4}
+      p={{ base: 3, md: 4 }}
       boxShadow="0px 2px 4px 0px rgba(24, 24, 27, 0.1), 0px 0px 1px 0px rgba(24, 24, 27, 0.3)"
     >
       <VStack gap={5} align="stretch">
@@ -87,7 +101,7 @@ export const ChatInput = ({
         <Box
           borderTop="1px solid"
           borderColor="gray.200"
-          pt={4}
+          pt={{ base: 3, md: 4 }}
           display="flex"
           justifyContent="flex-end"
           alignItems="center"
@@ -114,7 +128,6 @@ export const ChatInput = ({
           </Button>
         </Box>
       </VStack>
-
     </Box>
   );
 };

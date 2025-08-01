@@ -1,3 +1,6 @@
+import { apiClient } from '@/core/api'
+import type { ModelsResponse } from '@/core/types'
+
 type SecureModeRequest = {
   model: string
   message: string
@@ -53,19 +56,9 @@ export async function sendSecureMessage(
       requestBody.dialog_id = dialogId
     }
 
-    const response = await fetch('/api/chat/secure-mode', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody)
-    })
+    const response = await apiClient.post('/api/chat/secure-mode', requestBody)
 
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`)
-    }
-
-    const data = await response.json()
+    const data = response.data
     // Ensure backward compatibility with existing response format
     if (data.decrypted_response && !data.reply) {
       data.reply = data.decrypted_response
@@ -97,20 +90,9 @@ export async function sendMessage(
       requestBody.dialog_id = dialogId
     }
 
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody)
-    })
+    const response = await apiClient.post('/api/chat', requestBody)
 
-    if (!response.ok) {
-      const error = await response.text()
-      throw new Error(`Server error: ${error}`)
-    }
-
-    const data: ChatResponse = await response.json()
+    const data: ChatResponse = response.data
     console.log('Chat response received:', { 
       dialogId: data.dialog_id, 
       responseLength: data.response.length 
@@ -128,22 +110,23 @@ export async function checkFacts(message: string): Promise<FactCheckResponse> {
       message: message,
     }
 
-    const response = await fetch('/api/chat/fact-check', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody)
-    })
+    const response = await apiClient.post('/api/chat/fact-check', requestBody)
 
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`)
-    }
-
-    const data = await response.json()
-    return data
+    return response.data
   } catch (error) {
     console.error('Failed to check facts:', error)
+    throw error
+  }
+}
+
+// Функция для получения моделей с бэкенда
+export async function fetchModels(): Promise<ModelsResponse> {
+  try {
+    const response = await apiClient.get('/api/models')
+
+    return response.data
+  } catch (error) {
+    console.error('Failed to fetch models:', error)
     throw error
   }
 }
