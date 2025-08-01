@@ -5,9 +5,9 @@ import type { ChatStoreState, Chat, Message, ChatModel, ChatSettings } from '@/c
 import { sendSecureMessage, sendMessage, checkFacts, fetchModels } from '@/shared/lib/api'
 import { chatApi, type ChatMessage } from '@/core/api'
 
-const createDefaultChat = (customSettings?: { model?: ChatModel; temperature?: number; maxTokens?: number; secureMode?: boolean }): Chat => ({
+const createDefaultChat = (customSettings?: { model?: ChatModel; temperature?: number; maxTokens?: number; secureMode?: boolean; title?: string }): Chat => ({
   id: uuidv4(),
-  title: 'New Chat',
+  title: customSettings?.title || 'New Chat',
   model: customSettings?.model || 'openai/o4-mini-high',
   temperature: customSettings?.temperature || 0.5,
   maxTokens: customSettings?.maxTokens || 4096,
@@ -260,7 +260,15 @@ export const useChatStore = create<ChatStoreState>()(
         },
 
         sendMessage: async (chatId: string, content: string) => {
-          const { addMessage, clearDraft, setLoadingChat, createChat, selectChat } = get()
+          const { addMessage, clearDraft, setLoadingChat, selectChat } = get()
+          
+          // Функция для создания названия чата из промпта
+          const createChatTitle = (userMessage: string) => {
+            const newTitle = userMessage.length > 50 
+              ? userMessage.substring(0, 50) + '...'
+              : userMessage
+            return newTitle.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim()
+          }
           
           // Если чата не существует, создаем новый
           const currentState = get()
@@ -268,12 +276,27 @@ export const useChatStore = create<ChatStoreState>()(
           
           // Если чат не найден или нет чатов вообще, создаем новый
           if (!chat || currentState.chats.length === 0) {
-            const newChatId = createChat()
-            selectChat(newChatId)
-            // Получаем обновленное состояние после создания чата
-            const updatedState = get()
-            chat = updatedState.chats.find((c) => c.id === newChatId)
-            chatId = newChatId // Используем новый ID для отправки сообщения
+            // Создаем чат сразу с правильным названием из промпта
+            const chatTitle = createChatTitle(content)
+            const newChat = createDefaultChat({ ...defaultChatSettings, title: chatTitle })
+            set((state: ChatStoreState) => ({
+              ...state,
+              chats: [...state.chats, newChat],
+              currentChatId: newChat.id,
+            }))
+            selectChat(newChat.id)
+            chat = newChat
+            chatId = newChat.id // Используем новый ID для отправки сообщения
+          } else if (chat.title === 'New Chat') {
+            // Если это существующий чат с названием "New Chat", обновляем его название
+            const chatTitle = createChatTitle(content)
+            set((state: ChatStoreState) => ({
+              ...state,
+              chats: state.chats.map((c: Chat) =>
+                c.id === chatId ? { ...c, title: chatTitle } : c
+              ),
+            }))
+            chat = { ...chat, title: chatTitle }
           }
           
           if (!chat) {
@@ -344,19 +367,6 @@ export const useChatStore = create<ChatStoreState>()(
             }
 
             addMessage(chatId, aiMessage)
-
-            // Auto-generate chat title from first AI response
-            const currentChat = get().chats.find((c) => c.id === chatId)
-            const messagesCount = get().messagesByChat[chatId]?.length || 0
-            if (currentChat && currentChat.title === 'New Chat' && messagesCount <= 2) {
-              // Generate title from first 50 characters of AI response
-              const newTitle = aiContent.length > 50 
-                ? aiContent.substring(0, 50) + '...'
-                : aiContent
-              // Clean up the title (remove newlines, extra spaces)
-              const cleanTitle = newTitle.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim()
-              get().updateChatTitle(chatId, cleanTitle)
-            }
 
             // Update the user message with encrypted content if available (only in secure mode)
             if (chat.secureMode && encryptedResponse) {
