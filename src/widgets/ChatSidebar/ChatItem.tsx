@@ -131,14 +131,14 @@ export function ChatItem({ id, title, isSelected, hasActions, onClick }: ChatIte
             overflow="hidden"
             textOverflow="ellipsis"
             whiteSpace="nowrap"
-            maxWidth={hasActions ? "calc(100% - 32px)" : "100%"}
+            maxWidth={hasActions && title !== 'New Chat' ? "calc(100% - 32px)" : "100%"}
           >
             {title}
           </Text>
         )}
 
         {/* Menu Action */}
-        {hasActions && !isEditing && (
+        {hasActions && !isEditing && title !== 'New Chat' && (
           <Menu.Root
             open={isMenuOpen}
             onOpenChange={(e) => setIsMenuOpen(e.open)}

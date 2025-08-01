@@ -70,6 +70,7 @@ export default function ChatSidebar({ onChatSelect }: ChatSidebarProps = {}) {
         overflow="hidden"
         flex="1"
         alignSelf="stretch"
+        minHeight={0}
       >
         {/* Header with Logo and Close Button */}
         <HStack justify="space-between" align="center" width="100%">
@@ -110,6 +111,8 @@ export default function ChatSidebar({ onChatSelect }: ChatSidebarProps = {}) {
           align="center"
           gap={{ base: "20px", md: "33px" }}
           alignSelf="stretch"
+          flex="1"
+          minHeight={0}
         >
           {/* Start new chat button */}
           <Button
@@ -154,7 +157,7 @@ export default function ChatSidebar({ onChatSelect }: ChatSidebarProps = {}) {
           </Stack>
 
           {/* Chats Container */}
-          <Stack direction="column" gap={{ base: 2, md: 3 }} alignSelf="stretch" flex={1} overflow="hidden">
+          <Stack direction="column" gap={{ base: 2, md: 3 }} alignSelf="stretch" flex={1} overflow="hidden" minHeight={0}>
             <Text fontSize={{ base: "14px", md: "16px" }} lineHeight={{ base: "20px", md: "24px" }} fontWeight="400" color="#52525b">
               Chats ({sortedChats.length})
             </Text>
@@ -165,6 +168,8 @@ export default function ChatSidebar({ onChatSelect }: ChatSidebarProps = {}) {
               gap={1}
               flex={1}
               overflowY="auto"
+              minHeight={0}
+              maxHeight="100%"
               css={{
                 '&::-webkit-scrollbar': {
                   width: '4px',
