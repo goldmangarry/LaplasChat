@@ -1,4 +1,4 @@
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import type React from "react";
 import { useState } from "react";
 import { Button, Input } from "@chakra-ui/react";
@@ -13,6 +13,7 @@ export const LoginForm: React.FC = () => {
 	const [error, setError] = useState("");
 
 	const navigate = useNavigate();
+	const search = useSearch({ from: "/login" });
 	const { login, setLoading, isLoading } = useUserStore();
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -33,8 +34,8 @@ export const LoginForm: React.FC = () => {
 			// Save tokens and user to store
 			login(response.access_token, response.refresh_token, user);
 
-			// Redirect to home page
-			navigate({ to: "/" });
+			const redirectTo = search.redirect || "/";
+			navigate({ to: redirectTo as "/" });
 		} catch (err) {
 			console.error("Login failed:", err);
 			setError("Login failed. Please check your credentials.");

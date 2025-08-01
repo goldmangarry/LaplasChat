@@ -33,7 +33,6 @@ export const Route = createRootRoute({
           })
         }
       } else {
-        // Если нет refresh token, редиректим на логин
         throw redirect({
           to: '/login',
           search: {
@@ -49,18 +48,16 @@ export const Route = createRootRoute({
 function RootComponent() {
   const { isAuthenticated, refreshToken } = useUserStore()
   
-  // Автоматическое обновление токенов каждые 5 минут
   useEffect(() => {
     if (!isAuthenticated || !refreshToken) return
     
     const interval = setInterval(async () => {
       try {
         await useUserStore.getState().refreshTokens()
-      } catch (error) {
-        console.error('Failed to refresh tokens:', error)
+      } catch {
         useUserStore.getState().logout()
       }
-    }, 5 * 60 * 1000) // 5 минут
+    }, 5 * 60 * 1000) 
     
     return () => clearInterval(interval)
   }, [isAuthenticated, refreshToken])
