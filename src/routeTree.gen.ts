@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 
-
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',

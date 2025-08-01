@@ -1,7 +1,11 @@
 export type User = {
 	id: string;
-	username: string;
-	email?: string;
+	email: string;
+	first_name: string;
+	last_name: string;
+	avatar_url?: string;
+	created_at: string;
+	updated_at: string;
 };
 
 export type AuthState = {
@@ -17,4 +21,5 @@ export type AuthActions = {
 	logout: () => void;
 	setLoading: (loading: boolean) => void;
 	refreshTokens: () => Promise<void>;
+	fetchUserProfile: () => Promise<void>;
 };

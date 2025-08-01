@@ -24,15 +24,19 @@ export const LoginForm: React.FC = () => {
 		try {
 			const response: LoginResponse = await loginRequest(username, password);
 
-			// Create user object based on available data
-			const user = {
-				id: username, // using email as id for now
-				username,
-				email: username, // username is actually email
+			// Create temporary user object - real data will be loaded via fetchUserProfile
+			const tempUser = {
+				id: 'temp',
+				email: username,
+				first_name: 'Loading',
+				last_name: '...',
+				avatar_url: '',
+				created_at: new Date().toISOString(),
+				updated_at: new Date().toISOString(),
 			};
 
-			// Save tokens and user to store
-			login(response.access_token, response.refresh_token, user);
+			// Save tokens and temporary user to store
+			login(response.access_token, response.refresh_token, tempUser);
 
 			const redirectTo = search.redirect || "/";
 			navigate({ to: redirectTo as "/" });
@@ -61,7 +65,7 @@ export const LoginForm: React.FC = () => {
 					<Center>
 						<Box width="148px" height="40px">
 							<img
-								src="/assets/apilaplas-logo.svg"
+								src="/assets/logo-chat.svg"
 								alt="apilaplas"
 								width="148"
 								height="40"

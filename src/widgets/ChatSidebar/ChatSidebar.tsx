@@ -1,32 +1,33 @@
-import { 
-  Box, 
-  Text, 
-  Button, 
+import {
+  Box,
+  Text,
+  Button,
   Stack
 } from '@chakra-ui/react'
-import { 
-  MessageCircle, 
-  Plus, 
-  Image, 
+import {
+  MessageCircle,
+  Plus,
+  Image,
   Video
 } from 'lucide-react'
 import { useChatStore } from '@/features/chat/store'
+import { useUserStore } from '@/core/store/user/store'
 import { ChatItem } from './ChatItem'
 import { ChatTypeTab } from './ChatTypeTab'
 import { UserInfo } from './UserInfo'
+import { ChatListSkeleton, UserProfileSkeleton } from '@/shared/ui'
 import { useState, useMemo } from 'react'
 import type { Chat } from '@/core/types'
 
 export default function ChatSidebar() {
-  const { chats, currentChatId, createChat, selectChat } = useChatStore()
+  const { chats, currentChatId, createChat, selectChat, isLoadingHistory } = useChatStore()
+  const { user, isLoading: isLoadingUser } = useUserStore()
   const [selectedType, setSelectedType] = useState<'chat' | 'image' | 'video'>('chat')
 
   const sortedChats = useMemo(() => {
-    return chats.sort((a: Chat, b: Chat) => {
-      const aTime = new Date(a.updatedAt).getTime()
-      const bTime = new Date(b.updatedAt).getTime()
-      return bTime - aTime
-    })
+    // Возвращаем чаты как есть, без сортировки по времени
+    // так как updatedAt больше нет
+    return chats
   }, [chats])
 
   const handleCreateChat = () => {
@@ -58,7 +59,7 @@ export default function ChatSidebar() {
         {/* Logo */}
         <Box width="148px" height="40px">
           <img
-            src="/assets/apilaplas-logo.svg"
+            src="/assets/logo-chat.svg"
             alt="apilaplas"
             width="148"
             height="40"
@@ -119,12 +120,12 @@ export default function ChatSidebar() {
             <Text fontSize="16px" lineHeight="24px" fontWeight="400" color="#52525b">
               Chats ({sortedChats.length})
             </Text>
-            
+
             {/* Chat Items */}
-            <Stack 
+            <Stack
               direction="column"
-              gap={1} 
-              flex={1} 
+              gap={1}
+              flex={1}
               overflowY="auto"
               css={{
                 '&::-webkit-scrollbar': {
@@ -142,51 +143,44 @@ export default function ChatSidebar() {
                 },
               }}
             >
-              {sortedChats.length > 0 ? (
+              {isLoadingHistory ? (
+                <ChatListSkeleton count={6} />
+              ) : sortedChats.length > 0 ? (
                 sortedChats.map((chat: Chat) => (
                   <ChatItem
                     key={chat.id}
                     id={chat.id}
                     title={chat.title}
-                    type={
-                      chat.model.startsWith('openai/') ? 'openai' : 
-                      chat.model.startsWith('anthropic/') ? 'anthropic' :
-                      chat.model.startsWith('google/') ? 'google' :
-                      chat.model.startsWith('x-ai/') ? 'xai' :
-                      'openai'
-                    }
                     isSelected={currentChatId === chat.id}
                     hasActions={true}
                     onClick={() => selectChat(chat.id)}
                   />
                 ))
               ) : (
-              
-                <Stack 
+                <Stack
                   position="absolute"
                   top="50%"
                   left="5%"
-                  align="center" 
-                  justify="center" 
+                  align="center"
+                  justify="center"
                   gap="0"
                 >
-                  <Box 
-                    width="48px" 
-                    height="48px"                     
-                    display="flex" 
-                    alignItems="center" 
+                  <Box
+                    width="48px"
+                    height="48px"
+                    display="flex"
+                    alignItems="center"
                     justifyContent="center"
                   >
-                    
-                    <img src="/assets/not-chats.svg" alt="chat" 
+                    <img src="/assets/not-chats.svg" alt="chat"
                       width="78"
                       height="78"
                       style={{ width: '78px', height: '78px' }} />
                   </Box>
-                  <Text 
-                    fontSize="18px" 
+                  <Text
+                    fontSize="18px"
                     fontWeight="700"
-                    color="#A1A1AA" 
+                    color="#A1A1AA"
                     textAlign="center"
                   >
                     No chats
@@ -199,11 +193,15 @@ export default function ChatSidebar() {
       </Stack>
 
       {/* User Info */}
-      <UserInfo
-        name="Garry Goldman"
-        email="garrygodzilla@gmail.com"
-        avatarSrc="/assets/avatar.jpg"
-      />
+      {isLoadingUser ? (
+        <UserProfileSkeleton />
+      ) : (
+        <UserInfo
+          name={user ? `${user.first_name} ${user.last_name}` : 'Loading...'}
+          email={user?.email || ''}
+          avatarSrc={user?.avatar_url}
+        />
+      )}
     </Stack>
   )
 }

@@ -40,3 +40,13 @@ export type ChangePasswordRequest = {
 	current_password: string;
 	new_password: string;
 };
+
+export type UserProfile = {
+	id: string;
+	email: string;
+	first_name: string;
+	last_name: string;
+	avatar_url: string;
+	created_at: string;
+	updated_at: string;
+};

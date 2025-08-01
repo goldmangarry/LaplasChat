@@ -3,7 +3,7 @@ import axios from "axios";
 // Создаем инстанс axios с базовой конфигурацией
 export const apiClient = axios.create({
 	baseURL: import.meta.env.VITE_API_URL || "",
-	timeout: 10000,
+	timeout: 180000, // 3 минуты
 });
 
 // Функция для настройки interceptors (вызывается из user store)

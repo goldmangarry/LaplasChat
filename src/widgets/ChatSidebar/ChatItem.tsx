@@ -1,28 +1,34 @@
-import { Box, Text, HStack, IconButton } from '@chakra-ui/react'
-import { Trash2 } from 'lucide-react'
+import { Box, Text, HStack, IconButton, Input, Menu, Portal } from '@chakra-ui/react'
+import { MoreHorizontal, Check, X, Edit2, Trash2 } from 'lucide-react'
 import { useChatStore } from '@/features/chat/store'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { DeleteChatModal } from './DeleteChatModal'
-import anthropicIcon from '../../assets/icons/anthropic.svg'
-import openaiIcon from '../../assets/icons/openai.svg'
-import googleIcon from '../../assets/icons/google.svg'
-import grokIcon from '../../assets/icons/grok.svg'
 
 type ChatItemProps = {
   id: string
   title: string
-  type: 'anthropic' | 'openai' | 'google' | 'xai' | 'both'
   isSelected: boolean
   hasActions?: boolean
   onClick: () => void
 }
 
-export function ChatItem({ id, title, type, isSelected, hasActions, onClick }: ChatItemProps) {
-  const { deleteChat } = useChatStore()
+export function ChatItem({ id, title, isSelected, hasActions, onClick }: ChatItemProps) {
+  const { deleteChat, updateChatTitle } = useChatStore()
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isEditing, setIsEditing] = useState(false)
+  const [editTitle, setEditTitle] = useState(title)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
 
-  const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation()
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus()
+      inputRef.current.select()
+    }
+  }, [isEditing])
+
+  const handleDelete = () => {
+    setIsMenuOpen(false)
     setIsDeleteModalOpen(true)
   }
 
@@ -34,6 +40,32 @@ export function ChatItem({ id, title, type, isSelected, hasActions, onClick }: C
   const handleCancelDelete = () => {
     setIsDeleteModalOpen(false)
   }
+
+  const handleRename = () => {
+    setIsMenuOpen(false)
+    setIsEditing(true)
+    setEditTitle(title)
+  }
+
+  const handleSaveRename = () => {
+    if (editTitle.trim() && editTitle !== title) {
+      updateChatTitle(id, editTitle.trim())
+    }
+    setIsEditing(false)
+  }
+
+  const handleCancelRename = () => {
+    setEditTitle(title)
+    setIsEditing(false)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSaveRename()
+    } else if (e.key === 'Escape') {
+      handleCancelRename()
+    }
+  }
   return (
     <Box
       px="8px"
@@ -41,79 +73,148 @@ export function ChatItem({ id, title, type, isSelected, hasActions, onClick }: C
       borderRadius="4px"
       bg={isSelected ? '#e4e4e7' : 'transparent'}
       cursor="pointer"
-      onClick={onClick}
+      onClick={!isEditing ? onClick : undefined}
       _hover={{ bg: '#e4e4e7' }}
       position="relative"
       className="group"
     >
       <HStack gap="6px" align="center" position="relative">
-        {/* AI Logo */}
-        <Box width="20px" height="20px" flexShrink={0}>
-          {type === 'both' ? (
-            <Box position="relative" width="20px" height="20px">
-              <img src={anthropicIcon} alt="Anthropic" width="14" height="14" />
-              <Box
-                position="absolute"
-                bottom={0}
-                right={0}
-                width="14px"
-                height="14px"
-                borderRadius="full"
-                overflow="hidden"
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-              >
-                <img src={openaiIcon} alt="OpenAI" width="14" height="14" />
-              </Box>
-            </Box>
-          ) : type === 'anthropic' ? (
-            <img src={anthropicIcon} alt="Anthropic" width="20" height="20" />
-          ) : type === 'google' ? (
-            <img src={googleIcon} alt="Google" width="20" height="20" />
-          ) : type === 'xai' ? (
-            <img src={grokIcon} alt="Grok" width="20" height="20" />
-          ) : (
-            <img src={openaiIcon} alt="OpenAI" width="20" height="20" />
-          )}
-        </Box>
-        
-        {/* Title */}
-        <Text 
-          fontSize="12px" 
-          lineHeight="16px"
-          fontWeight="400"
-          color="#000000"
-          flex={1}
-          overflow="hidden"
-          textOverflow="ellipsis"
-          whiteSpace="nowrap"
-          _groupHover={hasActions ? { 
-            maxWidth: "calc(100% - 32px)"
-          } : {}}
-        >
-          {title}
-        </Text>
-
-        {/* Delete Action */}
-        {hasActions && (
-          <IconButton
-            aria-label="Delete"
-            size="xs"
-            variant="ghost"
-            color="gray.600"
-            position="absolute"
-            right="4px"
-            opacity={0}
-            transition="opacity 0.2s"
-            _groupHover={{ opacity: 1 }}
-            onClick={handleDelete}
-            minWidth="auto"
-            height="auto"
-            padding="4px"
+        {/* Title or Edit Input */}
+        {isEditing ? (
+          <HStack flex={1} gap="4px">
+            <Input
+              ref={inputRef}
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              onKeyDown={handleKeyDown}
+              fontSize="12px"
+              height="20px"
+              padding="2px 4px"
+              borderRadius="4px"
+              flex={1}
+              onClick={(e) => e.stopPropagation()}
+            />
+            <IconButton
+              aria-label="Save"
+              size="xs"
+              variant="ghost"
+              onClick={(e) => {
+                e.stopPropagation()
+                handleSaveRename()
+              }}
+              minWidth="20px"
+              height="20px"
+            >
+              <Check size={14} />
+            </IconButton>
+            <IconButton
+              aria-label="Cancel"
+              size="xs"
+              variant="ghost"
+              onClick={(e) => {
+                e.stopPropagation()
+                handleCancelRename()
+              }}
+              minWidth="20px"
+              height="20px"
+            >
+              <X size={14} />
+            </IconButton>
+          </HStack>
+        ) : (
+          <Text 
+            fontSize="12px" 
+            lineHeight="16px"
+            fontWeight="400"
+            color="#000000"
+            flex={1}
+            overflow="hidden"
+            textOverflow="ellipsis"
+            whiteSpace="nowrap"
+            maxWidth={hasActions ? "calc(100% - 32px)" : "100%"}
           >
-            <Trash2 size={14} />
-          </IconButton>
+            {title}
+          </Text>
+        )}
+
+        {/* Menu Action */}
+        {hasActions && !isEditing && (
+          <Menu.Root
+            open={isMenuOpen}
+            onOpenChange={(e) => setIsMenuOpen(e.open)}
+            positioning={{
+              placement: "bottom-end",
+              strategy: "fixed",
+              gutter: 4
+            }}
+          >
+            <Menu.Trigger asChild>
+              <IconButton
+                aria-label="Menu"
+                size="xs"
+                variant="ghost"
+                color="gray.600"
+                opacity={isMenuOpen ? 1 : 0}
+                transition="opacity 0.2s"
+                _groupHover={{ opacity: 1 }}
+                onClick={(e) => {
+                  e.stopPropagation()
+                }}
+                minWidth="20px"
+                height="20px"
+                padding="2px"
+              >
+                <MoreHorizontal size={16} />
+              </IconButton>
+            </Menu.Trigger>
+            <Portal>
+              <Menu.Positioner>
+                <Menu.Content
+                  bg="white"
+                  borderRadius="8px"
+                  boxShadow="0 2px 8px rgba(0, 0, 0, 0.15)"
+                  border="1px solid"
+                  borderColor="gray.200"
+                  minWidth="160px"
+                  overflow="hidden"
+                >
+                  <Menu.Item
+                    value="rename"
+                    px="12px"
+                    py="8px"
+                    cursor="pointer"
+                    _hover={{ bg: 'gray.50' }}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleRename()
+                    }}
+                  >
+                    <HStack gap="8px">
+                      <Edit2 size={14} />
+                      <Text fontSize="14px">Rename</Text>
+                    </HStack>
+                  </Menu.Item>
+                  <Menu.Item
+                    value="delete"
+                    px="12px"
+                    py="8px"
+                    cursor="pointer"
+                    _hover={{ bg: 'red.50' }}
+                    color="red.600"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleDelete()
+                    }}
+                  >
+                    <HStack gap="8px">
+                      <Trash2 size={14} />
+                      <Text fontSize="14px">Delete</Text>
+                    </HStack>
+                  </Menu.Item>
+                </Menu.Content>
+              </Menu.Positioner>
+            </Portal>
+          </Menu.Root>
         )}
       </HStack>
       

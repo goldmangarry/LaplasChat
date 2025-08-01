@@ -1,18 +1,17 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { v4 as uuidv4 } from 'uuid'
-import type { ChatStoreState, Chat, Message, ChatModel } from '@/core/types'
+import type { ChatStoreState, Chat, Message, ChatModel, ChatSettings } from '@/core/types'
 import { sendSecureMessage, sendMessage, checkFacts, fetchModels } from '@/shared/lib/api'
+import { chatApi, type ChatMessage } from '@/core/api'
 
-const createDefaultChat = (customSettings?: { model?: ChatModel; temperature?: number; maxTokens?: number }): Chat => ({
+const createDefaultChat = (customSettings?: { model?: ChatModel; temperature?: number; maxTokens?: number; secureMode?: boolean }): Chat => ({
   id: uuidv4(),
   title: 'New Chat',
   model: customSettings?.model || 'openai/o4-mini-high',
   temperature: customSettings?.temperature || 0.5,
   maxTokens: customSettings?.maxTokens || 4096,
-  secureMode: true,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
+  secureMode: customSettings?.secureMode ?? false,
 })
 
 export const useChatStore = create<ChatStoreState>()(
@@ -21,7 +20,8 @@ export const useChatStore = create<ChatStoreState>()(
       let defaultChatSettings = {
         model: 'openai/o4-mini-high' as ChatModel,
         temperature: 0.5,
-        maxTokens: 4096
+        maxTokens: 4096,
+        secureMode: false
       }
       
       return {
@@ -32,6 +32,7 @@ export const useChatStore = create<ChatStoreState>()(
         loadingChats: new Set(),
         models: [], // Новое состояние для моделей с бэкенда
         isLoadingModels: false, // Состояние загрузки моделей
+        isLoadingHistory: false, // Состояние загрузки истории
         factCheck: {
           isOpen: false,
           isLoading: false,
@@ -55,7 +56,8 @@ export const useChatStore = create<ChatStoreState>()(
               newDefaultSettings = {
                 model: firstModel.id as ChatModel,
                 temperature: defaultChatSettings.temperature,
-                maxTokens: firstModel.max_output
+                maxTokens: firstModel.max_output,
+                secureMode: defaultChatSettings.secureMode
               }
               defaultChatSettings = newDefaultSettings
             }
@@ -74,6 +76,98 @@ export const useChatStore = create<ChatStoreState>()(
           }
         },
 
+        // Функция для загрузки истории чатов с бэкенда
+        fetchChatHistory: async () => {
+          set((state: ChatStoreState) => ({
+            ...state,
+            isLoadingHistory: true,
+          }))
+
+          try {
+            const response = await chatApi.getHistory()
+            const dialogs = response.dialogs
+            
+            // Получаем сохранённые настройки чатов
+            const savedChatSettings = (get() as ChatStoreState & { savedChatSettings?: Record<string, ChatSettings> }).savedChatSettings || {}
+            
+            // Преобразуем диалоги из API в формат чатов
+            const chats: Chat[] = dialogs.map(dialog => {
+              // Ищем сохранённые настройки для этого чата по dialogId
+              const savedSettings = savedChatSettings[dialog.dialog_id]
+              
+              return {
+                id: dialog.dialog_id,
+                dialogId: dialog.dialog_id,
+                title: dialog.dialog_name,
+                provider: dialog.llm_provider, // Сохраняем провайдер для иконки
+                // Используем сохранённые настройки или дефолтные
+                model: savedSettings?.model || defaultChatSettings.model,
+                temperature: savedSettings?.temperature || defaultChatSettings.temperature,
+                maxTokens: savedSettings?.maxTokens || defaultChatSettings.maxTokens,
+                secureMode: savedSettings?.secureMode ?? false,
+              }
+            })
+            
+            set((state: ChatStoreState) => ({
+              ...state,
+              chats: chats,
+              isLoadingHistory: false,
+              // Не выбираем автоматически никакой чат при загрузке
+              currentChatId: null,
+            }))
+          } catch (error) {
+            console.error('Failed to fetch chat history:', error)
+            set((state: ChatStoreState) => ({
+              ...state,
+              isLoadingHistory: false,
+            }))
+          }
+        },
+
+        // Функция для загрузки сообщений конкретного чата
+        fetchChatMessages: async (chatId: string) => {
+          const chat = get().chats.find(c => c.id === chatId)
+          if (!chat || !chat.dialogId) {
+            console.warn('Chat not found or no dialogId:', chatId)
+            return
+          }
+
+          // Не загружаем сообщения повторно, если они уже есть
+          const existingMessages = get().messagesByChat[chatId]
+          if (existingMessages && existingMessages.length > 0) {
+            return
+          }
+
+          try {
+            const response = await chatApi.getChatMessages(chat.dialogId)
+            const apiMessages = response.messages
+
+            // Преобразуем сообщения из API в формат приложения
+            const messages: Message[] = apiMessages.map((apiMsg: ChatMessage) => ({
+              id: uuidv4(),
+              chatId: chatId,
+              content: apiMsg.content,
+              timestamp: new Date().toISOString(),
+              author: {
+                name: apiMsg.role === 'user' ? 'You' : 'Assistant',
+                avatar: apiMsg.role === 'assistant' ? '/assistant-avatar.png' : undefined,
+              },
+              isOwnMessage: apiMsg.role === 'user',
+            }))
+
+            // Сохраняем сообщения в store
+            set((state: ChatStoreState) => ({
+              ...state,
+              messagesByChat: {
+                ...state.messagesByChat,
+                [chatId]: messages,
+              },
+            }))
+          } catch (error) {
+            console.error('Failed to fetch chat messages:', error)
+          }
+        },
+
         createChat: () => {
           const newChat = createDefaultChat(defaultChatSettings)
           set((state: ChatStoreState) => ({
@@ -84,11 +178,17 @@ export const useChatStore = create<ChatStoreState>()(
           return newChat.id
         },
 
-        setDefaultChatSettings: (settings: { model?: ChatModel; temperature?: number; maxTokens?: number }) => {
+        setDefaultChatSettings: (settings: { model?: ChatModel; temperature?: number; maxTokens?: number; secureMode?: boolean }) => {
           defaultChatSettings = { ...defaultChatSettings, ...settings }
         },
 
-        selectChat: (chatId: string) => {
+        getDefaultSecureMode: () => {
+          return defaultChatSettings.secureMode
+        },
+
+        selectChat: async (chatId: string) => {
+          const { fetchChatMessages } = get()
+          
           // Проверяем, существует ли чат с таким ID
           const currentState = get()
           const chatExists = currentState.chats.find(chat => chat.id === chatId)
@@ -103,11 +203,15 @@ export const useChatStore = create<ChatStoreState>()(
             // Иначе выбираем первый доступный чат
             const fallbackChatId = currentState.chats[0].id
             set({ currentChatId: fallbackChatId })
+            // Загружаем сообщения для fallback чата
+            await fetchChatMessages(fallbackChatId)
             return
           }
           
           // Чат существует, можно выбрать
           set({ currentChatId: chatId })
+          // Загружаем сообщения для выбранного чата
+          await fetchChatMessages(chatId)
         },
 
         updateDraft: (chatId: string, content: string) => {
@@ -296,52 +400,106 @@ export const useChatStore = create<ChatStoreState>()(
           }
         },
 
-        deleteChat: (chatId: string) => {
-          set((state: ChatStoreState) => {
-            const { [chatId]: _1, ...restMessages } = state.messagesByChat
-            const { [chatId]: _2, ...restDrafts } = state.drafts
-            void _1 // Explicitly ignore the unused variable
-            void _2 // Explicitly ignore the unused variable
-            const filteredChats = state.chats.filter((chat: Chat) => chat.id !== chatId)
+        deleteChat: async (chatId: string) => {
+          const chat = get().chats.find(c => c.id === chatId)
+          if (!chat) {
+            console.error('Chat not found:', chatId)
+            return
+          }
 
-            // Если больше нет чатов, оставляем пустое состояние
-            if (filteredChats.length === 0) {
+          // Функция для удаления чата из локального состояния
+          const deleteLocalChat = () => {
+            set((state: ChatStoreState) => {
+              const { [chatId]: _1, ...restMessages } = state.messagesByChat
+              const { [chatId]: _2, ...restDrafts } = state.drafts
+              void _1 // Explicitly ignore the unused variable
+              void _2 // Explicitly ignore the unused variable
+              const filteredChats = state.chats.filter((chat: Chat) => chat.id !== chatId)
+
+              // Если больше нет чатов, оставляем пустое состояние
+              if (filteredChats.length === 0) {
+                return {
+                  ...state,
+                  chats: [],
+                  currentChatId: null,
+                  messagesByChat: {},
+                  drafts: {},
+                }
+              }
+
+              // Определяем новый currentChatId
+              let newCurrentChatId = state.currentChatId
+              
+              // Если удаляемый чат был текущим, выбираем первый из оставшихся
+              if (state.currentChatId === chatId) {
+                newCurrentChatId = filteredChats[0].id
+              }
+
               return {
                 ...state,
-                chats: [],
-                currentChatId: null,
-                messagesByChat: {},
-                drafts: {},
+                chats: filteredChats,
+                currentChatId: newCurrentChatId,
+                messagesByChat: restMessages,
+                drafts: restDrafts,
               }
-            }
+            })
+          }
 
-            // Определяем новый currentChatId
-            let newCurrentChatId = state.currentChatId
-            
-            // Если удаляемый чат был текущим, выбираем первый из оставшихся
-            if (state.currentChatId === chatId) {
-              newCurrentChatId = filteredChats[0].id
-            }
+          // Если у чата нет dialogId (он создан локально, но еще не синхронизирован с бэкендом)
+          if (!chat.dialogId) {
+            console.log('Deleting local-only chat:', chatId)
+            deleteLocalChat()
+            return
+          }
 
-            return {
-              ...state,
-              chats: filteredChats,
-              currentChatId: newCurrentChatId,
-              messagesByChat: restMessages,
-              drafts: restDrafts,
-            }
-          })
+          try {
+            // Отправляем запрос на удаление
+            await chatApi.deleteChat(chat.dialogId)
+            // Если успешно, удаляем локально
+            deleteLocalChat()
+          } catch (error) {
+            console.error('Failed to delete chat on backend:', error)
+            // Если ошибка "чат не найден" или любая другая, все равно удаляем локально
+            deleteLocalChat()
+          }
         },
 
-        updateChatTitle: (chatId: string, title: string) => {
+        updateChatTitle: async (chatId: string, title: string) => {
+          const chat = get().chats.find(c => c.id === chatId)
+          if (!chat || !chat.dialogId) {
+            console.error('Chat not found or no dialogId:', chatId)
+            return
+          }
+
+          // Сразу обновляем название в локальном состоянии (оптимистичное обновление)
+          const oldTitle = chat.title
           set((state: ChatStoreState) => ({
             ...state,
             chats: state.chats.map((chat: Chat) =>
               chat.id === chatId
-                ? { ...chat, title, updatedAt: new Date().toISOString() }
+                ? { ...chat, title }
                 : chat
             ),
           }))
+
+          try {
+            // Отправляем запрос на обновление названия в фоне
+            await chatApi.updateChat(chat.dialogId, {
+              dialog_name: title
+            })
+          } catch (error) {
+            console.error('Failed to update chat title:', error)
+            // В случае ошибки откатываем изменения
+            set((state: ChatStoreState) => ({
+              ...state,
+              chats: state.chats.map((chat: Chat) =>
+                chat.id === chatId
+                  ? { ...chat, title: oldTitle }
+                  : chat
+              ),
+            }))
+            throw error
+          }
         },
 
         updateChatSettings: (chatId: string, settings: { model?: ChatModel; temperature?: number; maxTokens?: number; secureMode?: boolean }) => {
@@ -434,33 +592,57 @@ export const useChatStore = create<ChatStoreState>()(
     },
     {
       name: 'laplas-chat-store',
-      partialize: (state) => ({
-        chats: state.chats,
-        currentChatId: state.currentChatId,
-        messagesByChat: state.messagesByChat,
-        drafts: state.drafts,
-      }),
+      partialize: (state) => {
+        // Сохраняем только настройки чатов, а не все данные
+        const chatSettings: Record<string, ChatSettings> = {}
+        
+        state.chats.forEach(chat => {
+          if (chat.dialogId) {
+            chatSettings[chat.dialogId] = {
+              dialogId: chat.dialogId,
+              model: chat.model,
+              temperature: chat.temperature,
+              maxTokens: chat.maxTokens,
+              secureMode: chat.secureMode,
+            }
+          }
+        })
+        
+        return {
+          chatSettings,
+          currentChatId: state.currentChatId,
+          drafts: state.drafts,
+        }
+      },
       onRehydrateStorage: () => (state) => {
-        // Проверяем корректность восстановленного состояния
         if (state) {
-          // Если нет чатов, оставляем пустое состояние - не создаем дефолтный чат
-          if (!state.chats || state.chats.length === 0) {
-            state.chats = []
-            state.currentChatId = null
-            state.messagesByChat = {}
-            state.drafts = {}
-            return
-          }
-          
-          // Если currentChatId ссылается на несуществующий чат, исправляем это
-          if (state.currentChatId && !state.chats.find(chat => chat.id === state.currentChatId)) {
-            const newCurrentChatId = state.chats[0].id
-            state.currentChatId = newCurrentChatId
-          }
-          
-          // Если currentChatId null или undefined, устанавливаем на первый чат
-          if (!state.currentChatId && state.chats.length > 0) {
-            state.currentChatId = state.chats[0].id
+          // Получаем сохранённые данные из localStorage
+          const persistedData = localStorage.getItem('laplas-chat-store')
+          if (persistedData) {
+            try {
+              const parsedData = JSON.parse(persistedData)
+              const persistedState = parsedData.state
+              
+              // Инициализируем пустые массивы/объекты
+              state.chats = []
+              state.messagesByChat = {}
+              
+              // Восстанавливаем настройки чатов в отдельное поле для последующего использования
+              if (persistedState?.chatSettings) {
+                // Сохраняем настройки для использования при загрузке истории
+                (state as ChatStoreState & { savedChatSettings?: Record<string, ChatSettings> }).savedChatSettings = persistedState.chatSettings
+              }
+              
+              // Восстанавливаем drafts
+              if (persistedState?.drafts) {
+                state.drafts = persistedState.drafts
+              }
+              
+              // currentChatId не восстанавливаем, так как чаты будут загружены с сервера
+              state.currentChatId = null
+            } catch (error) {
+              console.error('Failed to parse persisted state:', error)
+            }
           }
         }
       },

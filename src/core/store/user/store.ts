@@ -60,6 +60,25 @@ export const useUserStore = create<UserStore>()(
 			},
 
 			setLoading: (loading: boolean) => set({ isLoading: loading }),
+
+			fetchUserProfile: async () => {
+				const { accessToken } = get();
+				if (!accessToken) {
+					throw new Error("No access token available");
+				}
+
+				try {
+					set({ isLoading: true });
+					const userProfile = await authApi.getMe();
+					set({
+						user: userProfile,
+						isLoading: false,
+					});
+				} catch (error) {
+					set({ isLoading: false });
+					throw error;
+				}
+			},
 		}),
 		{
 			name: "user-storage",
