@@ -2,13 +2,16 @@ import {
   Box,
   Text,
   Button,
-  Stack
+  Stack,
+  IconButton,
+  HStack
 } from '@chakra-ui/react'
 import {
   MessageCircle,
   Plus,
   Image,
-  Video
+  Video,
+  X
 } from 'lucide-react'
 import { useChatStore } from '@/features/chat/store'
 import { useUserStore } from '@/core/store/user/store'
@@ -17,12 +20,18 @@ import { ChatTypeTab } from './ChatTypeTab'
 import { UserInfo } from './UserInfo'
 import { ChatListSkeleton, UserProfileSkeleton } from '@/shared/ui'
 import { useState, useMemo } from 'react'
+import { useBreakpointValue } from '@chakra-ui/react'
 import type { Chat } from '@/core/types'
 
-export default function ChatSidebar() {
+type ChatSidebarProps = {
+  onChatSelect?: () => void
+}
+
+export default function ChatSidebar({ onChatSelect }: ChatSidebarProps = {}) {
   const { chats, currentChatId, createChat, selectChat, isLoadingHistory } = useChatStore()
   const { user, isLoading: isLoadingUser } = useUserStore()
   const [selectedType, setSelectedType] = useState<'chat' | 'image' | 'video'>('chat')
+  const isMobile = useBreakpointValue({ base: true, md: false })
 
   const sortedChats = useMemo(() => {
     // Возвращаем чаты как есть, без сортировки по времени
@@ -33,16 +42,22 @@ export default function ChatSidebar() {
   const handleCreateChat = () => {
     const newChatId = createChat()
     selectChat(newChatId)
+    onChatSelect?.()
+  }
+
+  const handleSelectChat = (chatId: string) => {
+    selectChat(chatId)
+    onChatSelect?.()
   }
 
 
   return (
     <Stack
-      width="283px"
+      width={{ base: "100%", md: "283px" }}
       height="100vh"
       bg="#fafafa"
-      paddingX="16px"
-      paddingTop="40px"
+      paddingX={{ base: "12px", md: "16px" }}
+      paddingTop={{ base: "20px", md: "40px" }}
       paddingBottom="24px"
       justify="flex-start"
       align="flex-start"
@@ -51,37 +66,60 @@ export default function ChatSidebar() {
       <Stack
         justify="flex-start"
         align="center"
-        gap="42px"
+        gap={{ base: "24px", md: "42px" }}
         overflow="hidden"
         flex="1"
         alignSelf="stretch"
       >
-        {/* Logo */}
-        <Box width="148px" height="40px">
-          <img
-            src="/assets/logo-chat.svg"
-            alt="apilaplas"
-            width="148"
-            height="40"
-            style={{ width: '148px', height: '40px' }}
-          />
-        </Box>
+        {/* Header with Logo and Close Button */}
+        <HStack justify="space-between" align="center" width="100%">
+          <Box 
+            width={{ base: "120px", md: "148px" }} 
+            height={{ base: "32px", md: "40px" }}
+          >
+            <img
+              src="/assets/logo-chat.svg"
+              alt="apilaplas"
+              width="148"
+              height="40"
+              style={{ 
+                width: '100%', 
+                height: '100%',
+                objectFit: 'contain'
+              }}
+            />
+          </Box>
+          
+          {/* Close Button - только на мобильных */}
+          {isMobile && onChatSelect && (
+            <IconButton
+              aria-label="Close sidebar"
+              variant="ghost"
+              size="sm"
+              onClick={onChatSelect}
+              color="gray.600"
+              _hover={{ bg: "gray.100" }}
+            >
+              <X size={20} />
+            </IconButton>
+          )}
+        </HStack>
 
         <Stack
           justify="flex-start"
           align="center"
-          gap="33px"
+          gap={{ base: "20px", md: "33px" }}
           alignSelf="stretch"
         >
           {/* Start new chat button */}
           <Button
-            height="40px"
+            height={{ base: "36px", md: "40px" }}
             alignSelf="stretch"
             bg="#18181b"
             color="white"
             _hover={{ bg: '#27272a' }}
             borderRadius="md"
-            fontSize="14px"
+            fontSize={{ base: "13px", md: "14px" }}
             fontWeight="600"
             onClick={handleCreateChat}
           >
@@ -116,8 +154,8 @@ export default function ChatSidebar() {
           </Stack>
 
           {/* Chats Container */}
-          <Stack direction="column" gap={3} alignSelf="stretch" flex={1} overflow="hidden">
-            <Text fontSize="16px" lineHeight="24px" fontWeight="400" color="#52525b">
+          <Stack direction="column" gap={{ base: 2, md: 3 }} alignSelf="stretch" flex={1} overflow="hidden">
+            <Text fontSize={{ base: "14px", md: "16px" }} lineHeight={{ base: "20px", md: "24px" }} fontWeight="400" color="#52525b">
               Chats ({sortedChats.length})
             </Text>
 
@@ -153,7 +191,7 @@ export default function ChatSidebar() {
                     title={chat.title}
                     isSelected={currentChatId === chat.id}
                     hasActions={true}
-                    onClick={() => selectChat(chat.id)}
+                    onClick={() => handleSelectChat(chat.id)}
                   />
                 ))
               ) : (
@@ -166,8 +204,8 @@ export default function ChatSidebar() {
                   gap="0"
                 >
                   <Box
-                    width="48px"
-                    height="48px"
+                    width={{ base: "40px", md: "48px" }}
+                    height={{ base: "40px", md: "48px" }}
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
@@ -175,10 +213,14 @@ export default function ChatSidebar() {
                     <img src="/assets/not-chats.svg" alt="chat"
                       width="78"
                       height="78"
-                      style={{ width: '78px', height: '78px' }} />
+                      style={{ 
+                        width: '100%', 
+                        height: '100%',
+                        objectFit: 'contain'
+                      }} />
                   </Box>
                   <Text
-                    fontSize="18px"
+                    fontSize={{ base: "16px", md: "18px" }}
                     fontWeight="700"
                     color="#A1A1AA"
                     textAlign="center"

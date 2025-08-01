@@ -13,9 +13,10 @@ import { ChatSuggestions } from './ChatSuggestions'
 
 type ChatAreaProps = {
   onOpenSettings?: () => void
+  onOpenSidebar?: () => void
 }
 
-export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
+export default function ChatArea({ onOpenSettings, onOpenSidebar }: ChatAreaProps) {
   const {
     currentChatId,
     messagesByChat,
@@ -113,6 +114,7 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
           secureMode={defaultSecureMode}
           onSecureModeChange={handleSecureModeChange}
           onOpenSettings={onOpenSettings}
+          onOpenSidebar={onOpenSidebar}
           model={defaultModel}
           models={models}
           isLoadingModels={isLoadingModels}
@@ -126,7 +128,7 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
           justifyContent="center"
           overflowY="auto"
         >
-          <Box px="5%" pb={6} flexShrink={0}>
+          <Box px={{ base: "4%", md: "5%" }} pb={{ base: 4, md: 6 }} flexShrink={0}>
             <Box
               mx="auto"
               width={{ base: '100%', '2xl': '75%' }}
@@ -152,6 +154,7 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
         secureMode={currentChat?.secureMode ?? true}
         onSecureModeChange={handleSecureModeChange}
         onOpenSettings={onOpenSettings}
+        onOpenSidebar={onOpenSidebar}
         model={currentChat?.model}
         models={models}
         isLoadingModels={isLoadingModels}
@@ -173,10 +176,10 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
         <Box
           flex={messages.length > 0 || isLoadingChat(currentChatId) ? 1 : 0}
           overflowY="auto"
-          px="5%"
-          py={6}
+          px={{ base: "4%", md: "5%" }}
+          py={{ base: 4, md: 6 }}
         >
-          <Stack direction="column" gap={6} align="stretch">
+          <Stack direction="column" gap={{ base: 4, md: 6 }} align="stretch">
             {messages.map((msg: Message) => (
               <ChatMessage
                 key={msg.id}
@@ -217,7 +220,7 @@ export default function ChatArea({ onOpenSettings }: ChatAreaProps) {
         </Box>
 
         {/* Suggestions and Input Area */}
-        <Box px="5%" pt={4} pb={6} flexShrink={0}>
+        <Box px={{ base: "4%", md: "5%" }} pt={4} pb={{ base: 4, md: 6 }} flexShrink={0}>
           <Box
             mx="auto"
             width={

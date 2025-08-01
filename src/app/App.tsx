@@ -1,4 +1,4 @@
-import { Flex, Drawer } from '@chakra-ui/react'
+import { Flex, Drawer, useBreakpointValue } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { HiCog6Tooth } from 'react-icons/hi2'
 import { useChatStore } from '@/features/chat/store'
@@ -12,7 +12,9 @@ import type { ChatModel } from '@/core/types'
 function App() {
   const { chats, currentChatId, updateChatSettings, fetchModels, models, fetchChatHistory } = useChatStore()
   const { fetchUserProfile } = useUserStore()
-  const [isSettingsOpen, setIsSettingsOpen] = useState(true)
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const isMobile = useBreakpointValue({ base: true, md: false })
   
   // Get current chat
   const currentChat = chats.find(chat => chat.id === currentChatId)
@@ -73,12 +75,35 @@ function App() {
 
   return (
     <Flex height="100vh" bg="gray.50">
-      <ChatSidebar />
-      <Flex flex={1} bg="white" margin="16px" borderRadius="16px" overflow="hidden" direction="column">      
-
+      {/* Desktop Sidebar */}
+      {!isMobile && <ChatSidebar />}
+      
+      {/* Mobile Sidebar Drawer */}
+      {isMobile && (
+        <Drawer.Root open={isSidebarOpen} onOpenChange={(e) => setIsSidebarOpen(e.open)} placement="start">
+          <Drawer.Backdrop />
+          <Drawer.Positioner>
+            <Drawer.Content p={0} width="75vw" maxW="300px">
+              <ChatSidebar onChatSelect={() => setIsSidebarOpen(false)} />
+            </Drawer.Content>
+          </Drawer.Positioner>
+        </Drawer.Root>
+      )}
+      
+      <Flex 
+        flex={1} 
+        bg="white" 
+        margin={{ base: 0, md: "16px" }} 
+        borderRadius={{ base: 0, md: "16px" }} 
+        overflow="hidden" 
+        direction="column"
+      >
         {/* Main content */}
         <Flex flex={1} overflow="hidden">
-          <ChatArea onOpenSettings={() => setIsSettingsOpen(true)} />
+          <ChatArea 
+            onOpenSettings={() => setIsSettingsOpen(true)}
+            onOpenSidebar={isMobile ? () => setIsSidebarOpen(true) : undefined}
+          />
         </Flex>
 
         {/* Settings Drawer */}

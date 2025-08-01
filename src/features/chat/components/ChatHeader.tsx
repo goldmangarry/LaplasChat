@@ -1,5 +1,5 @@
-import { Box, HStack, Text, Switch, IconButton, Menu, Button, Flex, Icon } from '@chakra-ui/react'
-import { PanelRight } from 'lucide-react'
+import { Box, HStack, Text, Switch, IconButton, Menu, Button, Flex, Icon, useBreakpointValue } from '@chakra-ui/react'
+import { PanelRight, Menu as MenuIcon } from 'lucide-react'
 import { HiChevronDown } from 'react-icons/hi2'
 import type { ChatModel, ChatModelFromBackend } from '@/core/types'
 import anthropicIcon from '@/assets/icons/anthropic.svg'
@@ -19,6 +19,7 @@ type ChatHeaderProps = {
   secureMode?: boolean;
   onSecureModeChange?: (enabled: boolean) => void;
   onOpenSettings?: () => void;
+  onOpenSidebar?: () => void;
   model?: ChatModel;
   models?: ChatModelFromBackend[];
   isLoadingModels?: boolean;
@@ -29,6 +30,7 @@ export default function ChatHeader({
   secureMode = false,
   onSecureModeChange,
   onOpenSettings,
+  onOpenSidebar,
   model,
   models = [],
   isLoadingModels = false,
@@ -36,15 +38,28 @@ export default function ChatHeader({
 }: ChatHeaderProps) {
   // Находим выбранную модель из данных с бэкенда
   const selectedModel = models.find(m => m.id === model) || null
+  const isMobile = useBreakpointValue({ base: true, md: false })
+  
   return (
     <Box 
       borderBottom="1px solid" 
       borderColor="gray.200" 
-      px={6} 
+      px={{ base: 4, md: 6 }} 
       py={4}
     >
       <HStack justify="space-between" align="center">
-        <HStack gap={4}>
+        <HStack gap={{ base: 2, md: 4 }}>
+          {/* Mobile Menu Button */}
+          {isMobile && onOpenSidebar && (
+            <IconButton
+              aria-label="Open menu"
+              variant="ghost"
+              size="sm"
+              onClick={onOpenSidebar}
+            >
+              <MenuIcon size={20} />
+            </IconButton>
+          )}
           {/* Model Selection */}
           {models.length > 0 && (
             <Menu.Root>
@@ -59,9 +74,9 @@ export default function ChatHeader({
                   alignItems="center"
                   aria-label="Select AI model"
                   loading={isLoadingModels}
-                  px={2}
+                  px={{ base: 1, md: 2 }}
                 >
-                  <Flex align="center" gap={2}>
+                  <Flex align="center" gap={{ base: 1, md: 2 }}>
                     {selectedModel && (
                       <Box w={4} h={4}>
                         <img 
@@ -71,7 +86,7 @@ export default function ChatHeader({
                         />
                       </Box>
                     )}
-                    <Text fontSize="xs" fontWeight="medium">
+                    <Text fontSize="xs" fontWeight="medium" display={{ base: "block", md: "block" }}>
                       {selectedModel?.name || 'Select model'}
                     </Text>
                     <Icon as={HiChevronDown} boxSize={3} />
@@ -107,7 +122,7 @@ export default function ChatHeader({
           )}
           
           {/* Secure Mode */}
-          <HStack gap={2}>
+          <HStack gap={{ base: 1, md: 2 }}>
             <Switch.Root
               checked={secureMode}
               onCheckedChange={(e) => onSecureModeChange?.(e.checked)}

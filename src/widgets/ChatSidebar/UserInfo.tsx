@@ -4,7 +4,7 @@ import {
   Menu,
   Portal
 } from '@chakra-ui/react'
-import { useRouter } from '@tanstack/react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { useUserStore } from '@/core/store/user/store'
 
 type UserInfoProps = {
@@ -14,14 +14,20 @@ type UserInfoProps = {
 }
 
 export function UserInfo({ name, email, avatarSrc }: UserInfoProps) {
-  const router = useRouter()
+  const navigate = useNavigate()
   const logout = useUserStore((state) => state.logout)
 
-  const handleLogout = () => {
-    // Используем logout из userStore для очистки токенов
-    logout()
-    // Перенаправляем на страницу логина
-    router.navigate({ to: '/login' })
+  const handleLogout = async () => {
+    try {
+      // Очищаем данные пользователя
+      logout()
+      // Перенаправляем на страницу логина
+      await navigate({ to: '/login' })
+    } catch (error) {
+      console.error('Logout error:', error)
+      // В случае ошибки навигации, обновляем страницу
+      window.location.href = '/login'
+    }
   }
 
   return (
@@ -72,13 +78,13 @@ export function UserInfo({ name, email, avatarSrc }: UserInfoProps) {
               py={2}
               _hover={{ bg: 'gray.100' }}
               cursor="pointer"
+              onClick={async (e) => {
+                e.preventDefault()
+                await handleLogout()
+              }}
             >
               <HStack 
                 gap={2} 
-                onClick={(e) => {
-                  e.preventDefault()
-                  handleLogout()
-                }}
               >
                 <LogOut size={16} />
                 <Text>Log out</Text>

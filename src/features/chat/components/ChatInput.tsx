@@ -68,7 +68,7 @@ export const ChatInput = ({
       border="1px solid"
       borderColor="gray.200"
       borderRadius="12px"
-      p={4}
+      p={{ base: 3, md: 4 }}
       boxShadow="0px 2px 4px 0px rgba(24, 24, 27, 0.1), 0px 0px 1px 0px rgba(24, 24, 27, 0.3)"
     >
       <VStack gap={5} align="stretch">
@@ -101,7 +101,7 @@ export const ChatInput = ({
         <Box
           borderTop="1px solid"
           borderColor="gray.200"
-          pt={4}
+          pt={{ base: 3, md: 4 }}
           display="flex"
           justifyContent="flex-end"
           alignItems="center"
