@@ -6,6 +6,10 @@ import anthropicIcon from '@/assets/icons/anthropic.svg'
 import openaiIcon from '@/assets/icons/openai.svg'
 import googleIcon from '@/assets/icons/google.svg'
 import grokIcon from '@/assets/icons/grok.svg'
+import metaColorIcon from '@/assets/icons/meta-color.svg'
+import mistralColorIcon from '@/assets/icons/mistral-color.svg'
+import deepseekColorIcon from '@/assets/icons/deepseek-color.svg'
+import qwenColorIcon from '@/assets/icons/qwen-color.svg'
 
 // Объект соответствия provider → иконка
 const providerIcons: Record<string, string> = {
@@ -13,6 +17,10 @@ const providerIcons: Record<string, string> = {
   anthropic: anthropicIcon,
   google: googleIcon,
   'x-ai': grokIcon,
+  'meta-llama': metaColorIcon,
+  mistralai: mistralColorIcon,
+  deepseek: deepseekColorIcon,
+  qwen: qwenColorIcon,
 }
 
 type ChatHeaderProps = {
