@@ -6,6 +6,7 @@ import { useUserStore } from "@/core/store/user/store";
 import { loginRequest } from "../model/api";
 import type { LoginResponse } from "../model/types";
 import { Stack, Center, Field, Container, Box, Heading, Text } from "@chakra-ui/react";
+import googleIcon from "@/assets/icons/google.svg";
 
 export const LoginForm: React.FC = () => {
 	const [username, setUsername] = useState("");
@@ -138,7 +139,7 @@ export const LoginForm: React.FC = () => {
 								disabled={isLoading}
 							>
 								<img 
-									src="/src/assets/icons/google.svg" 
+									src={googleIcon} 
 									alt="Google" 
 									style={{ width: '20px', height: '20px', marginRight: '8px' }}
 								/>
