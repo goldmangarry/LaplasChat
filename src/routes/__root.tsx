@@ -6,8 +6,8 @@ import { useEffect } from 'react'
 
 export const Route = createRootRoute({
   beforeLoad: async ({ location }) => {
-    // Исключаем страницу логина из проверки авторизации
-    if (location.pathname === '/login') {
+    // Исключаем страницу логина и OAuth callback из проверки авторизации
+    if (location.pathname === '/login' || location.pathname.startsWith('/auth/oauth/callback')) {
       return
     }
 

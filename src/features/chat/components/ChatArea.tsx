@@ -10,6 +10,7 @@ import { EncryptedResponseModal } from './EncryptedResponseModal'
 import { FactCheckSidebar } from './FactCheckSidebar'
 import { toaster } from '@/components/ui/toast'
 import { ChatSuggestions } from './ChatSuggestions'
+import { LoadingMessage } from './LoadingMessage'
 
 type ChatAreaProps = {
   onOpenSettings?: () => void
@@ -147,6 +148,8 @@ export default function ChatArea({ onOpenSettings, onOpenSidebar }: ChatAreaProp
     )
   }
 
+  console.log(isLoadingChat(currentChatId))
+
   return (
     <Flex flex={1} direction="column" bg="white">
       {/* Header */}
@@ -206,12 +209,11 @@ export default function ChatArea({ onOpenSettings, onOpenSidebar }: ChatAreaProp
               />
             ))}
             {isLoadingChat(currentChatId) && (
-              <ChatMessage
+              <LoadingMessage
                 userName="Assistant"
                 userInitials="AI"
-                message="Thinking..."
                 timestamp="now"
-                isAI={true}
+                isSecureMode={currentChat?.secureMode ?? false}
                 onCopy={() => {}}
               />
             )}

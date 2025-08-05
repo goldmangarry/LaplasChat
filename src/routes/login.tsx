@@ -6,6 +6,7 @@ import { LoginPage } from '@/pages/login';
 
 const loginSearchSchema = z.object({
 	redirect: z.string().optional(),
+	error: z.string().optional(),
 })
 
 export const Route = createFileRoute("/login")({

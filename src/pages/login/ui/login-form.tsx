@@ -1,6 +1,6 @@
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import type React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Input } from "@chakra-ui/react";
 import { useUserStore } from "@/core/store/user/store";
 import { loginRequest } from "../model/api";
@@ -15,6 +15,13 @@ export const LoginForm: React.FC = () => {
 	const navigate = useNavigate();
 	const search = useSearch({ from: "/login" });
 	const { login, setLoading, isLoading } = useUserStore();
+
+	// Handle OAuth errors from URL params
+	useEffect(() => {
+		if (search?.error === 'oauth_failed') {
+			setError('Google sign-in failed. Please try again.');
+		}
+	}, [search?.error]);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -116,6 +123,26 @@ export const LoginForm: React.FC = () => {
 								disabled={!username || !password || isLoading}
 							>
 								Sign in
+							</Button>
+							
+							<Text fontSize="sm" color="gray.500" textAlign="center">
+								or
+							</Text>
+							
+							<Button
+								size="lg"
+								variant="outline"
+								onClick={() => {
+									window.location.href = `https://main-apilaplas-backend.onrender.com/auth/login/google`;
+								}}
+								disabled={isLoading}
+							>
+								<img 
+									src="/src/assets/icons/google.svg" 
+									alt="Google" 
+									style={{ width: '20px', height: '20px', marginRight: '8px' }}
+								/>
+								Sign in with Google
 							</Button>
 						</Stack>
 					</Stack>
