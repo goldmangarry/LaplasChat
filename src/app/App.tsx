@@ -115,7 +115,7 @@ function App() {
                 <Flex align="center" gap={2}>
                   <HiCog6Tooth size={20} />
                   <Drawer.Title fontSize="lg" fontWeight="semibold">
-                    Chat Settings
+                    Настройки чата
                   </Drawer.Title>
                 </Flex>
                 <Drawer.CloseTrigger />

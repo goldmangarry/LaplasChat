@@ -20,7 +20,7 @@ export const EncryptedResponseModal = ({
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header>
-              <Dialog.Title>Encrypted Response</Dialog.Title>
+              <Dialog.Title>Зашифрованный ответ</Dialog.Title>
             </Dialog.Header>
             <Dialog.CloseTrigger />
             <Dialog.Body>

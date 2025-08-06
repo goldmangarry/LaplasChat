@@ -3,7 +3,7 @@ import { HiInformationCircle } from 'react-icons/hi2'
 import { useCallback, useState, useEffect, useMemo } from 'react'
 import type { ChatModel } from '@/core/types'
 import { useChatStore } from '@/features/chat/store'
-import { Tooltip } from '@/components/ui/tooltip'
+import { ClickTooltip } from '@/components/ui/tooltip'
 
 type ChatSettingsProps = {
   model: ChatModel
@@ -86,7 +86,7 @@ export function ChatSettings({
         {/* Parameters */}
         <Stack gap={6} align="stretch">
           <Text fontSize="sm" fontWeight="medium" color="gray.600">
-            Parameters
+            Параметры
           </Text>
 
           {/* Temperature */}
@@ -106,11 +106,11 @@ export function ChatSettings({
               <Flex justify="space-between" align="center" mb={2}>
                 <Flex align="center" gap={1}>
                   <Slider.Label fontSize="sm" fontWeight="medium" color="gray.800">
-                    Temperature
+                    Температура
                   </Slider.Label>
-                  <Tooltip openDelay={200} closeDelay={200} content="Temperature is a parameter that controls the randomness of the model's output. Lower values make the output more focused and deterministic, while higher values make it more creative and varied.">
+                  <ClickTooltip interactive content="Температура — это параметр, который контролирует случайность ответов модели. Низкие значения делают ответы более сосредоточенными и предсказуемыми, в то время как высокие — более креативными и разнообразными.">
                     <Icon as={HiInformationCircle} boxSize={4} color="gray.400" />
-                  </Tooltip>
+                  </ClickTooltip>
                 </Flex>
                 <Input
                   width="64px"
@@ -142,8 +142,8 @@ export function ChatSettings({
             </Slider.Root>
             
             <Flex justify="space-between">
-              <Text fontSize="xs" color="gray.500">More accuracy</Text>
-              <Text fontSize="xs" color="gray.500">More creativity</Text>
+              <Text fontSize="xs" color="gray.500">Больше точности</Text>
+              <Text fontSize="xs" color="gray.500">Больше креативности</Text>
             </Flex>
           </Stack>
 
@@ -164,11 +164,11 @@ export function ChatSettings({
               <Flex justify="space-between" align="center" mb={2}>
                 <Flex align="center" gap={1}>
                   <Slider.Label fontSize="sm" fontWeight="medium" color="gray.800">
-                    Output Length
+                    Длина ответа
                   </Slider.Label>
-                  <Tooltip openDelay={200} closeDelay={200} content="Output Length is a parameter that controls the length of the model's output. Lower values make the output shorter, while higher values make it longer.">
+                  <ClickTooltip interactive content="Длина ответа — это параметр, который контролирует длину ответов модели. Низкие значения делают ответы короче, в то время как высокие — длиннее.">
                     <Icon as={HiInformationCircle} boxSize={4} color="gray.400" />
-                  </Tooltip>
+                  </ClickTooltip>
                 </Flex>
                 <Input
                   width="64px"

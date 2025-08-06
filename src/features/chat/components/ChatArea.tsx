@@ -92,7 +92,7 @@ export default function ChatArea({ onOpenSettings, onOpenSidebar }: ChatAreaProp
   const handleCopyMessage = (content: string) => {
     navigator.clipboard.writeText(content)
     toaster.create({
-      title: 'Message copied!',
+      title: 'Сообщение скопировано!',
       type: 'success',
       duration: 2000,
     })
@@ -140,7 +140,7 @@ export default function ChatArea({ onOpenSettings, onOpenSidebar }: ChatAreaProp
                 <ChatSuggestions onSuggestionClick={handleSuggestionClick} />
               </Box>
               <ChatInput
-                placeholder="How can I help you?"
+                placeholder="Как я могу вам помочь?"
                 disabled={false}
               />
             </Box>
@@ -253,7 +253,7 @@ export default function ChatArea({ onOpenSettings, onOpenSidebar }: ChatAreaProp
               </Box>
             )}
             <ChatInput
-              placeholder="How can I help you?"
+              placeholder="Как я могу вам помочь?"
               disabled={isLoadingChat(currentChatId)}
             />
           </Box>

@@ -36,12 +36,12 @@ export const DeleteChatModal = ({
       <Dialog.Positioner>
         <Dialog.Content>
           <Dialog.Header>
-            <Dialog.Title>Delete Chat</Dialog.Title>
+            <Dialog.Title>Удаление чата</Dialog.Title>
           </Dialog.Header>
           <Dialog.CloseTrigger />
           <Dialog.Body>
             <Text fontSize="sm" color="gray.600">
-              Are you sure you want to delete "{chatTitle}"? This action cannot be undone.
+              Вы уверены, что хотите удалить "{chatTitle}"? Это действие нельзя отменить.
             </Text>
           </Dialog.Body>
           <Dialog.Footer>
@@ -51,14 +51,14 @@ export const DeleteChatModal = ({
                 size="sm"
                 onClick={onCancel}
               >
-                Cancel
+                Отмена
               </Button>
               <Button
                 colorScheme="red"
                 size="sm"
                 onClick={onConfirm}
               >
-                Delete
+                Удалить
               </Button>
             </HStack>
           </Dialog.Footer>

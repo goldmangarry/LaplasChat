@@ -195,7 +195,7 @@ export function ChatItem({ id, title, isSelected, hasActions, hasEncryptedMessag
                   >
                     <HStack gap="8px">
                       <Edit2 size={14} />
-                      <Text fontSize="14px">Rename</Text>
+                      <Text fontSize="14px">Переименовать</Text>
                     </HStack>
                   </Menu.Item>
                   <Menu.Item
@@ -212,7 +212,7 @@ export function ChatItem({ id, title, isSelected, hasActions, hasEncryptedMessag
                   >
                     <HStack gap="8px">
                       <Trash2 size={14} />
-                      <Text fontSize="14px">Delete</Text>
+                      <Text fontSize="14px">Удалить</Text>
                     </HStack>
                   </Menu.Item>
                 </Menu.Content>

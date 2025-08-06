@@ -34,7 +34,7 @@ export const FactCheckSidebar = ({
             <Drawer.Title fontSize="lg" fontWeight="semibold">
               <Flex align="center" gap={2}>
                 <CheckCircle2 size={20} color="#10B981" />
-                  Fact Check
+                  Проверка фактов
               </Flex>
             </Drawer.Title>
             <Drawer.CloseTrigger />
@@ -69,11 +69,11 @@ export const FactCheckSidebar = ({
                         />
                       </Box>
                       <Text fontSize="20px" fontWeight="semibold" color="gray.800">
-                        DeepSeek V3 Model
+                        Модель DeepSeek V3
                       </Text>
                       <Text fontSize="14px" color="gray.600" textAlign="center" px={2}>
-                        Advanced reasoning model with enhanced fact-checking capabilities,
-                        comprehensive knowledge base, and reliable source verification.
+                        Продвинутая модель с улучшенными возможностями проверки фактов,
+                        всеобъемлющей базой знаний и надёжной проверкой источников.
                       </Text>
                     </VStack>
                   </Box>
@@ -81,7 +81,7 @@ export const FactCheckSidebar = ({
                   {/* Response */}
                   <Box>
                     <Text fontSize="14px" fontWeight="600" color="gray.800" mb={3}>
-                      Fact Check Result
+                      Результат проверки
                     </Text>
                     <Text fontSize="14px" color="gray.600" lineHeight="1.5">
                       {parseMarkdown(data.response)}
@@ -92,7 +92,7 @@ export const FactCheckSidebar = ({
                   {data.urls && data.urls.length > 0 && (
                     <Box>
                       <Text fontSize="14px" fontWeight="600" color="gray.800" mb={3}>
-                        Sources
+                        Источники
                       </Text>
                       <VStack gap={2} align="stretch">
                         {data.urls.map((url, index) => (
@@ -132,7 +132,7 @@ export const FactCheckSidebar = ({
                 </VStack>
               ) : (
                 <Text fontSize="14px" color="gray.500">
-                  An error occurred while checking the facts
+                  Произошла ошибка при проверке фактов
                 </Text>
               )}
             </Box>

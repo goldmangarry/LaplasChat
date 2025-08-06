@@ -2,9 +2,9 @@ import { Box, Text, Grid, HStack } from '@chakra-ui/react';
 import { Building2, Heart, Banknote } from 'lucide-react';
 
 const suggestions = [
-  { text: 'How do large companies scale AI in key business processes?', bg: '#F5F5F5', icon: Building2 },
-  { text: 'What AI solutions are applied by healthcare organizations for diagnostics and treatment?', bg: '#F5F5F5', icon: Heart },
-  { text: 'How does AI help banks and fintechs manage risks and increase profitability?', bg: '#F5F5F5', icon: Banknote },
+  { text: 'Как крупные компании масштабируют ИИ в ключевых бизнес-процессах?', bg: '#F5F5F5', icon: Building2 },
+  { text: 'Какие ИИ-решения применяют медорганизации для диагностики и лечения?', bg: '#F5F5F5', icon: Heart },
+  { text: 'Как ИИ помогает банкам и финтеху управлять рисками и повышать доходность?', bg: '#F5F5F5', icon: Banknote },
 ];
 
 type ChatSuggestionsProps = {

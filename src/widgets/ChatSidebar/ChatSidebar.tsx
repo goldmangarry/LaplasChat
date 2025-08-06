@@ -91,7 +91,7 @@ export default function ChatSidebar({ onChatSelect }: ChatSidebarProps = {}) {
           {/* Close Button - только на мобильных */}
           {isMobile && onChatSelect && (
             <IconButton
-              aria-label="Close sidebar"
+              aria-label="Закрыть боковую панель"
               variant="ghost"
               size="sm"
               onClick={onChatSelect}
@@ -124,13 +124,13 @@ export default function ChatSidebar({ onChatSelect }: ChatSidebarProps = {}) {
             onClick={handleCreateChat}
           >
             <Plus size={16} style={{ marginRight: '6px' }} />
-            Start new chat
+            Новый чат
           </Button>
 
           {/* Chats Container */}
           <Stack direction="column" gap={{ base: 2, md: 3 }} alignSelf="stretch" flex={1} overflow="hidden" minHeight={0}>
             <Text fontSize={{ base: "14px", md: "16px" }} lineHeight={{ base: "20px", md: "24px" }} fontWeight="400" color="#52525b">
-              Chats ({sortedChats.length})
+              Чаты ({sortedChats.length})
             </Text>
 
             {/* Chat Items */}
@@ -187,7 +187,7 @@ export default function ChatSidebar({ onChatSelect }: ChatSidebarProps = {}) {
                     alignItems="center"
                     justifyContent="center"
                   >
-                    <img src="/assets/not-chats.svg" alt="chat"
+                    <img src="/assets/not-chats.svg" alt="чат"
                       width="78"
                       height="78"
                       style={{ 
@@ -202,7 +202,7 @@ export default function ChatSidebar({ onChatSelect }: ChatSidebarProps = {}) {
                     color="#A1A1AA"
                     textAlign="center"
                   >
-                    No chats
+                    Нет чатов
                   </Text>
                 </Stack>
               )}
@@ -216,7 +216,7 @@ export default function ChatSidebar({ onChatSelect }: ChatSidebarProps = {}) {
         <UserProfileSkeleton />
       ) : (
         <UserInfo
-          name={user ? `${user.first_name} ${user.last_name}` : 'Loading...'}
+          name={user ? `${user.first_name} ${user.last_name}` : 'Загрузка...'}
           email={user?.email || ''}
           avatarSrc={user?.avatar_url}
         />

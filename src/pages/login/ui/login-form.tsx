@@ -20,7 +20,7 @@ export const LoginForm: React.FC = () => {
 	// Handle OAuth errors from URL params
 	useEffect(() => {
 		if (search?.error === 'oauth_failed') {
-			setError('Google sign-in failed. Please try again.');
+			setError('Ошибка входа через Google. Попробуйте еще раз.');
 		}
 	}, [search?.error]);
 
@@ -50,7 +50,7 @@ export const LoginForm: React.FC = () => {
 			navigate({ to: redirectTo as "/" });
 		} catch (err) {
 			console.error("Login failed:", err);
-			setError("Login failed. Please check your credentials.");
+			setError("Ошибка входа. Проверьте правильность введенных данных.");
 		} finally {
 			setLoading(false);
 		}
@@ -82,28 +82,28 @@ export const LoginForm: React.FC = () => {
 						</Box>
 					</Center>
 					<Stack gap={{ base: '2', md: '3' }} textAlign="center">
-						<Heading size={{ base: '2xl', md: '3xl' }}>Welcome</Heading>
+						<Heading size={{ base: '2xl', md: '3xl' }}>Добро пожаловать</Heading>
 					</Stack>
 					<Stack gap="6">
 						<Stack gap="5">
 							<Field.Root>
-								<Field.Label>Email</Field.Label>
+								<Field.Label>Электронная почта</Field.Label>
 								<Input 
 									type="email" 
 									value={username}
 									onChange={handleUsernameChange}
-									placeholder="Enter your email"
+									placeholder="Введите адрес электронной почты"
 									required
 									disabled={isLoading}
 								/>
 							</Field.Root>
 							<Field.Root>
-								<Field.Label>Password</Field.Label>
+								<Field.Label>Пароль</Field.Label>
 								<Input 
 									type="password" 
 									value={password}
 									onChange={handlePasswordChange}
-									placeholder="Enter your password"
+									placeholder="Введите пароль"
 									required
 									disabled={isLoading}
 								/>
@@ -120,14 +120,14 @@ export const LoginForm: React.FC = () => {
 								size="lg" 
 								colorScheme="teal"
 								loading={isLoading}
-								loadingText="Signing in..."
+								loadingText="Вход в систему..."
 								disabled={!username || !password || isLoading}
 							>
-								Sign in
+								Войти
 							</Button>
 							
 							<Text fontSize="sm" color="gray.500" textAlign="center">
-								or
+								или
 							</Text>
 							
 							<Button
@@ -143,7 +143,7 @@ export const LoginForm: React.FC = () => {
 									alt="Google" 
 									style={{ width: '20px', height: '20px', marginRight: '8px' }}
 								/>
-								Sign in with Google
+								Войти через Google
 							</Button>
 						</Stack>
 					</Stack>

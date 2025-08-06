@@ -11,7 +11,7 @@ export type ChatInputProps = {
 };
 
 export const ChatInput = ({
-  placeholder = "How can I help you?",
+  placeholder = "Как я могу вам помочь?",
   disabled = false,
 }: ChatInputProps) => {
   const { currentChatId, drafts, updateDraft, sendMessage, isLoadingChat, chats } = useChatStore();
@@ -123,7 +123,7 @@ export const ChatInput = ({
               cursor: 'not-allowed'
             }}
           >
-            Send message
+            Отправить
             <Send size={16} style={{ marginLeft: '4px' }} />
           </Button>
         </Box>

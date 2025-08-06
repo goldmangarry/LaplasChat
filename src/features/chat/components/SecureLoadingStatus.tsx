@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react'
 import { Lightbulb } from 'lucide-react'
 
 const SECURITY_STATUSES = [
-  'Scanning for vulnerabilities...',
-  'Encrypting request...', 
-  'Sending request to external LLM...',
-  'Waiting for LLM response...',
-  'Decrypting response...',
-  'Preparing response...'
+  'Сканирую на уязвимости...',
+  'Шифрую запрос...', 
+  'Отправляю запрос к внешней ИИ модели...',
+  'Ожидаю ответ от ИИ модели...',
+  'Расшифровываю ответ...',
+  'Готовлю ответ...'
 ] as const
 
 export const SecureLoadingStatus = () => {

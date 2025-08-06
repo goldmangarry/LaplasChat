@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react'
 import { Lightbulb } from 'lucide-react'
 
 const LOADING_STATUSES = [
-  'Generating response...',
-  'Thinking...',
-  'Processing request...',
-  'Writing for you...',
-  'Crafting answer...'
+  'Генерирую ответ...',
+  'Думаю...',
+  'Обрабатываю запрос...',
+  'Пишу для вас...',
+  'Формулирую ответ...'
 ] as const
 
 export const LoadingStatus = () => {

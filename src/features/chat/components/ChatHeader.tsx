@@ -10,7 +10,7 @@ import metaColorIcon from '@/assets/icons/meta-color.svg'
 import mistralColorIcon from '@/assets/icons/mistral-color.svg'
 import deepseekColorIcon from '@/assets/icons/deepseek-color.svg'
 import qwenColorIcon from '@/assets/icons/qwen-color.svg'
-import { Tooltip } from '@/components/ui/tooltip'
+import { ClickTooltip } from '@/components/ui/tooltip'
 
 // Объект соответствия provider → иконка
 const providerIcons: Record<string, string> = {
@@ -96,7 +96,7 @@ export default function ChatHeader({
                       </Box>
                     )}
                     <Text fontSize="xs" fontWeight="medium" display={{ base: "block", md: "block" }}>
-                      {selectedModel?.name || 'Select model'}
+                      {selectedModel?.name || 'Выберите модель'}
                     </Text>
                     <Icon as={HiChevronDown} boxSize={3} />
                   </Flex>
@@ -144,11 +144,11 @@ export default function ChatHeader({
               </Switch.Control>
             </Switch.Root>
             <Text fontSize="xs" fontWeight="normal" color="black">
-              Secure mode
+              Безопасный режим
             </Text>
-            <Tooltip openDelay={200} closeDelay={200} content="When Secure Mode is enabled, sensitive data such as company name, personal data, and so on, is not passed to external AI models. We recommend working with sensitive data in this mode">
+            <ClickTooltip interactive content="При включении Безопасного режима конфиденциальные данные, включая название компании, персональные данные и так далее, не передаются во внешние ИИ модели. Советуем работать с чувствительными данными в этом режиме">
               <Icon as={HiInformationCircle} boxSize={4} color="gray.400" />
-            </Tooltip>
+            </ClickTooltip>
           </HStack>
         </HStack>
 

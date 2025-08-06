@@ -87,7 +87,7 @@ export function UserInfo({ name, email, avatarSrc }: UserInfoProps) {
                 gap={2} 
               >
                 <LogOut size={16} />
-                <Text>Log out</Text>
+                <Text>Выйти</Text>
               </HStack>
             </Menu.Item>
           </Menu.Content>
