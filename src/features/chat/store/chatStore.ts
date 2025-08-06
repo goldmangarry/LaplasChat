@@ -27,9 +27,10 @@ export const useChatStore = create<ChatStoreState>((set, get) => {
     messagesByChat: {},
     drafts: {},
         loadingChats: new Set(),
+        loadingChatHistory: new Set(), // Состояние загрузки истории сообщений конкретного чата
         models: [], // Новое состояние для моделей с бэкенда
         isLoadingModels: false, // Состояние загрузки моделей
-        isLoadingHistory: false, // Состояние загрузки истории
+        isLoadingHistory: false, // Состояние загрузки общей истории чатов
         factCheck: {
           isOpen: false,
           isLoading: false,
@@ -119,9 +120,10 @@ export const useChatStore = create<ChatStoreState>((set, get) => {
 
         // Функция для загрузки сообщений конкретного чата
         fetchChatMessages: async (chatId: string) => {
+          const { setLoadingChatHistory } = get()
           const chat = get().chats.find(c => c.id === chatId)
-          if (!chat || !chat.dialogId) {
-            console.warn('Chat not found or no dialogId:', chatId)
+          if (!chat) {
+            console.warn('Chat not found:', chatId)
             return
           }
 
@@ -130,6 +132,14 @@ export const useChatStore = create<ChatStoreState>((set, get) => {
           if (existingMessages && existingMessages.length > 0) {
             return
           }
+
+          // Если нет dialogId, значит это новый локальный чат без сообщений
+          if (!chat.dialogId) {
+            return
+          }
+
+          // Устанавливаем состояние загрузки истории чата
+          setLoadingChatHistory(chatId, true)
 
           try {
             const response = await chatApi.getChatMessages(chat.dialogId)
@@ -158,6 +168,9 @@ export const useChatStore = create<ChatStoreState>((set, get) => {
             }))
           } catch (error) {
             console.error('Failed to fetch chat messages:', error)
+          } finally {
+            // Выключаем состояние загрузки истории после завершения
+            setLoadingChatHistory(chatId, false)
           }
         },
 
@@ -543,6 +556,23 @@ export const useChatStore = create<ChatStoreState>((set, get) => {
             return {
               ...state,
               loadingChats: newLoadingChats,
+            }
+          })
+        },
+
+        isLoadingChatHistory: (chatId: string) => get().loadingChatHistory.has(chatId),
+
+        setLoadingChatHistory: (chatId: string, loading: boolean) => {
+          set((state: ChatStoreState) => {
+            const newLoadingChatHistory = new Set(state.loadingChatHistory)
+            if (loading) {
+              newLoadingChatHistory.add(chatId)
+            } else {
+              newLoadingChatHistory.delete(chatId)
+            }
+            return {
+              ...state,
+              loadingChatHistory: newLoadingChatHistory,
             }
           })
         },

@@ -11,6 +11,7 @@ import { FactCheckSidebar } from './FactCheckSidebar'
 import { toaster } from '@/components/ui/toast'
 import { ChatSuggestions } from './ChatSuggestions'
 import { LoadingMessage } from './LoadingMessage'
+import { Skeleton } from '@chakra-ui/react'
 
 type ChatAreaProps = {
   onOpenSettings?: () => void
@@ -22,6 +23,7 @@ export default function ChatArea({ onOpenSettings, onOpenSidebar }: ChatAreaProp
     currentChatId,
     messagesByChat,
     isLoadingChat,
+    isLoadingChatHistory,
     factCheck,
     checkFacts,
     closeFactCheck,
@@ -169,7 +171,7 @@ export default function ChatArea({ onOpenSettings, onOpenSidebar }: ChatAreaProp
         flex={1}
         direction="column"
         justifyContent={
-          messages.length > 0 || isLoadingChat(currentChatId)
+          messages.length > 0 || isLoadingChat(currentChatId) || isLoadingChatHistory(currentChatId)
             ? 'space-between'
             : 'center'
         }
@@ -177,14 +179,27 @@ export default function ChatArea({ onOpenSettings, onOpenSidebar }: ChatAreaProp
       >
         {/* Messages Area */}
         <Box
-          flex={messages.length > 0 || isLoadingChat(currentChatId) ? 1 : 0}
+          flex={messages.length > 0 || isLoadingChat(currentChatId) || isLoadingChatHistory(currentChatId) ? 1 : 0}
           overflowY="auto"
           px={{ base: "4%", md: "5%" }}
           py={{ base: 4, md: 6 }}
         >
           <Stack direction="column" gap={{ base: 4, md: 6 }} align="stretch">
-            {messages.map((msg: Message) => (
-              <ChatMessage
+            {/* History loading skeleton */}
+            {isLoadingChatHistory(currentChatId) && messages.length === 0 ? (
+              Array.from({ length: 3 }, (_, i) => (
+                <Stack key={i} direction="row" gap={4}>
+                  <Skeleton height="40px" width="40px" borderRadius="full" />
+                  <Stack flex={1} gap={2}>
+                    <Skeleton height="20px" width="80px" />
+                    <Skeleton height="16px" width="100%" />
+                    <Skeleton height="16px" width="60%" />
+                  </Stack>
+                </Stack>
+              ))
+            ) : (
+              messages.map((msg: Message) => (
+                <ChatMessage
                 key={msg.id}
                 userName={msg.isOwnMessage ? 'You' : msg.author.name}
                 userInitials={
@@ -207,7 +222,8 @@ export default function ChatArea({ onOpenSettings, onOpenSidebar }: ChatAreaProp
                   !msg.isOwnMessage ? () => checkFacts(msg.content) : undefined
                 }
               />
-            ))}
+              ))
+            )}
             {isLoadingChat(currentChatId) && (
               <LoadingMessage
                 userName="Assistant"
@@ -231,7 +247,7 @@ export default function ChatArea({ onOpenSettings, onOpenSidebar }: ChatAreaProp
                 : { base: '100%'}
             }
           >
-            {messages.length === 0 && !isLoadingChat(currentChatId) && (
+            {messages.length === 0 && !isLoadingChat(currentChatId) && !isLoadingChatHistory(currentChatId) && (
               <Box mb={4}>
                 <ChatSuggestions onSuggestionClick={handleSuggestionClick} />
               </Box>

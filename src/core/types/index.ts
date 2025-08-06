@@ -111,9 +111,10 @@ export type ChatStore = {
   messagesByChat: Record<string, Message[]>
   drafts: Record<string, Draft>
   loadingChats: Set<string>
+  loadingChatHistory: Set<string> // Состояние загрузки истории сообщений конкретного чата
   models: ChatModelFromBackend[] // Новое поле для моделей с бэкенда
   isLoadingModels: boolean // Состояние загрузки моделей
-  isLoadingHistory: boolean // Состояние загрузки истории
+  isLoadingHistory: boolean // Состояние загрузки общей истории чатов
   factCheck: FactCheckState
 }
 
@@ -131,6 +132,8 @@ interface ChatStoreActions {
   getDefaultSecureMode: () => boolean
   isLoadingChat: (chatId: string) => boolean
   setLoadingChat: (chatId: string, loading: boolean) => void
+  isLoadingChatHistory: (chatId: string) => boolean
+  setLoadingChatHistory: (chatId: string, loading: boolean) => void
   openFactCheck: () => void
   closeFactCheck: () => void
   checkFacts: (message: string) => Promise<void>
