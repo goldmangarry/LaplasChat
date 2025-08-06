@@ -136,7 +136,7 @@ export function ChatItem({ id, title, isSelected, hasActions, hasEncryptedMessag
               {title}
             </Text>
             {hasEncryptedMessages && (
-              <ShieldCheck size={16} color="#666666" />
+              <ShieldCheck style={{ minWidth: '16px' }} size={16} color="#666666" />
             )}
           </HStack>
         )}
