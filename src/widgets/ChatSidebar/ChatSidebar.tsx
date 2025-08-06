@@ -69,7 +69,9 @@ export default function ChatSidebar({ onChatSelect }: ChatSidebarProps = {}) {
       >
         {/* Header with Logo and Close Button */}
         <HStack justify="space-between" align="center" width="100%">
-          <Box 
+          <Box
+            marginRight='auto' 
+            marginLeft='auto'
             width={{ base: "120px", md: "148px" }} 
             height={{ base: "32px", md: "40px" }}
           >
