@@ -43,7 +43,7 @@ export const ChatMessage = ({
       <Flex justify="space-between" align="center" width="full">
         <HStack gap={4.5}>
           <HStack gap={2}>
-            <Avatar.Root size="xs" color="white">
+            <Avatar.Root background={isAI ? "unset" : ""} size="xs" color="white">
               {isAI ? (
                 <img
                   src={OpenAIIcon}

@@ -41,16 +41,16 @@ export type Chat = {
   maxTokens: number
   secureMode: boolean
   provider?: string // Провайдер из API для отображения иконки
+  hasEncryptedMessages?: boolean // Показывать замочек если есть зашифрованные сообщения
+  modelInfo?: {
+    id: string
+    name: string
+    provider: string
+    max_tokens: number
+    temperature: number
+  } // Данные модели из API
 }
 
-// Тип для хранения настроек чата в localStorage
-export type ChatSettings = {
-  dialogId: string
-  model: ChatModel
-  temperature: number
-  maxTokens: number
-  secureMode: boolean
-}
 
 export type Message = {
   id: string

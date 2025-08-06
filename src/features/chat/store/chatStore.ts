@@ -1,7 +1,6 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 import { v4 as uuidv4 } from 'uuid'
-import type { ChatStoreState, Chat, Message, ChatModel, ChatSettings } from '@/core/types'
+import type { ChatStoreState, Chat, Message, ChatModel } from '@/core/types'
 import { sendSecureMessage, sendMessage, checkFacts, fetchModels } from '@/shared/lib/api'
 import { chatApi, type ChatMessage } from '@/core/api'
 
@@ -14,21 +13,19 @@ const createDefaultChat = (customSettings?: { model?: ChatModel; temperature?: n
   secureMode: customSettings?.secureMode ?? false,
 })
 
-export const useChatStore = create<ChatStoreState>()(
-  persist(
-    (set, get) => {
-      let defaultChatSettings = {
-        model: 'openai/o4-mini-high' as ChatModel,
-        temperature: 0.5,
-        maxTokens: 4096,
-        secureMode: false
-      }
-      
-      return {
-        chats: [], // Изначально пустой массив чатов
-        currentChatId: null, // Нет текущего чата
-        messagesByChat: {},
-        drafts: {},
+export const useChatStore = create<ChatStoreState>((set, get) => {
+  let defaultChatSettings = {
+    model: 'openai/o4-mini-high' as ChatModel,
+    temperature: 0.5,
+    maxTokens: 4096,
+    secureMode: false
+  }
+  
+  return {
+    chats: [], // Изначально пустой массив чатов
+    currentChatId: null, // Нет текущего чата
+    messagesByChat: {},
+    drafts: {},
         loadingChats: new Set(),
         models: [], // Новое состояние для моделей с бэкенда
         isLoadingModels: false, // Состояние загрузки моделей
@@ -87,24 +84,20 @@ export const useChatStore = create<ChatStoreState>()(
             const response = await chatApi.getHistory()
             const dialogs = response.dialogs
             
-            // Получаем сохранённые настройки чатов
-            const savedChatSettings = (get() as ChatStoreState & { savedChatSettings?: Record<string, ChatSettings> }).savedChatSettings || {}
-            
             // Преобразуем диалоги из API в формат чатов
             const chats: Chat[] = dialogs.map(dialog => {
-              // Ищем сохранённые настройки для этого чата по dialogId
-              const savedSettings = savedChatSettings[dialog.dialog_id]
-              
               return {
-                id: dialog.dialog_id,
-                dialogId: dialog.dialog_id,
-                title: dialog.dialog_name,
+                id: dialog.id,
+                dialogId: dialog.id,
+                title: dialog.name,
                 provider: dialog.llm_provider, // Сохраняем провайдер для иконки
-                // Используем сохранённые настройки или дефолтные
-                model: savedSettings?.model || defaultChatSettings.model,
-                temperature: savedSettings?.temperature || defaultChatSettings.temperature,
-                maxTokens: savedSettings?.maxTokens || defaultChatSettings.maxTokens,
-                secureMode: savedSettings?.secureMode ?? false,
+                hasEncryptedMessages: dialog.has_encrypted_messages, // Показывать замочек
+                // Используем данные модели из API или дефолтные
+                model: (dialog.last_model_info?.id as ChatModel) || defaultChatSettings.model,
+                temperature: dialog.last_model_info?.temperature || defaultChatSettings.temperature,
+                maxTokens: dialog.last_model_info?.max_tokens || defaultChatSettings.maxTokens,
+                secureMode: dialog.has_encrypted_messages, // secureMode по умолчанию включен если есть зашифрованные сообщения
+                modelInfo: dialog.last_model_info, // Сохраняем полную информацию о модели
               }
             })
             
@@ -392,6 +385,16 @@ export const useChatStore = create<ChatStoreState>()(
                 ),
               }))
             }
+
+            // Update hasEncryptedMessages flag if secure mode was used
+            if (chat.secureMode) {
+              set((state: ChatStoreState) => ({
+                ...state,
+                chats: state.chats.map((c: Chat) =>
+                  c.id === chatId ? { ...c, hasEncryptedMessages: true } : c
+                ),
+              }))
+            }
           } catch (error) {
             console.error('Failed to send message:', error)
             const errorMessage: Message = {
@@ -599,63 +602,5 @@ export const useChatStore = create<ChatStoreState>()(
           }
         },
       }
-    },
-    {
-      name: 'laplas-chat-store',
-      partialize: (state) => {
-        // Сохраняем только настройки чатов, а не все данные
-        const chatSettings: Record<string, ChatSettings> = {}
-        
-        state.chats.forEach(chat => {
-          if (chat.dialogId) {
-            chatSettings[chat.dialogId] = {
-              dialogId: chat.dialogId,
-              model: chat.model,
-              temperature: chat.temperature,
-              maxTokens: chat.maxTokens,
-              secureMode: chat.secureMode,
-            }
-          }
-        })
-        
-        return {
-          chatSettings,
-          currentChatId: state.currentChatId,
-          drafts: state.drafts,
-        }
-      },
-      onRehydrateStorage: () => (state) => {
-        if (state) {
-          // Получаем сохранённые данные из localStorage
-          const persistedData = localStorage.getItem('laplas-chat-store')
-          if (persistedData) {
-            try {
-              const parsedData = JSON.parse(persistedData)
-              const persistedState = parsedData.state
-              
-              // Инициализируем пустые массивы/объекты
-              state.chats = []
-              state.messagesByChat = {}
-              
-              // Восстанавливаем настройки чатов в отдельное поле для последующего использования
-              if (persistedState?.chatSettings) {
-                // Сохраняем настройки для использования при загрузке истории
-                (state as ChatStoreState & { savedChatSettings?: Record<string, ChatSettings> }).savedChatSettings = persistedState.chatSettings
-              }
-              
-              // Восстанавливаем drafts
-              if (persistedState?.drafts) {
-                state.drafts = persistedState.drafts
-              }
-              
-              // currentChatId не восстанавливаем, так как чаты будут загружены с сервера
-              state.currentChatId = null
-            } catch (error) {
-              console.error('Failed to parse persisted state:', error)
-            }
-          }
-        }
-      },
     }
-  )
 )

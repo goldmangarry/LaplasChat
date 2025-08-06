@@ -1,5 +1,5 @@
 import { Box, Text, HStack, IconButton, Input, Menu, Portal } from '@chakra-ui/react'
-import { MoreHorizontal, Check, X, Edit2, Trash2 } from 'lucide-react'
+import { MoreHorizontal, Check, X, Edit2, Trash2, ShieldCheck } from 'lucide-react'
 import { useChatStore } from '@/features/chat/store'
 import { useState, useRef, useEffect } from 'react'
 import { DeleteChatModal } from './DeleteChatModal'
@@ -9,10 +9,11 @@ type ChatItemProps = {
   title: string
   isSelected: boolean
   hasActions?: boolean
+  hasEncryptedMessages?: boolean
   onClick: () => void
 }
 
-export function ChatItem({ id, title, isSelected, hasActions, onClick }: ChatItemProps) {
+export function ChatItem({ id, title, isSelected, hasActions, hasEncryptedMessages, onClick }: ChatItemProps) {
   const { deleteChat, updateChatTitle } = useChatStore()
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
@@ -122,19 +123,22 @@ export function ChatItem({ id, title, isSelected, hasActions, onClick }: ChatIte
             </IconButton>
           </HStack>
         ) : (
-          <Text 
-            fontSize="12px" 
-            lineHeight="16px"
-            fontWeight="400"
-            color="#000000"
-            flex={1}
-            overflow="hidden"
-            textOverflow="ellipsis"
-            whiteSpace="nowrap"
-            maxWidth={hasActions && title !== 'New Chat' ? "calc(100% - 32px)" : "100%"}
-          >
-            {title}
-          </Text>
+          <HStack gap="4px" flex={1} overflow="hidden" maxWidth={hasActions && title !== 'New Chat' ? "calc(100% - 32px)" : "100%"}>
+            <Text 
+              fontSize="12px" 
+              lineHeight="16px"
+              fontWeight="400"
+              color="#000000"
+              overflow="hidden"
+              textOverflow="ellipsis"
+              whiteSpace="nowrap"
+            >
+              {title}
+            </Text>
+            {hasEncryptedMessages && (
+              <ShieldCheck size={16} color="#666666" />
+            )}
+          </HStack>
         )}
 
         {/* Menu Action */}

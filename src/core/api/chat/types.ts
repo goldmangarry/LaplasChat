@@ -1,7 +1,15 @@
 export type Dialog = {
-  dialog_id: string;
-  dialog_name: string;
+  id: string;
+  name: string;
   llm_provider: string;
+  has_encrypted_messages: boolean;
+  last_model_info: {
+    id: string;
+    name: string;
+    provider: string;
+    max_tokens: number;
+    temperature: number;
+  };
 };
 
 export type DialogHistoryResponse = {

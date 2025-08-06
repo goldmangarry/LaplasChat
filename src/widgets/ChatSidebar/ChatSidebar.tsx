@@ -165,6 +165,7 @@ export default function ChatSidebar({ onChatSelect }: ChatSidebarProps = {}) {
                     title={chat.title}
                     isSelected={currentChatId === chat.id}
                     hasActions={true}
+                    hasEncryptedMessages={chat.hasEncryptedMessages}
                     onClick={() => handleSelectChat(chat.id)}
                   />
                 ))
