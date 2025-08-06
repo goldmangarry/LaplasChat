@@ -3,6 +3,7 @@ import { HiInformationCircle } from 'react-icons/hi2'
 import { useCallback, useState, useEffect, useMemo } from 'react'
 import type { ChatModel } from '@/core/types'
 import { useChatStore } from '@/features/chat/store'
+import { Tooltip } from '@/components/ui/tooltip'
 
 type ChatSettingsProps = {
   model: ChatModel
@@ -107,7 +108,9 @@ export function ChatSettings({
                   <Slider.Label fontSize="sm" fontWeight="medium" color="gray.800">
                     Temperature
                   </Slider.Label>
-                  <Icon as={HiInformationCircle} boxSize={4} color="gray.400" />
+                  <Tooltip content="Temperature is a parameter that controls the randomness of the model's output. Lower values make the output more focused and deterministic, while higher values make it more creative and varied.">
+                    <Icon as={HiInformationCircle} boxSize={4} color="gray.400" />
+                  </Tooltip>
                 </Flex>
                 <Input
                   width="64px"
@@ -163,7 +166,9 @@ export function ChatSettings({
                   <Slider.Label fontSize="sm" fontWeight="medium" color="gray.800">
                     Output Length
                   </Slider.Label>
-                  <Icon as={HiInformationCircle} boxSize={4} color="gray.400" />
+                  <Tooltip content="Output Length is a parameter that controls the length of the model's output. Lower values make the output shorter, while higher values make it longer.">
+                    <Icon as={HiInformationCircle} boxSize={4} color="gray.400" />
+                  </Tooltip>
                 </Flex>
                 <Input
                   width="64px"
