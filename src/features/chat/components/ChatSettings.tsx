@@ -108,7 +108,7 @@ export function ChatSettings({
                   <Slider.Label fontSize="sm" fontWeight="medium" color="gray.800">
                     Temperature
                   </Slider.Label>
-                  <Tooltip content="Temperature is a parameter that controls the randomness of the model's output. Lower values make the output more focused and deterministic, while higher values make it more creative and varied.">
+                  <Tooltip openDelay={200} closeDelay={200} content="Temperature is a parameter that controls the randomness of the model's output. Lower values make the output more focused and deterministic, while higher values make it more creative and varied.">
                     <Icon as={HiInformationCircle} boxSize={4} color="gray.400" />
                   </Tooltip>
                 </Flex>
@@ -166,7 +166,7 @@ export function ChatSettings({
                   <Slider.Label fontSize="sm" fontWeight="medium" color="gray.800">
                     Output Length
                   </Slider.Label>
-                  <Tooltip content="Output Length is a parameter that controls the length of the model's output. Lower values make the output shorter, while higher values make it longer.">
+                  <Tooltip openDelay={200} closeDelay={200} content="Output Length is a parameter that controls the length of the model's output. Lower values make the output shorter, while higher values make it longer.">
                     <Icon as={HiInformationCircle} boxSize={4} color="gray.400" />
                   </Tooltip>
                 </Flex>

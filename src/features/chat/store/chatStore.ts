@@ -172,7 +172,7 @@ export const useChatStore = create<ChatStoreState>()(
           const newChat = createDefaultChat(defaultChatSettings)
           set((state: ChatStoreState) => ({
             ...state,
-            chats: [...state.chats, newChat],
+            chats: [newChat, ...state.chats],
             currentChatId: newChat.id,
           }))
           return newChat.id
@@ -281,7 +281,7 @@ export const useChatStore = create<ChatStoreState>()(
             const newChat = createDefaultChat({ ...defaultChatSettings, title: chatTitle })
             set((state: ChatStoreState) => ({
               ...state,
-              chats: [...state.chats, newChat],
+              chats: [newChat, ...state.chats],
               currentChatId: newChat.id,
             }))
             selectChat(newChat.id)

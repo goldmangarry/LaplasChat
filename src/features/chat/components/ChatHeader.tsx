@@ -146,7 +146,7 @@ export default function ChatHeader({
             <Text fontSize="xs" fontWeight="normal" color="black">
               Secure mode
             </Text>
-            <Tooltip content="When Secure Mode is enabled, sensitive data such as company name, personal data, and so on, is not passed to external AI models. We recommend working with sensitive data in this mode">
+            <Tooltip openDelay={200} closeDelay={200} content="When Secure Mode is enabled, sensitive data such as company name, personal data, and so on, is not passed to external AI models. We recommend working with sensitive data in this mode">
               <Icon as={HiInformationCircle} boxSize={4} color="gray.400" />
             </Tooltip>
           </HStack>
