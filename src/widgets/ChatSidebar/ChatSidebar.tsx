@@ -173,9 +173,10 @@ export default function ChatSidebar({ onChatSelect }: ChatSidebarProps = {}) {
                 ))
               ) : (
                 <Stack
-                  position="absolute"
-                  top="50%"
-                  left="5%"
+                  marginTop="auto"
+                  marginBottom="auto"
+                  marginLeft="auto"
+                  marginRight="auto"
                   align="center"
                   justify="center"
                   gap="0"

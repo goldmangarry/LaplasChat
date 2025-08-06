@@ -64,6 +64,10 @@ export type Message = {
   }
   isOwnMessage?: boolean
   encryptedContent?: string
+  modelInfo?: {
+    name: string
+    provider: string
+  }
 }
 
 export type NavigationItem = {

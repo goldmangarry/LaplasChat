@@ -150,12 +150,16 @@ export const useChatStore = create<ChatStoreState>((set, get) => {
               id: uuidv4(),
               chatId: chatId,
               content: apiMsg.content,
-              timestamp: new Date().toISOString(),
+              timestamp: apiMsg.created_at,
               author: {
-                name: apiMsg.role === 'user' ? 'You' : 'Assistant',
+                name: apiMsg.role === 'user' ? 'You' : (apiMsg.last_model_info?.name || 'Assistant'),
                 avatar: apiMsg.role === 'assistant' ? '/assistant-avatar.png' : undefined,
               },
               isOwnMessage: apiMsg.role === 'user',
+              modelInfo: apiMsg.last_model_info ? {
+                name: apiMsg.last_model_info.name,
+                provider: apiMsg.last_model_info.provider,
+              } : undefined,
             }))
 
             // Сохраняем сообщения в store
@@ -360,16 +364,23 @@ export const useChatStore = create<ChatStoreState>((set, get) => {
               dialogId = response.dialog_id
             }
 
+            // Находим информацию о текущей модели
+            const currentModel = get().models.find(m => m.id === chat.model)
+            
             const aiMessage: Message = {
               id: uuidv4(),
               chatId,
               content: aiContent,
               timestamp: new Date().toISOString(),
               author: {
-                name: 'Assistant',
+                name: currentModel?.name || 'Assistant',
                 avatar: '/assistant-avatar.png',
               },
               isOwnMessage: false,
+              modelInfo: currentModel ? {
+                name: currentModel.name,
+                provider: currentModel.provider,
+              } : undefined,
             }
 
             addMessage(chatId, aiMessage)

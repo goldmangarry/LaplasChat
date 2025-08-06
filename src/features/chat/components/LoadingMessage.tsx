@@ -4,6 +4,25 @@ import { Copy } from 'lucide-react';
 import OpenAIIcon from '../../../assets/icons/openai.svg';
 import { SecureLoadingStatus } from './SecureLoadingStatus';
 import { LoadingStatus } from './LoadingStatus';
+import anthropicIcon from '@/assets/icons/anthropic.svg';
+import googleIcon from '@/assets/icons/google.svg';
+import grokIcon from '@/assets/icons/grok.svg';
+import metaColorIcon from '@/assets/icons/meta-color.svg';
+import mistralColorIcon from '@/assets/icons/mistral-color.svg';
+import deepseekColorIcon from '@/assets/icons/deepseek-color.svg';
+import qwenColorIcon from '@/assets/icons/qwen-color.svg';
+
+// Объект соответствия provider → иконка
+const providerIcons: Record<string, string> = {
+  openai: OpenAIIcon,
+  anthropic: anthropicIcon,
+  google: googleIcon,
+  'x-ai': grokIcon,
+  'meta-llama': metaColorIcon,
+  mistralai: mistralColorIcon,
+  deepseek: deepseekColorIcon,
+  qwen: qwenColorIcon,
+};
 
 export type LoadingMessageProps = {
   userName?: string;
@@ -11,6 +30,10 @@ export type LoadingMessageProps = {
   timestamp?: string;
   isSecureMode?: boolean;
   onCopy?: () => void;
+  modelInfo?: {
+    name: string;
+    provider: string;
+  };
 };
 
 export const LoadingMessage = ({
@@ -18,6 +41,7 @@ export const LoadingMessage = ({
   timestamp = "now",
   isSecureMode = false,
   onCopy = () => {},
+  modelInfo,
 }: LoadingMessageProps) => {
   return (
     <VStack
@@ -31,10 +55,10 @@ export const LoadingMessage = ({
       <Flex justify="space-between" align="center" width="full">
         <HStack gap={4.5}>
           <HStack gap={2}>
-            <Avatar.Root size="xs" color="white">
+            <Avatar.Root background="unset" size="xs" color="white">
               <img
-                src={OpenAIIcon}
-                alt="OpenAI"
+                src={modelInfo ? providerIcons[modelInfo.provider] || OpenAIIcon : OpenAIIcon}
+                alt={modelInfo?.name || "AI"}
                 width="32"
                 height="32"
               />

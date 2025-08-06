@@ -221,18 +221,26 @@ export default function ChatArea({ onOpenSettings, onOpenSidebar }: ChatAreaProp
                 onFactCheck={
                   !msg.isOwnMessage ? () => checkFacts(msg.content) : undefined
                 }
+                modelInfo={msg.modelInfo}
               />
               ))
             )}
-            {isLoadingChat(currentChatId) && (
-              <LoadingMessage
-                userName="Assistant"
-                userInitials="AI"
-                timestamp="now"
-                isSecureMode={currentChat?.secureMode ?? false}
-                onCopy={() => {}}
-              />
-            )}
+            {isLoadingChat(currentChatId) && (() => {
+              const currentModel = models.find(m => m.id === currentChat?.model)
+              return (
+                <LoadingMessage
+                  userName={currentModel?.name || "Assistant"}
+                  userInitials="AI"
+                  timestamp="now"
+                  isSecureMode={currentChat?.secureMode ?? false}
+                  onCopy={() => {}}
+                  modelInfo={currentModel ? {
+                    name: currentModel.name,
+                    provider: currentModel.provider,
+                  } : undefined}
+                />
+              )
+            })()}
             <div ref={messagesEndRef} />
           </Stack>
         </Box>
