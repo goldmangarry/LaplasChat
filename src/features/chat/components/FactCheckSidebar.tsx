@@ -1,6 +1,7 @@
 import { parseMarkdown } from '@/shared/lib/markdown';
 import { Box, Drawer, Flex, Link, Skeleton, Text, VStack } from '@chakra-ui/react';
 import { ExternalLink, CheckCircle2 } from 'lucide-react';
+import deepseekColorIcon from '@/assets/icons/deepseek-color.svg';
 
 type FactCheckData = {
   response: string;
@@ -33,7 +34,7 @@ export const FactCheckSidebar = ({
             <Drawer.Title fontSize="lg" fontWeight="semibold">
               <Flex align="center" gap={2}>
                 <CheckCircle2 size={20} color="#10B981" />
-                Проверка фактов
+                  Fact Check
               </Flex>
             </Drawer.Title>
             <Drawer.CloseTrigger />
@@ -50,10 +51,37 @@ export const FactCheckSidebar = ({
                 </VStack>
               ) : data ? (
                 <VStack gap={6} align="stretch">
+                  {/* Model Information */}
+                  <Box textAlign="center" py={4}>
+                    <VStack gap={3}>
+                      <Box 
+                        width="60px" 
+                        height="60px" 
+                        borderRadius="full" 
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                      >
+                        <img 
+                          src={deepseekColorIcon} 
+                          alt="DeepSeek" 
+                          style={{ width: '32px', height: '32px' }}
+                        />
+                      </Box>
+                      <Text fontSize="20px" fontWeight="semibold" color="gray.800">
+                        DeepSeek V3 Model
+                      </Text>
+                      <Text fontSize="14px" color="gray.600" textAlign="center" px={2}>
+                        Advanced reasoning model with enhanced fact-checking capabilities,
+                        comprehensive knowledge base, and reliable source verification.
+                      </Text>
+                    </VStack>
+                  </Box>
+
                   {/* Response */}
                   <Box>
                     <Text fontSize="14px" fontWeight="600" color="gray.800" mb={3}>
-                      Результат проверки
+                      Fact Check Result
                     </Text>
                     <Text fontSize="14px" color="gray.600" lineHeight="1.5">
                       {parseMarkdown(data.response)}
@@ -64,7 +92,7 @@ export const FactCheckSidebar = ({
                   {data.urls && data.urls.length > 0 && (
                     <Box>
                       <Text fontSize="14px" fontWeight="600" color="gray.800" mb={3}>
-                        Источники
+                        Sources
                       </Text>
                       <VStack gap={2} align="stretch">
                         {data.urls.map((url, index) => (
@@ -104,7 +132,7 @@ export const FactCheckSidebar = ({
                 </VStack>
               ) : (
                 <Text fontSize="14px" color="gray.500">
-                  Произошла ошибка при проверке фактов
+                  An error occurred while checking the facts
                 </Text>
               )}
             </Box>
