@@ -7,19 +7,15 @@ import {
   HStack
 } from '@chakra-ui/react'
 import {
-  MessageCircle,
   Plus,
-  Image,
-  Video,
   X
 } from 'lucide-react'
 import { useChatStore } from '@/features/chat/store'
 import { useUserStore } from '@/core/store/user/store'
 import { ChatItem } from './ChatItem'
-import { ChatTypeTab } from './ChatTypeTab'
 import { UserInfo } from './UserInfo'
 import { ChatListSkeleton, UserProfileSkeleton } from '@/shared/ui'
-import { useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useBreakpointValue } from '@chakra-ui/react'
 import type { Chat } from '@/core/types'
 
@@ -30,7 +26,6 @@ type ChatSidebarProps = {
 export default function ChatSidebar({ onChatSelect }: ChatSidebarProps = {}) {
   const { chats, currentChatId, createChat, selectChat, isLoadingHistory } = useChatStore()
   const { user, isLoading: isLoadingUser } = useUserStore()
-  const [selectedType, setSelectedType] = useState<'chat' | 'image' | 'video'>('chat')
   const isMobile = useBreakpointValue({ base: true, md: false })
 
   const sortedChats = useMemo(() => {
@@ -129,32 +124,6 @@ export default function ChatSidebar({ onChatSelect }: ChatSidebarProps = {}) {
             <Plus size={16} style={{ marginRight: '6px' }} />
             Start new chat
           </Button>
-
-          {/* Chat type tabs */}
-          <Stack direction="column" gap={1} alignSelf="stretch" position="relative">
-            <ChatTypeTab
-              icon={MessageCircle}
-              label="Chat"
-              isSelected={selectedType === 'chat'}
-              onClick={() => setSelectedType('chat')}
-            />
-            <ChatTypeTab
-              icon={Image}
-              label="Image"
-              isDisabled
-              badge="soon"
-              isSelected={false}
-              onClick={() => {}}
-            />
-            <ChatTypeTab
-              icon={Video}
-              label="Video"
-              isDisabled
-              badge="soon"
-              isSelected={false}
-              onClick={() => {}}
-            />
-          </Stack>
 
           {/* Chats Container */}
           <Stack direction="column" gap={{ base: 2, md: 3 }} alignSelf="stretch" flex={1} overflow="hidden" minHeight={0}>
