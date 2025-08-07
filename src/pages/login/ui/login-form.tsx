@@ -134,7 +134,7 @@ export const LoginForm: React.FC = () => {
 								size="lg"
 								variant="outline"
 								onClick={() => {
-									window.location.href = `https://dev-apilaplas-backend.onrender.com/auth/login/google`;
+									window.location.href = `https://main-apilaplas-backend.onrender.com/auth/login/google`;
 								}}
 								disabled={isLoading}
 							>
