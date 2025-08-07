@@ -1,11 +1,15 @@
 import { HStack, VStack, Text, Avatar } from '@chakra-ui/react'
-import { LogOut } from 'lucide-react'
+import { LogOut, Key } from 'lucide-react'
 import {
   Menu,
   Portal
 } from '@chakra-ui/react'
 import { useNavigate } from '@tanstack/react-router'
 import { useUserStore } from '@/core/store/user/store'
+import { useState } from 'react'
+import { ChangePasswordModal } from './ChangePasswordModal'
+import { authApi } from '@/core/api/auth'
+import { toaster } from '@/components/ui/toast'
 
 type UserInfoProps = {
   name: string
@@ -16,6 +20,7 @@ type UserInfoProps = {
 export function UserInfo({ name, email, avatarSrc }: UserInfoProps) {
   const navigate = useNavigate()
   const logout = useUserStore((state) => state.logout)
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false)
 
   const handleLogout = async () => {
     try {
@@ -27,6 +32,34 @@ export function UserInfo({ name, email, avatarSrc }: UserInfoProps) {
       console.error('Logout error:', error)
       // В случае ошибки навигации, обновляем страницу
       window.location.href = '/login'
+    }
+  }
+
+  const handleChangePassword = async (currentPassword: string, newPassword: string) => {
+    try {
+      await authApi.changePassword({
+        current_password: currentPassword,
+        new_password: newPassword
+      })
+      
+      toaster.create({
+        title: 'Пароль успешно изменен',
+        type: 'success',
+        duration: 3000,
+      })
+      
+      setIsChangePasswordOpen(false)
+    } catch (error: unknown) {
+      console.error('Change password error:', error)
+      
+      toaster.create({
+        title: 'Ошибка при смене пароля',
+        description: (error as { response?: { data?: { detail?: string } } })?.response?.data?.detail || 'Произошла ошибка. Попробуйте еще раз.',
+        type: 'error',
+        duration: 5000,
+      })
+      
+      throw error
     }
   }
 
@@ -73,6 +106,24 @@ export function UserInfo({ name, email, avatarSrc }: UserInfoProps) {
             py={1}
           >
             <Menu.Item
+              value="change-password"
+              px={3}
+              py={2}
+              _hover={{ bg: 'gray.100' }}
+              cursor="pointer"
+              onClick={(e) => {
+                e.preventDefault()
+                setIsChangePasswordOpen(true)
+              }}
+            >
+              <HStack 
+                gap={2} 
+              >
+                <Key size={16} />
+                <Text>Сменить пароль</Text>
+              </HStack>
+            </Menu.Item>
+            <Menu.Item
               value="logout"
               px={3}
               py={2}
@@ -93,6 +144,11 @@ export function UserInfo({ name, email, avatarSrc }: UserInfoProps) {
           </Menu.Content>
         </Menu.Positioner>
       </Portal>
+      <ChangePasswordModal
+        isOpen={isChangePasswordOpen}
+        onConfirm={handleChangePassword}
+        onCancel={() => setIsChangePasswordOpen(false)}
+      />
     </Menu.Root>
   )
 }
