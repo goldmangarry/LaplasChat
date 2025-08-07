@@ -1,7 +1,8 @@
-import { Dialog, Button, HStack, VStack, Input, Text } from '@chakra-ui/react'
+import { Dialog, Button, HStack, VStack, Input, Text, IconButton, InputGroup } from '@chakra-ui/react'
 import { useState, useEffect, useCallback } from 'react'
 import { Field } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
+import { Eye, EyeOff } from 'lucide-react'
 
 type ChangePasswordForm = {
   currentPassword: string
@@ -21,6 +22,9 @@ export const ChangePasswordModal = ({
   onCancel
 }: ChangePasswordModalProps) => {
   const [isLoading, setIsLoading] = useState(false)
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   
   const {
     register,
@@ -87,17 +91,30 @@ export const ChangePasswordModal = ({
               <VStack gap={4} align="stretch">
                 <Field.Root invalid={!!errors.currentPassword}>
                   <Field.Label>Текущий пароль</Field.Label>
-                  <Input
-                    type="password"
-                    placeholder="Введите текущий пароль"
-                    {...register('currentPassword', {
-                      required: 'Текущий пароль обязателен',
-                      minLength: {
-                        value: 6,
-                        message: 'Текущий пароль должен содержать минимум 6 символов'
-                      }
-                    })}
-                  />
+                  <InputGroup
+                    endElement={
+                      <IconButton
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                        aria-label={showCurrentPassword ? "Скрыть пароль" : "Показать пароль"}
+                      >
+                        {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </IconButton>
+                    }
+                  >
+                    <Input
+                      type={showCurrentPassword ? "text" : "password"}
+                      placeholder="Введите текущий пароль"
+                      {...register('currentPassword', {
+                        required: 'Текущий пароль обязателен',
+                        minLength: {
+                          value: 6,
+                          message: 'Текущий пароль должен содержать минимум 6 символов'
+                        }
+                      })}
+                    />
+                  </InputGroup>
                   {errors.currentPassword && (
                     <Text color="red.500" fontSize="sm">{errors.currentPassword.message}</Text>
                   )}
@@ -105,28 +122,41 @@ export const ChangePasswordModal = ({
 
                 <Field.Root invalid={!!errors.newPassword}>
                   <Field.Label>Новый пароль</Field.Label>
-                  <Input
-                    type="password"
-                    placeholder="Введите новый пароль"
-                    {...register('newPassword', {
-                      required: 'Новый пароль обязателен',
-                      minLength: {
-                        value: 8,
-                        message: 'Новый пароль должен содержать минимум 8 символов'
-                      },
-                      validate: (value) => {
-                        const hasUpperCase = /[A-Z]/.test(value)
-                        const hasLowerCase = /[a-z]/.test(value)
-                        const hasNumbers = /\d/.test(value)
-                        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value)
-                        
-                        if (!hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChar) {
-                          return 'Новый пароль должен содержать заглавные и строчные буквы, цифры и специальные символы'
+                  <InputGroup
+                    endElement={
+                      <IconButton
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        aria-label={showNewPassword ? "Скрыть пароль" : "Показать пароль"}
+                      >
+                        {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </IconButton>
+                    }
+                  >
+                    <Input
+                      type={showNewPassword ? "text" : "password"}
+                      placeholder="Введите новый пароль"
+                      {...register('newPassword', {
+                        required: 'Новый пароль обязателен',
+                        minLength: {
+                          value: 8,
+                          message: 'Новый пароль должен содержать минимум 8 символов'
+                        },
+                        validate: (value) => {
+                          const hasUpperCase = /[A-Z]/.test(value)
+                          const hasLowerCase = /[a-z]/.test(value)
+                          const hasNumbers = /\d/.test(value)
+                          const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value)
+                          
+                          if (!hasUpperCase || !hasLowerCase || !hasNumbers || !hasSpecialChar) {
+                            return 'Новый пароль должен содержать заглавные и строчные буквы, цифры и специальные символы'
+                          }
+                          return true
                         }
-                        return true
-                      }
-                    })}
-                  />
+                      })}
+                    />
+                  </InputGroup>
                   {errors.newPassword && (
                     <Text color="red.500" fontSize="sm">{errors.newPassword.message}</Text>
                   )}
@@ -134,19 +164,32 @@ export const ChangePasswordModal = ({
 
                 <Field.Root invalid={!!errors.confirmPassword}>
                   <Field.Label>Повторите новый пароль</Field.Label>
-                  <Input
-                    type="password"
-                    placeholder="Повторите новый пароль"
-                    {...register('confirmPassword', {
-                      required: 'Подтверждение пароля обязательно',
-                      validate: (value) => {
-                        if (value !== newPassword) {
-                          return 'Пароли не совпадают'
+                  <InputGroup
+                    endElement={
+                      <IconButton
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        aria-label={showConfirmPassword ? "Скрыть пароль" : "Показать пароль"}
+                      >
+                        {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </IconButton>
+                    }
+                  >
+                    <Input
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="Повторите новый пароль"
+                      {...register('confirmPassword', {
+                        required: 'Подтверждение пароля обязательно',
+                        validate: (value) => {
+                          if (value !== newPassword) {
+                            return 'Пароли не совпадают'
+                          }
+                          return true
                         }
-                        return true
-                      }
-                    })}
-                  />
+                      })}
+                    />
+                  </InputGroup>
                   {errors.confirmPassword && (
                     <Text color="red.500" fontSize="sm">{errors.confirmPassword.message}</Text>
                   )}
