@@ -7,7 +7,7 @@ import { chatApi, type ChatMessage } from '@/core/api'
 const createDefaultChat = (customSettings?: { model?: ChatModel; temperature?: number; maxTokens?: number; secureMode?: boolean; title?: string }): Chat => ({
   id: uuidv4(),
   title: customSettings?.title || 'New Chat',
-  model: customSettings?.model || 'openai/o4-mini-high',
+  model: customSettings?.model || 'openai/gpt-5-chat',
   temperature: customSettings?.temperature || 0.5,
   maxTokens: customSettings?.maxTokens || 4096,
   secureMode: customSettings?.secureMode ?? false,
@@ -15,7 +15,7 @@ const createDefaultChat = (customSettings?: { model?: ChatModel; temperature?: n
 
 export const useChatStore = create<ChatStoreState>((set, get) => {
   let defaultChatSettings = {
-    model: 'openai/o4-mini-high' as ChatModel,
+    model: 'openai/gpt-5-chat' as ChatModel,
     temperature: 0.5,
     maxTokens: 4096,
     secureMode: false

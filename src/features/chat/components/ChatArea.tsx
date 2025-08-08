@@ -150,8 +150,6 @@ export default function ChatArea({ onOpenSettings, onOpenSidebar }: ChatAreaProp
     )
   }
 
-  console.log(isLoadingChat(currentChatId))
-
   return (
     <Flex flex={1} direction="column" bg="white">
       {/* Header */}

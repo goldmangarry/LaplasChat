@@ -5,6 +5,8 @@ export type ChatModel =
   | 'openai/o4-mini'
   | 'openai/gpt-4.1'
   | 'openai/gpt-4.1-mini'
+  | 'openai/gpt-5-chat'
+  | 'openai/gpt-5-mini'
   // xAI Models
   | 'x-ai/grok-4'
   // Anthropic Models
