@@ -1,53 +1,31 @@
 import axios from "axios";
 
-// Создаем инстанс axios с базовой конфигурацией
 export const apiClient = axios.create({
-	baseURL: import.meta.env.VITE_API_URL || "",
-	timeout: 180000, // 3 минуты
+	headers: {
+		"Content-Type": "application/x-www-form-urlencoded",
+	},
 });
 
-// Функция для настройки interceptors (вызывается из user store)
-export const setupApiInterceptors = (
-	getAccessToken: () => string | null,
-	refreshTokens: () => Promise<void>,
-	logout: () => void,
-) => {
-	// Request interceptor для добавления токена авторизации
-	apiClient.interceptors.request.use(
-		(config) => {
-			const accessToken = getAccessToken();
-			if (accessToken) {
-				config.headers.Authorization = `Bearer ${accessToken}`;
+apiClient.interceptors.request.use((config) => {
+	const token = localStorage.getItem("access_token");
+	if (token) {
+		config.headers.Authorization = `Bearer ${token}`;
+	}
+	return config;
+});
+
+apiClient.interceptors.response.use(
+	(response) => response,
+	(error) => {
+		if (error.response?.status === 401) {
+			// Don't redirect on login endpoint - let the form handle the error
+			const isLoginRequest = error.config?.url?.includes('/api/auth/login');
+			if (!isLoginRequest) {
+				localStorage.removeItem("access_token");
+				localStorage.removeItem("refresh_token");
+				window.location.href = "/login";
 			}
-			return config;
-		},
-		(error) => Promise.reject(error),
-	);
-
-	// Response interceptor для обработки ошибок авторизации
-	apiClient.interceptors.response.use(
-		(response) => response,
-		async (error) => {
-			const originalRequest = error.config;
-
-			if (error.response?.status === 401 && !originalRequest._retry) {
-				originalRequest._retry = true;
-
-				try {
-					await refreshTokens();
-
-					// Повторяем оригинальный запрос с новым токеном
-					const accessToken = getAccessToken();
-					originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-					return apiClient(originalRequest);
-				} catch (refreshError) {
-					// Если обновление токена не удалось, разлогиниваем пользователя
-					logout();
-					return Promise.reject(refreshError);
-				}
-			}
-
-			return Promise.reject(error);
-		},
-	);
-};
+		}
+		return Promise.reject(error);
+	},
+);

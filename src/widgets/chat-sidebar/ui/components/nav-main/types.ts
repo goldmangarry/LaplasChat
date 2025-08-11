@@ -1,0 +1,1 @@
+// NavMain component no longer needs any props

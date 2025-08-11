@@ -1,0 +1,32 @@
+{
+	"login": {
+		"title": "Добро пожаловать",
+		"subtitle": "Войдите в свой аккаунт Laplas Chat",
+		"email": "Электронная почта",
+		"emailPlaceholder": "example@example.com",
+		"password": "Пароль",
+		"forgotPassword": "Забыли пароль?",
+		"loginButton": "Войти",
+		"loading": "Входим...",
+		"orContinueWith": "Или продолжить с помощью",
+		"noAccount": "Нет аккаунта?",
+		"signUp": "Зарегистрироваться",
+		"termsAndPrivacy": "Нажимая продолжить, вы соглашаетесь с нашими <termsLink>{{termsText}}</termsLink> и <privacyLink>{{privacyText}}</privacyLink>.",
+		"termsOfService": "Условиями использования",
+		"privacyPolicy": "Политикой конфиденциальности",
+		"socialLogin": {
+			"apple": "Войти через Apple",
+			"google": "Войти через Google",
+			"meta": "Войти через Meta"
+		},
+		"errors": {
+			"invalidCredentials": "Неверный email или пароль",
+			"networkError": "Ошибка сети. Попробуйте еще раз",
+			"emailRequired": "Введите email",
+			"passwordRequired": "Введите пароль"
+		}
+	},
+	"chat": {
+		"newChat": "Новый чат"
+	}
+}

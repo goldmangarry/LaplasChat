@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthOauthCallbackGoogleRouteImport } from './routes/auth.oauth.callback.google'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -23,40 +22,31 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthOauthCallbackGoogleRoute = AuthOauthCallbackGoogleRouteImport.update({
-  id: '/auth/oauth/callback/google',
-  path: '/auth/oauth/callback/google',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/auth/oauth/callback/google': typeof AuthOauthCallbackGoogleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/auth/oauth/callback/google': typeof AuthOauthCallbackGoogleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/auth/oauth/callback/google': typeof AuthOauthCallbackGoogleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/auth/oauth/callback/google'
+  fullPaths: '/' | '/login'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/auth/oauth/callback/google'
-  id: '__root__' | '/' | '/login' | '/auth/oauth/callback/google'
+  to: '/' | '/login'
+  id: '__root__' | '/' | '/login'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
-  AuthOauthCallbackGoogleRoute: typeof AuthOauthCallbackGoogleRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -75,20 +65,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/oauth/callback/google': {
-      id: '/auth/oauth/callback/google'
-      path: '/auth/oauth/callback/google'
-      fullPath: '/auth/oauth/callback/google'
-      preLoaderRoute: typeof AuthOauthCallbackGoogleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
-  AuthOauthCallbackGoogleRoute: AuthOauthCallbackGoogleRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

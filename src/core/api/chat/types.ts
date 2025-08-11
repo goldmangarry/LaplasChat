@@ -1,41 +1,20 @@
+import type { ModelProvider } from "../models/types";
+
+export type ModelInfo = {
+	id: string;
+	name: string;
+	provider: ModelProvider;
+	max_output: number;
+	temperature: number;
+};
+
 export type Dialog = {
-  id: string;
-  name: string;
-  llm_provider: string;
-  has_encrypted_messages: boolean;
-  last_model_info: {
-    id: string;
-    name: string;
-    provider: string;
-    max_tokens: number;
-    temperature: number;
-  };
+	id: string;
+	name: string;
+	has_encrypted_messages: boolean;
+	last_model_info: ModelInfo;
 };
 
-export type DialogHistoryResponse = {
-  dialogs: Dialog[];
-};
-
-export type ChatMessage = {
-  role: string;
-  content: string;
-  created_at: string;
-  last_model_info?: {
-    name: string;
-    provider: string;
-  };
-};
-
-export type ChatMessagesResponse = {
-  messages: ChatMessage[];
-};
-
-export type UpdateDialogRequest = {
-  dialog_name: string;
-};
-
-export type UpdateDialogResponse = {
-  dialog_id: string;
-  dialog_name: string;
-  updated_at: string;
+export type ChatHistoryResponse = {
+	dialogs: Dialog[];
 };

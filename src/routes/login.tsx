@@ -1,26 +1,6 @@
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { z } from 'zod'
-import { useUserStore } from '@/core/store/user';
-import { isCurrentTokenExpired } from '@/core/api/auth/helpers';
-import { LoginPage } from '@/pages/login';
-
-const loginSearchSchema = z.object({
-	redirect: z.string().optional(),
-	error: z.string().optional(),
-})
+import { createFileRoute } from "@tanstack/react-router";
+import { LoginPage } from "@/pages/login";
 
 export const Route = createFileRoute("/login")({
-	validateSearch: loginSearchSchema,
-	beforeLoad: ({ search }) => {
-		const userStore = useUserStore.getState();
-		const isTokenExpired = isCurrentTokenExpired();
-
-		if (userStore.isAuthenticated && !isTokenExpired) {
-			const redirectTo = search.redirect || "/";
-			throw redirect({
-				to: redirectTo as "/",
-			});
-		}
-	},
-	component: LoginPage,
+	component: () => <LoginPage />,
 });

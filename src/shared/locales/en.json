@@ -1,0 +1,32 @@
+{
+	"login": {
+		"title": "Welcome back",
+		"subtitle": "Login to your Laplas Chat account",
+		"email": "Email",
+		"emailPlaceholder": "m@example.com",
+		"password": "Password",
+		"forgotPassword": "Forgot your password?",
+		"loginButton": "Login",
+		"loading": "Logging in...",
+		"orContinueWith": "Or continue with",
+		"noAccount": "Don't have an account?",
+		"signUp": "Sign up",
+		"termsAndPrivacy": "By clicking continue, you agree to our <termsLink>{{termsText}}</termsLink> and <privacyLink>{{privacyText}}</privacyLink>.",
+		"termsOfService": "Terms of Service",
+		"privacyPolicy": "Privacy Policy",
+		"socialLogin": {
+			"apple": "Login with Apple",
+			"google": "Login with Google",
+			"meta": "Login with Meta"
+		},
+		"errors": {
+			"invalidCredentials": "Invalid email or password",
+			"networkError": "Network error. Please try again",
+			"emailRequired": "Email is required",
+			"passwordRequired": "Password is required"
+		}
+	},
+	"chat": {
+		"newChat": "New Chat"
+	}
+}
