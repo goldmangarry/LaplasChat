@@ -7,25 +7,28 @@ import {
 	SidebarRail,
 } from "@/components/ui/sidebar";
 import { NavMain } from "./components/nav-main";
-import { NavProjects } from "./components/nav-projects";
+import { NavChats } from "./components/nav-chats";
 import { NavUser } from "./components/nav-user";
 import { TeamSwitcher } from "./components/team-switcher";
-import { data } from "./constants";
 
 export function ChatSidebar({
 	...props
 }: React.ComponentProps<typeof Sidebar>) {
 	return (
-		<Sidebar collapsible="icon" {...props}>
-			<SidebarHeader>
+		<Sidebar collapsible="icon" {...props} className="flex flex-col">
+			<SidebarHeader className="sticky top-0 z-10 bg-sidebar">
 				<TeamSwitcher />
 			</SidebarHeader>
-			<SidebarContent>
-				<NavMain />
-				<NavProjects projects={data.projects} />
+			<SidebarContent className="flex flex-col overflow-hidden">
+				<div className="sticky top-0 z-10 bg-sidebar">
+					<NavMain />
+				</div>
+				<div className="flex-1 overflow-y-auto">
+					<NavChats />
+				</div>
 			</SidebarContent>
-			<SidebarFooter>
-				<NavUser user={data.user} />
+			<SidebarFooter className="sticky bottom-0 z-10 bg-sidebar">
+				<NavUser />
 			</SidebarFooter>
 			<SidebarRail />
 		</Sidebar>

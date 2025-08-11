@@ -1,9 +1,10 @@
 import {
-  Folder,
-  Forward,
   MoreHorizontal,
   Trash2,
+  ShieldCheck,
+  Edit,
 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import {
   DropdownMenu,
@@ -21,22 +22,28 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import type { NavProjectsProps } from "./types"
+import { useChatHistory } from "@/core/api/chat/hooks"
 import { DROPDOWN_MENU_WIDTH } from "./constants"
 
-export function NavProjects({ projects }: NavProjectsProps) {
+export function NavChats() {
   const { isMobile } = useSidebar()
+  const { t } = useTranslation()
+  const { data: chatHistory } = useChatHistory()
+  
+  const chats = chatHistory?.dialogs || []
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Projects</SidebarGroupLabel>
+      <SidebarGroupLabel>{t('chat.chats')}</SidebarGroupLabel>
       <SidebarMenu>
-        {projects.map((item) => (
-          <SidebarMenuItem key={item.name}>
+        {chats.map((chat) => (
+          <SidebarMenuItem key={chat.id}>
             <SidebarMenuButton asChild>
-              <a href={item.url}>
-                <item.icon />
-                <span>{item.name}</span>
+              <a href={`/chat/${chat.id}`}>
+                {chat.has_encrypted_messages && (
+                  <ShieldCheck className="text-stone-500" />
+                )}
+                <span>{chat.name}</span>
               </a>
             </SidebarMenuButton>
             <DropdownMenu>
@@ -52,28 +59,18 @@ export function NavProjects({ projects }: NavProjectsProps) {
                 align={isMobile ? "end" : "start"}
               >
                 <DropdownMenuItem>
-                  <Folder className="text-muted-foreground" />
-                  <span>View Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Forward className="text-muted-foreground" />
-                  <span>Share Project</span>
+                  <Edit className="text-muted-foreground" />
+                  <span>{t('chat.renameChat')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
-                  <Trash2 className="text-muted-foreground" />
-                  <span>Delete Project</span>
+                  <Trash2 className="text-destructive" />
+                  <span className="text-destructive">{t('chat.deleteChat')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
         ))}
-        <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
-            <MoreHorizontal className="text-sidebar-foreground/70" />
-            <span>More</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
   )

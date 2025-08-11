@@ -27,6 +27,13 @@
 		}
 	},
 	"chat": {
-		"newChat": "Новый чат"
+		"newChat": "Новый чат",
+		"chats": "Чаты",
+		"renameChat": "Переименовать",
+		"deleteChat": "Удалить"
+	},
+	"user": {
+		"logout": "Выйти",
+		"changePassword": "Изменить пароль"
 	}
 }

@@ -1,1 +1,0 @@
-export const DROPDOWN_MENU_WIDTH = "w-48"

@@ -27,6 +27,13 @@
 		}
 	},
 	"chat": {
-		"newChat": "New Chat"
+		"newChat": "New Chat",
+		"chats": "Chats",
+		"renameChat": "Rename",
+		"deleteChat": "Delete"
+	},
+	"user": {
+		"logout": "Log out",
+		"changePassword": "Change password"
 	}
 }
