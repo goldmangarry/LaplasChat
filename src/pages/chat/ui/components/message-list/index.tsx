@@ -52,7 +52,7 @@ export const MessageList = ({ dialogId }: MessageListProps) => {
   }
 
   return (
-    <div className="flex flex-col space-y-4 h-full overflow-y-auto">
+    <div className="flex flex-col space-y-4 h-full overflow-y-auto px-4 py-4">
       {/* Сообщения из кеша (включая оптимистичные) */}
       {messages.map((message, index) => (
         <div

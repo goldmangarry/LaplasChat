@@ -39,14 +39,14 @@ export const ChatPage = ({ dialogId }: ChatPageProps) => {
 				onOpenSettingsDrawer={() => setIsSettingsOpen(true)}
 			/>
 
-            <div className="flex flex-col flex-1 px-[10%]">
+			<div className="flex flex-col flex-1 px-[10%] min-h-0">
 				<div className="flex-1 overflow-hidden">
-				<MessageList dialogId={dialogId} />
-			</div>
+					<MessageList dialogId={dialogId} />
+				</div>
 
-			<div className="p-4">
-				<ChatInput />
-			</div>
+				<div className="flex-shrink-0 p-4">
+					<ChatInput />
+				</div>
 			</div>
 
 			<ChatSettingsDrawer

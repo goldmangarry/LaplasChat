@@ -15,7 +15,7 @@ export function ChatInput() {
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 	const { message, setMessage, clearMessage } = useChatInputStore();
-	const { getCurrentSettings, updateDefaultSettings, activeDialogId, setActiveDialogId } = useChatStore();
+	const { getCurrentSettings, updateCurrentSettings, activeDialogId, setActiveDialogId } = useChatStore();
 	
 	const settings = getCurrentSettings();
 	const isSecure = settings.has_encrypted_messages;
@@ -134,7 +134,7 @@ export function ChatInput() {
 				<div className="flex items-center gap-1">
 					<SecureToggle
 						isSecure={isSecure}
-						onToggle={(secure) => updateDefaultSettings({ has_encrypted_messages: secure })}
+						onToggle={(secure) => updateCurrentSettings({ has_encrypted_messages: secure })}
 						disabled={isLoading}
 					/>
 				</div>
