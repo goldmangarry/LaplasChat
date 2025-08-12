@@ -24,7 +24,7 @@ export type SendMessageRequest = {
 	message: string;
 	max_tokens: number;
 	temperature: number;
-	dialog_id: string;
+	dialog_id?: string;
 };
 
 export type SendMessageResponse = {
@@ -35,9 +35,11 @@ export type SendMessageResponse = {
 export type MessageRole = "assistant" | "user";
 
 export type ChatMessage = {
+	id?: string;
 	role: MessageRole;
 	content: string;
-	created_at: string;
+	created_at?: string;
+	timestamp?: number;
 	encrypted_content?: string;
 	last_model_info?: ModelInfo;
 };

@@ -1,2 +1,2 @@
-export type { ChatHeaderProps, ChatSettings } from "./types";
+export type { ChatHeaderProps } from "./types";
 export { ChatHeader } from "./ui";

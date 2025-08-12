@@ -4,6 +4,7 @@ import {
   Edit,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { Link } from "@tanstack/react-router"
 
 import {
   DropdownMenu,
@@ -22,6 +23,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { useChatHistory } from "@/core/api/chat/hooks"
+import { useChatStore } from "@/core/chat/store"
 import { DROPDOWN_MENU_WIDTH } from "./constants"
 import { Trash2 } from "@/components/animate-ui/icons/trash-2"
 import { AnimateIcon } from "@/components/animate-ui/icons/icon"
@@ -30,6 +32,7 @@ export function NavChats() {
   const { isMobile } = useSidebar()
   const { t } = useTranslation()
   const { data: chatHistory } = useChatHistory()
+  const { setActiveDialogId, applyChatSettingsFromDialog } = useChatStore()
   
   const chats = chatHistory?.dialogs || []
 
@@ -40,12 +43,19 @@ export function NavChats() {
         {chats.map((chat) => (
           <SidebarMenuItem key={chat.id}>
             <SidebarMenuButton asChild>
-              <a href={`/chat/${chat.id}`}>
+              <Link 
+                to="/chat/$dialogId" 
+                params={{ dialogId: chat.id }}
+                onClick={() => {
+                  setActiveDialogId(chat.id);
+                  applyChatSettingsFromDialog(chat);
+                }}
+              >
                 {chat.has_encrypted_messages && (
                   <ShieldCheck className="text-stone-500" />
                 )}
                 <span>{chat.name}</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

@@ -30,7 +30,16 @@
 		"newChat": "New Chat",
 		"chats": "Chats",
 		"renameChat": "Rename",
-		"deleteChat": "Delete"
+		"deleteChat": "Delete",
+		"you": "You",
+		"assistant": "Assistant",
+		"dialog": "Dialog",
+		"tempChat": "Temporary Chat",
+		"noMessages": "No messages yet",
+		"startConversation": "Start a conversation",
+		"tempChatStart": "Temporary chat started",
+		"errorLoadingMessages": "Error loading messages",
+		"typing": "typing..."
 	},
 	"user": {
 		"logout": "Log out",
@@ -54,5 +63,21 @@
 		"aiBusinessScaling": "How do large companies scale AI in key business processes?",
 		"aiHealthcare": "What AI solutions do healthcare organizations use for diagnosis and treatment?",
 		"nlpCustomerSupport": "How do companies use NLP to automate customer support?"
+	},
+	"chatSettings": {
+		"title": "Chat Settings",
+		"modelSettings": "Model Settings",
+		"placeholder": "Settings coming soon...",
+		"maxTokens": "Max Tokens",
+		"temperature": "Temperature",
+		"reset": "Reset",
+		"apply": "Apply"
+	},
+	"common": {
+		"close": "Close"
+	},
+	"message": {
+		"copy": "Copy",
+		"factCheck": "Fact Check"
 	}
 }

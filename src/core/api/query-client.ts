@@ -5,8 +5,8 @@ export const queryClient = new QueryClient({
 		queries: {
 			staleTime: 5 * 60 * 1000, // 5 minutes
 			gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
-			retry: (failureCount, error: any) => {
-				if (error?.response?.status === 401) {
+			retry: (failureCount, error: unknown) => {
+				if ((error as { response?: { status?: number } })?.response?.status === 401) {
 					return false; // Don't retry unauthorized requests
 				}
 				return failureCount < 3;

@@ -1,6 +1,7 @@
 "use client"
 
 import { useTranslation } from "react-i18next"
+import { useNavigate } from "@tanstack/react-router"
 
 import {
   SidebarGroup,
@@ -10,13 +11,18 @@ import {
 } from "@/components/ui/sidebar"
 import { MessageCircleMore } from "@/components/animate-ui/icons/message-circle-more"
 import { AnimateIcon } from "@/components/animate-ui/icons/icon"
+import { useChatStore } from "@/core/chat/store"
 
 export function NavMain() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+  const { setActiveDialogId } = useChatStore()
 
   const handleNewChat = () => {
-    // TODO: implement new chat functionality
-    console.log("New chat clicked")
+    // Убираем активный чат из состояния
+    setActiveDialogId(null)
+    // Переходим на главную страницу
+    navigate({ to: "/" })
   }
 
   return (

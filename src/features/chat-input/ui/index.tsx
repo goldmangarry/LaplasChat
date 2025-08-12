@@ -1,19 +1,98 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "@tanstack/react-router";
 import { useChatInputStore } from "../model/store";
+import { useChatStore } from "@/core/chat/store";
+import { useSendMessage, useSendSecureMessage } from "@/core/api/chat/hooks";
+import { useQueryClient } from "@tanstack/react-query";
 import { SecureToggle } from "./components/secure-toggle";
 import { SendButton } from "./components/send-button";
 
 export function ChatInput() {
 	const { t } = useTranslation();
-	const [isSecure, setIsSecure] = useState(false);
+	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-	const { message, isLoading, setMessage, sendMessage } = useChatInputStore();
+	const { message, setMessage, clearMessage } = useChatInputStore();
+	const { getCurrentSettings, updateDefaultSettings, activeDialogId, setActiveDialogId } = useChatStore();
+	
+	const settings = getCurrentSettings();
+	const isSecure = settings.has_encrypted_messages;
+
+	const sendMessageMutation = useSendMessage();
+	const sendSecureMessageMutation = useSendSecureMessage();
+	
+	const isLoading = sendMessageMutation.isPending || sendSecureMessageMutation.isPending;
 
 	const handleSend = async () => {
 		if (message.trim() && !isLoading) {
-			await sendMessage(message.trim());
+			const trimmedMessage = message.trim();
+			
+			// Очищаем input сразу
+			clearMessage();
+
+			// Проверяем, нужно ли создать новый чат
+			const isNewChat = !activeDialogId;
+			let currentDialogId = activeDialogId;
+
+			// Если это новый чат, создаем временный ID и сразу навигируем
+			if (isNewChat) {
+				const tempDialogId = `temp-${Date.now()}`;
+				currentDialogId = tempDialogId;
+				setActiveDialogId(tempDialogId);
+				
+				// Предзаполняем кеш для временного чата
+				queryClient.setQueryData(['chat', 'messages', tempDialogId], {
+					messages: [{
+						id: `temp-user-${Date.now()}`,
+						content: trimmedMessage,
+						role: "user",
+						timestamp: Date.now(),
+					}],
+					has_encrypted_messages: settings.has_encrypted_messages,
+					last_model_info: null
+				});
+				
+				navigate({ to: `/chat/${tempDialogId}` as any });
+			}
+
+			// Подготавливаем данные для запроса
+			const messageData = {
+				model: settings.model,
+				message: trimmedMessage,
+				max_tokens: settings.max_tokens,
+				temperature: settings.temperature,
+				// Добавляем dialog_id если есть активный диалог (но не временный)
+				...(activeDialogId && !activeDialogId.startsWith('temp-') && { dialog_id: activeDialogId }),
+			};
+
+			try {
+				if (isSecure) {
+					const response = await sendSecureMessageMutation.mutateAsync(messageData);
+					
+					// Если это новый диалог и получили реальный dialog_id
+					if (isNewChat && response.dialog_id && response.dialog_id !== currentDialogId) {
+						setActiveDialogId(response.dialog_id);
+						navigate({ to: `/chat/${response.dialog_id}`, replace: true } as any);
+					}
+				} else {
+					const response = await sendMessageMutation.mutateAsync(messageData);
+					
+					// Если это новый диалог и получили реальный dialog_id
+					if (isNewChat && response.dialog_id && response.dialog_id !== currentDialogId) {
+						setActiveDialogId(response.dialog_id);
+						navigate({ to: `/chat/${response.dialog_id}`, replace: true } as any);
+					}
+				}
+			} catch (error) {
+				console.error("Failed to send message:", error);
+				// При ошибке в новом чате возвращаемся на главную
+				if (isNewChat) {
+					setActiveDialogId(null);
+					navigate({ to: "/", replace: true } as any);
+				}
+			}
 		}
 	};
 
@@ -55,7 +134,7 @@ export function ChatInput() {
 				<div className="flex items-center gap-1">
 					<SecureToggle
 						isSecure={isSecure}
-						onToggle={setIsSecure}
+						onToggle={(secure) => updateDefaultSettings({ has_encrypted_messages: secure })}
 						disabled={isLoading}
 					/>
 				</div>
