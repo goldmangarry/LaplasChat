@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient, useMutationState } from "@tanstack/react-query";
 import { chatApi } from "./index";
-import type { SendMessageRequest, ChatMessage } from "./types";
+import { modelsApi } from "../models/index";
+import type { SendMessageRequest, ChatMessage, ModelInfo } from "./types";
 
 export const useChatHistory = () => {
 	return useQuery({
@@ -68,7 +69,7 @@ export const useSendMessage = () => {
 			}
 		},
 		// После успеха или ошибки обновляем данные
-		onSettled: (data, _error, _messageData, context) => {
+		onSettled: async (data, _error, _messageData, context) => {
 			if (context?.dialogId) {
 				// Инвалидируем запрос сообщений для этого чата
 				queryClient.invalidateQueries({ queryKey: ['chat', 'messages', context.dialogId] });
@@ -80,6 +81,24 @@ export const useSendMessage = () => {
 				
 				// Если это был новый чат (без dialog_id), устанавливаем данные для реального чата
 				if (!context?.dialogId) {
+					// Получаем информацию о модели из запроса
+					let modelInfo: ModelInfo | null = null;
+					try {
+						const modelsData = await modelsApi.getModels();
+						const targetModel = modelsData.models.find(model => model.id === _messageData.model);
+						if (targetModel) {
+							modelInfo = {
+								id: targetModel.id,
+								name: targetModel.name,
+								provider: targetModel.provider,
+								max_output: _messageData.max_tokens,
+								temperature: _messageData.temperature
+							};
+						}
+					} catch (error) {
+						console.warn('Failed to fetch model info for new chat:', error);
+					}
+
 					// Создаем данные для нового чата с ответом сервера
 					queryClient.setQueryData(['chat', 'messages', data.dialog_id], {
 						messages: [
@@ -90,16 +109,17 @@ export const useSendMessage = () => {
 								role: "user" as const,
 								timestamp: Date.now(),
 							},
-							// Ответ ассистента из сервера
+							// Ответ ассистента из сервера с информацией о модели
 							{
 								id: `assistant-${Date.now()}`,
 								content: data.response,
 								role: "assistant" as const,
 								timestamp: Date.now(),
+								last_model_info: modelInfo
 							}
 						],
 						has_encrypted_messages: false,
-						last_model_info: null
+						last_model_info: modelInfo
 					});
 				}
 			}
@@ -110,7 +130,25 @@ export const useSendMessage = () => {
 export const useChatMessages = (dialogId: string) => {
 	return useQuery({
 		queryKey: ["chat", "messages", dialogId],
-		queryFn: () => chatApi.getChatMessages(dialogId),
+		queryFn: async () => {
+			const response = await chatApi.getChatMessages(dialogId);
+			
+			// Прокидываем last_model_info в каждое сообщение ассистента
+			const messagesWithModelInfo = response.messages.map(message => {
+				if (message.role === 'assistant' && !message.last_model_info) {
+					return {
+						...message,
+						last_model_info: response.last_model_info
+					};
+				}
+				return message;
+			});
+			
+			return {
+				...response,
+				messages: messagesWithModelInfo
+			};
+		},
 		enabled: !!dialogId && !dialogId.startsWith('temp-'), // Отключаем запросы для временных чатов
 	});
 };
@@ -162,7 +200,7 @@ export const useSendSecureMessage = () => {
 				queryClient.setQueryData(['chat', 'messages', context.dialogId], context.previousData);
 			}
 		},
-		onSettled: (data, _error, _messageData, context) => {
+		onSettled: async (data, _error, _messageData, context) => {
 			if (context?.dialogId) {
 				queryClient.invalidateQueries({ queryKey: ['chat', 'messages', context.dialogId] });
 			}
@@ -173,6 +211,24 @@ export const useSendSecureMessage = () => {
 				
 				// Если это был новый чат (без dialog_id), устанавливаем данные для реального чата
 				if (!context?.dialogId) {
+					// Получаем информацию о модели из запроса
+					let modelInfo: ModelInfo | null = null;
+					try {
+						const modelsData = await modelsApi.getModels();
+						const targetModel = modelsData.models.find(model => model.id === _messageData.model);
+						if (targetModel) {
+							modelInfo = {
+								id: targetModel.id,
+								name: targetModel.name,
+								provider: targetModel.provider,
+								max_output: _messageData.max_tokens,
+								temperature: _messageData.temperature
+							};
+						}
+					} catch (error) {
+						console.warn('Failed to fetch model info for secure new chat:', error);
+					}
+
 					// Создаем данные для нового чата с ответом сервера
 					queryClient.setQueryData(['chat', 'messages', data.dialog_id], {
 						messages: [
@@ -183,16 +239,17 @@ export const useSendSecureMessage = () => {
 								role: "user" as const,
 								timestamp: Date.now(),
 							},
-							// Ответ ассистента из сервера (для secure используем decrypted_response)
+							// Ответ ассистента из сервера (для secure используем decrypted_response) с информацией о модели
 							{
 								id: `assistant-${Date.now()}`,
 								content: data.decrypted_response,
 								role: "assistant" as const,
 								timestamp: Date.now(),
+								last_model_info: modelInfo
 							}
 						],
 						has_encrypted_messages: true,
-						last_model_info: null
+						last_model_info: modelInfo
 					});
 				}
 			}

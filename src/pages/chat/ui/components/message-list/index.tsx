@@ -2,6 +2,7 @@ import { useChatMessages, usePendingMessages, usePendingSecureMessages } from "@
 import { useTranslation } from "react-i18next";
 import { UserMessage } from "./components/user-message";
 import { AssistantMessage } from "./components/assistant-message";
+import { LoadingMessage } from "./components/loading-message";
 
 type MessageListProps = {
   dialogId: string;
@@ -71,19 +72,7 @@ export const MessageList = ({ dialogId }: MessageListProps) => {
       {/* Loader для pending мутаций и фоновых запросов */}
       {shouldShowLoader && (
         <div className="flex justify-start">
-          <div className="bg-muted rounded-lg px-4 py-2 max-w-[100%]">
-            <div className="text-sm font-medium mb-1">{t('chat.assistant')}</div>
-            <div className="flex items-center space-x-1">
-              <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-current rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-              </div>
-              <span className="text-sm text-muted-foreground ml-2">
-                {t('chat.typing')}
-              </span>
-            </div>
-          </div>
+          <LoadingMessage dialogId={dialogId} />
         </div>
       )}
     </div>
