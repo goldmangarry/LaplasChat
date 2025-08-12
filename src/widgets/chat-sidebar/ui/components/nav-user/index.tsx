@@ -27,13 +27,18 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useUserProfile } from "@/core/api/auth/hooks"
+import { useUserProfile, useLogout } from "@/core/api/auth/hooks"
 import { AVATAR_SIZE, DROPDOWN_MENU_WIDTH, DEFAULT_AVATAR_FALLBACK, SIDE_OFFSET } from "./constants"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
   const { t } = useTranslation()
   const { data: user, isLoading } = useUserProfile()
+  const logoutMutation = useLogout()
+
+  const handleLogout = () => {
+    logoutMutation.mutate()
+  }
 
   if (isLoading || !user) {
     return null
@@ -85,9 +90,9 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout} disabled={logoutMutation.isPending}>
               <LogOut />
-              {t('user.logout')}
+              {logoutMutation.isPending ? t('user.loggingOut') : t('user.logout')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

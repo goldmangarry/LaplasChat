@@ -43,6 +43,7 @@
 	},
 	"user": {
 		"logout": "Выйти",
+		"loggingOut": "Выходим...",
 		"changePassword": "Изменить пароль"
 	},
 	"chatHeader": {
