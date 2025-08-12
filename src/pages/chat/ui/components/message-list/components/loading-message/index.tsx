@@ -3,7 +3,6 @@ import { useChatStore } from "@/core/chat/store";
 import { useModels } from "@/core/api/models/hooks";
 import { usePendingMessages, usePendingSecureMessages } from "@/core/api/chat/hooks";
 import type { SendMessageRequest } from "@/core/api/chat/types";
-import { MorphingText } from "@/components/magicui/morphing-text";
 import { AnimatedShinyText } from "@/components/magicui/animated-shiny-text";
 
 // Импорты иконок провайдеров
