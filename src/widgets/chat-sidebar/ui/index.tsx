@@ -6,8 +6,8 @@ import {
 	SidebarHeader,
 	SidebarRail,
 } from "@/components/ui/sidebar";
-import { NavMain } from "./components/nav-main";
 import { NavChats } from "./components/nav-chats";
+import { NavMain } from "./components/nav-main";
 import { NavUser } from "./components/nav-user";
 import { TeamSwitcher } from "./components/team-switcher";
 

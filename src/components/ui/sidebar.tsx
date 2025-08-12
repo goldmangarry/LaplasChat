@@ -3,7 +3,6 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
-import { PanelLeftIcon } from "lucide-react"
 
 import { useIsMobile } from "@/components/hooks/use-mobile"
 import { cn } from "@/components/lib/utils"
@@ -24,6 +23,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { PanelLeftIcon } from "../animate-ui/icons/panel-left"
+import { AnimateIcon } from "../animate-ui/icons/icon"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -261,7 +262,8 @@ function SidebarTrigger({
   const { toggleSidebar } = useSidebar()
 
   return (
-    <Button
+    <AnimateIcon animateOnHover animateOnTap>
+      <Button
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       variant="ghost"
@@ -276,6 +278,7 @@ function SidebarTrigger({
       <PanelLeftIcon />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
+    </AnimateIcon>
   )
 }
 

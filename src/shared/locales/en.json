@@ -35,5 +35,24 @@
 	"user": {
 		"logout": "Log out",
 		"changePassword": "Change password"
+	},
+	"chatHeader": {
+		"model": "Model",
+		"openSettings": "Settings",
+		"modelSettings": "Model Settings",
+		"searchModel": "Search model...",
+		"noModelFound": "No model found."
+	},
+	"chatInput": {
+		"placeholder": "Ask something....",
+		"send": "Send",
+		"secureMode": "Secure Mode",
+		"webSearch": "Web Search",
+		"deepthink": "Deepthink"
+	},
+	"suggestions": {
+		"aiBusinessScaling": "How do large companies scale AI in key business processes?",
+		"aiHealthcare": "What AI solutions do healthcare organizations use for diagnosis and treatment?",
+		"nlpCustomerSupport": "How do companies use NLP to automate customer support?"
 	}
 }

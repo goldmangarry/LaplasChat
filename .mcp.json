@@ -1,12 +1,17 @@
 {
-  "mcpServers": {
-    "Framelink Figma MCP": {
-      "command": "npx",
-      "args": ["-y", "figma-developer-mcp", "--figma-api-key=figd_Ctm33rwkRYMKKkzAnR_i2r6i8-abEzoPRml9VcbF", "--stdio"]
-    },
-    "context7": {
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"]
-    }
-  }
+	"mcpServers": {
+		"Framelink Figma MCP": {
+			"command": "npx",
+			"args": [
+				"-y",
+				"figma-developer-mcp",
+				"--figma-api-key=figd_Ctm33rwkRYMKKkzAnR_i2r6i8-abEzoPRml9VcbF",
+				"--stdio"
+			]
+		},
+		"context7": {
+			"command": "npx",
+			"args": ["-y", "@upstash/context7-mcp"]
+		}
+	}
 }

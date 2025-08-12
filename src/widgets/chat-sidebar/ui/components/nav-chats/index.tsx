@@ -1,6 +1,5 @@
 import {
   MoreHorizontal,
-  Trash2,
   ShieldCheck,
   Edit,
 } from "lucide-react"
@@ -24,6 +23,8 @@ import {
 } from "@/components/ui/sidebar"
 import { useChatHistory } from "@/core/api/chat/hooks"
 import { DROPDOWN_MENU_WIDTH } from "./constants"
+import { Trash2 } from "@/components/animate-ui/icons/trash-2"
+import { AnimateIcon } from "@/components/animate-ui/icons/icon"
 
 export function NavChats() {
   const { isMobile } = useSidebar()
@@ -63,10 +64,14 @@ export function NavChats() {
                   <span>{t('chat.renameChat')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                <AnimateIcon animateOnHover animateOnTap>
                 <DropdownMenuItem>
-                  <Trash2 className="text-destructive" />
-                  <span className="text-destructive">{t('chat.deleteChat')}</span>
+                    <div className="flex items-center gap-2">
+                      <Trash2 className="text-destructive" />
+                      <span className="text-destructive">{t('chat.deleteChat')}</span>
+                    </div>
                 </DropdownMenuItem>
+                </AnimateIcon>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>

@@ -19,7 +19,7 @@ apiClient.interceptors.response.use(
 	(error) => {
 		if (error.response?.status === 401) {
 			// Don't redirect on login endpoint - let the form handle the error
-			const isLoginRequest = error.config?.url?.includes('/api/auth/login');
+			const isLoginRequest = error.config?.url?.includes("/api/auth/login");
 			if (!isLoginRequest) {
 				localStorage.removeItem("access_token");
 				localStorage.removeItem("refresh_token");

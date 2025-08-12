@@ -1,9 +1,9 @@
-import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { routeTree } from "@/routeTree.gen";
 import { queryClient } from "@/core/api/query-client";
+import { routeTree } from "@/routeTree.gen";
 import "@/shared/lib/i18n";
 import "./routes/index.css";
 

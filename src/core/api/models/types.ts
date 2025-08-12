@@ -1,4 +1,13 @@
-export type ModelProvider = 'openai' | 'anthropic';
+export type ModelProvider =
+	| "openai"
+	| "anthropic"
+	| "perplexity"
+	| "google"
+	| "meta-llama"
+	| "mistralai"
+	| "deepseek"
+	| "qwen"
+	| "grok";
 
 export type Model = {
 	id: string;
