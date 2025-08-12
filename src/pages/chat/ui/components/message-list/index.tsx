@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useChatMessages, usePendingMessages, usePendingSecureMessages } from "@/core/api/chat/hooks";
 import { useTranslation } from "react-i18next";
 import { UserMessage } from "./components/user-message";
@@ -10,6 +11,7 @@ type MessageListProps = {
 
 export const MessageList = ({ dialogId }: MessageListProps) => {
   const { t } = useTranslation();
+  const loadingRef = useRef<HTMLDivElement>(null);
   
   // Получаем сообщения из React Query кеша
   const { 
@@ -30,6 +32,16 @@ export const MessageList = ({ dialogId }: MessageListProps) => {
   // Показываем loader если есть pending мутации или идет фоновое обновление данных
   // НО только если у нас уже есть сообщения (чтобы не показывать loader при первой загрузке)
   const shouldShowLoader = hasPendingMessage || (isFetchingMessages && messages.length > 0);
+
+  // Автоскролл к элементу loading при появлении pending сообщения
+  useEffect(() => {
+    if (shouldShowLoader && loadingRef.current) {
+      loadingRef.current.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'nearest' 
+      });
+    }
+  }, [shouldShowLoader]);
 
   if (messagesError) {
     return (

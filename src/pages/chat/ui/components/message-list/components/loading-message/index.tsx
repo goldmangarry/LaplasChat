@@ -1,8 +1,10 @@
+import { useState, useEffect } from "react";
 import { useChatStore } from "@/core/chat/store";
-import { useTranslation } from "react-i18next";
 import { useModels } from "@/core/api/models/hooks";
 import { usePendingMessages, usePendingSecureMessages } from "@/core/api/chat/hooks";
 import type { SendMessageRequest } from "@/core/api/chat/types";
+import { MorphingText } from "@/components/magicui/morphing-text";
+import { AnimatedShinyText } from "@/components/magicui/animated-shiny-text";
 
 // Импорты иконок провайдеров
 import AnthropicIcon from "@/assets/icons/anthropic.svg";
@@ -67,14 +69,33 @@ const getProviderFallback = (provider: string) => {
   }
 };
 
+// Текстовки для обычных сообщений (смена каждые 5 секунд)
+const NORMAL_LOADING_TEXTS = [
+  'Генерирую ответ...',
+  'Думаю...',
+  'Обрабатываю запрос...',
+  'Пишу для вас...',
+  'Формулирую ответ...',
+];
+
+// Текстовки для secure сообщений (смена каждые 10 секунд)
+const SECURE_LOADING_TEXTS = [
+  'Сканирую на уязвимости...',
+  'Шифрую запрос...', 
+  'Отправляю запрос к внешней ИИ модели...',
+  'Ожидаю ответ от ИИ модели...',
+  'Расшифровываю ответ...',
+  'Готовлю ответ...',
+];
+
 type LoadingMessageProps = {
   dialogId: string;
 };
 
 export const LoadingMessage = ({ dialogId }: LoadingMessageProps) => {
-  const { t } = useTranslation();
   const { getCurrentSettings } = useChatStore();
   const settings = getCurrentSettings();
+  const [currentTextIndex, setCurrentTextIndex] = useState(0);
 
   // Получаем данные о доступных моделях
   const { data: modelsData } = useModels();
@@ -83,6 +104,9 @@ export const LoadingMessage = ({ dialogId }: LoadingMessageProps) => {
   // Получаем pending запросы для этого диалога
   const pendingMessages = usePendingMessages(dialogId);
   const pendingSecureMessages = usePendingSecureMessages(dialogId);
+
+  // Определяем, является ли это secure сообщением
+  const isSecure = pendingSecureMessages.length > 0;
 
   // Получаем первый pending запрос (если есть)
   const pendingRequest: SendMessageRequest | undefined = 
@@ -100,6 +124,19 @@ export const LoadingMessage = ({ dialogId }: LoadingMessageProps) => {
 
   const ProviderIcon = getProviderIcon(provider);
   const providerFallback = getProviderFallback(provider);
+
+  // Выбираем соответствующий массив текстовок и интервал
+  const loadingTexts = isSecure ? SECURE_LOADING_TEXTS : NORMAL_LOADING_TEXTS;
+  const intervalTime = isSecure ? 10000 : 5000; // 10 сек для secure, 5 сек для обычных
+
+  // Логика смены текстовок по таймеру
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTextIndex((prevIndex) => (prevIndex + 1) % loadingTexts.length);
+    }, intervalTime);
+
+    return () => clearInterval(interval);
+  }, [loadingTexts.length, intervalTime]);
 
   return (
     <div className="max-w-[100%] rounded-lg px-4 py-3 text-foreground min-w-0 break-words">
@@ -136,16 +173,11 @@ export const LoadingMessage = ({ dialogId }: LoadingMessageProps) => {
         </span>
       </div>
       
-      {/* Лоадер с анимацией */}
-      <div className="flex items-center space-x-1">
-        <div className="flex space-x-1">
-          <div className="w-2 h-2 bg-current rounded-full animate-bounce"></div>
-          <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-          <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-        </div>
-        <span className="text-sm text-muted-foreground ml-2">
-          {t('chat.typing')}
-        </span>
+      {/* Анимированный текст лоадера */}
+      <div className="flex justify-start">
+        <AnimatedShinyText className="text-sm ml-0">
+          {loadingTexts[currentTextIndex]}
+        </AnimatedShinyText>
       </div>
     </div>
   );
