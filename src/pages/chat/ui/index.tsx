@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { useChatStore } from "@/core/chat/store";
+import { useEffect, useState } from "react";
 import { useChatHistory } from "@/core/api/chat/hooks";
+import { useChatStore } from "@/core/chat/store";
 import { ChatInput } from "@/features/chat-input";
 import { ChatHeader } from "@/widgets/chat-header";
 import { ChatSettingsDrawer } from "@/widgets/chat-settings-drawer";
@@ -8,7 +8,12 @@ import type { ChatPageProps } from "../types";
 import { MessageList } from "./components/message-list";
 
 export const ChatPage = ({ dialogId }: ChatPageProps) => {
-	const { getCurrentSettings, updateCurrentSettings, setActiveDialogId, applyChatSettingsFromDialog } = useChatStore();
+	const {
+		getCurrentSettings,
+		updateCurrentSettings,
+		setActiveDialogId,
+		applyChatSettingsFromDialog,
+	} = useChatStore();
 	const { data: chatHistory } = useChatHistory();
 	const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -16,7 +21,9 @@ export const ChatPage = ({ dialogId }: ChatPageProps) => {
 	useEffect(() => {
 		if (dialogId && chatHistory?.dialogs) {
 			setActiveDialogId(dialogId);
-			const currentChat = chatHistory.dialogs.find(dialog => dialog.id === dialogId);
+			const currentChat = chatHistory.dialogs.find(
+				(dialog) => dialog.id === dialogId,
+			);
 			if (currentChat) {
 				applyChatSettingsFromDialog(currentChat);
 			}
@@ -32,12 +39,14 @@ export const ChatPage = ({ dialogId }: ChatPageProps) => {
 				onOpenSettingsDrawer={() => setIsSettingsOpen(true)}
 			/>
 
-			<div className="flex-1 overflow-hidden px-[15%]">
+            <div className="flex flex-col flex-1 px-[10%]">
+				<div className="flex-1 overflow-hidden">
 				<MessageList dialogId={dialogId} />
 			</div>
 
-			<div className="p-4 px-[15%]">
+			<div className="p-4">
 				<ChatInput />
+			</div>
 			</div>
 
 			<ChatSettingsDrawer

@@ -66,6 +66,7 @@ export const SettingsSlider = ({
 							value={inputValue}
 							onChange={handleInputChange}
 							onBlur={handleInputBlur}
+							autoFocus={false}
 							className="w-full h-8 px-3 text-sm text-center text-stone-800 bg-white border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
 						/>
 					</div>
@@ -76,6 +77,7 @@ export const SettingsSlider = ({
 			<div className="relative w-full h-1 bg-neutral-100 rounded-full">
 				<input
 					type="range"
+					autoFocus={false}
 					min={min}
 					max={max}
 					step={step}

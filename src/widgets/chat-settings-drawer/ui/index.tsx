@@ -40,7 +40,11 @@ export const ChatSettingsDrawer = ({
 	};
 	return (
 		<Sheet open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-			<SheetContent side="right" className="w-full sm:max-w-md p-0">
+			<SheetContent 
+				side="right" 
+				className="w-full sm:max-w-md p-0"
+				onOpenAutoFocus={(e) => e.preventDefault()}
+			>
 				<ChatSettingsHeader />
 				<ModelInfoBlock settings={settings} />
 
