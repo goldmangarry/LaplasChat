@@ -63,3 +63,7 @@ export type SendSecureMessageResponse = {
 	content_type: string;
 	dialog_id: string;
 };
+
+export type DeleteChatHistoryRequest = {
+	dialog_id: string;
+};

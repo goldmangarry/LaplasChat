@@ -300,3 +300,18 @@ export const usePendingSecureMessages = (dialogId: string) => {
 	
 	return pendingMutations.filter((mutation): mutation is SendMessageRequest => mutation !== undefined);
 };
+
+export const useDeleteChatHistory = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (dialogId: string) => chatApi.deleteChatHistory(dialogId),
+		onSuccess: (_, dialogId) => {
+			// Удаляем данные чата из кеша
+			queryClient.removeQueries({ queryKey: ["chat", "messages", dialogId] });
+			
+			// Инвалидируем историю чатов для обновления списка
+			queryClient.invalidateQueries({ queryKey: ["chat", "history"] });
+		},
+	});
+};

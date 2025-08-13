@@ -39,7 +39,13 @@
 		"startConversation": "Начните разговор",
 		"tempChatStart": "Временный чат создан",
 		"errorLoadingMessages": "Ошибка загрузки сообщений",
-		"typing": "печатает..."
+		"typing": "печатает...",
+		"deleteChatModal": {
+			"title": "Удалить чат?",
+			"description": "Вы хотите удалить чат \"{{chatName}}\"? Это действие необратимо и все сообщения будут безвозвратно потеряны.",
+			"deleteButton": "Удалить",
+			"cancelButton": "Отменить"
+		}
 	},
 	"user": {
 		"logout": "Выйти",

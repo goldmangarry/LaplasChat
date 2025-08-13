@@ -2,7 +2,6 @@
 
 import {
   ChevronsUpDown,
-  LogOut,
   KeyRound,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -29,6 +28,8 @@ import {
 } from "@/components/ui/sidebar"
 import { useUserProfile, useLogout } from "@/core/api/auth/hooks"
 import { AVATAR_SIZE, DROPDOWN_MENU_WIDTH, DEFAULT_AVATAR_FALLBACK, SIDE_OFFSET } from "./constants"
+import { LogOut } from "@/components/animate-ui/icons/log-out"
+import { AnimateIcon } from "@/components/animate-ui/icons/icon"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
@@ -90,10 +91,12 @@ export function NavUser() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
+            <AnimateIcon animateOnHover animateOnTap>
             <DropdownMenuItem onClick={handleLogout} disabled={logoutMutation.isPending}>
               <LogOut />
               {logoutMutation.isPending ? t('user.loggingOut') : t('user.logout')}
             </DropdownMenuItem>
+            </AnimateIcon>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

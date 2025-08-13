@@ -39,7 +39,13 @@
 		"startConversation": "Start a conversation",
 		"tempChatStart": "Temporary chat started",
 		"errorLoadingMessages": "Error loading messages",
-		"typing": "typing..."
+		"typing": "typing...",
+		"deleteChatModal": {
+			"title": "Delete chat?",
+			"description": "Do you want to delete the chat \"{{chatName}}\"? This action is irreversible and all messages will be permanently lost.",
+			"deleteButton": "Delete",
+			"cancelButton": "Cancel"
+		}
 	},
 	"user": {
 		"logout": "Log out",

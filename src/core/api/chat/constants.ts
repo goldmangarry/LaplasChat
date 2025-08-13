@@ -3,4 +3,5 @@ export const CHAT_ENDPOINTS = {
 	SEND_MESSAGE: "/api/chat",
 	SEND_SECURE_MESSAGE: "/api/chat/secure-mode",
 	CHAT_MESSAGES: (dialogId: string) => `/api/chat/history/${dialogId}`,
+	DELETE_CHAT_HISTORY: (dialogId: string) => `/api/chat/history/${dialogId}`,
 } as const;

@@ -52,4 +52,8 @@ export const chatApi = {
 		);
 		return response.data;
 	},
+
+	deleteChatHistory: async (dialogId: string): Promise<void> => {
+		await apiClient.delete(CHAT_ENDPOINTS.DELETE_CHAT_HISTORY(dialogId));
+	},
 };
