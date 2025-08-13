@@ -352,3 +352,10 @@ export const useFactCheck = () => {
 		mutationKey: ['factCheck'],
 	});
 };
+
+export const useUploadFiles = () => {
+	return useMutation({
+		mutationFn: (files: File[]) => chatApi.uploadFiles(files),
+		mutationKey: ['uploadFiles'],
+	});
+};

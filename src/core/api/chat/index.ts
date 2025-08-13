@@ -10,6 +10,7 @@ import type {
 	UpdateDialogNameResponse,
 	FactCheckRequest,
 	FactCheckResponse,
+	UploadFilesResponse,
 } from "./types";
 
 export const chatApi = {
@@ -86,6 +87,25 @@ export const chatApi = {
 			{
 				headers: {
 					"Content-Type": "application/json",
+				},
+			},
+		);
+		return response.data;
+	},
+
+	uploadFiles: async (files: File[]): Promise<UploadFilesResponse> => {
+		const formData = new FormData();
+		
+		files.forEach((file) => {
+			formData.append("files", file);
+		});
+
+		const response = await apiClient.post<UploadFilesResponse>(
+			CHAT_ENDPOINTS.UPLOAD,
+			formData,
+			{
+				headers: {
+					"Content-Type": "multipart/form-data",
 				},
 			},
 		);

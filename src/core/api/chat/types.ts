@@ -25,6 +25,7 @@ export type SendMessageRequest = {
 	max_tokens: number;
 	temperature: number;
 	dialog_id?: string;
+	file_ids?: string[];
 };
 
 export type SendMessageResponse = {
@@ -34,6 +35,14 @@ export type SendMessageResponse = {
 
 export type MessageRole = "assistant" | "user";
 
+export type AttachedFile = {
+	id: string;
+	filename: string;
+	content_type: string;
+	file_size: number;
+	created_at: string;
+};
+
 export type ChatMessage = {
 	id?: string;
 	role: MessageRole;
@@ -42,6 +51,7 @@ export type ChatMessage = {
 	timestamp?: number;
 	encrypted_content?: string;
 	last_model_info?: ModelInfo;
+	attached_files?: AttachedFile[];
 };
 
 export type ChatMessagesResponse = {
@@ -85,4 +95,16 @@ export type FactCheckRequest = {
 export type FactCheckResponse = {
 	response: string;
 	urls: string[];
+};
+
+export type UploadedFile = {
+	file_id: string;
+	filename: string;
+	download_url: string;
+	expires_at: string;
+	text_extracted: boolean;
+};
+
+export type UploadFilesResponse = {
+	files: UploadedFile[];
 };

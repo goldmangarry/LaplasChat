@@ -1,12 +1,14 @@
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "@tanstack/react-router";
-import { useChatInputStore } from "../model/store";
-import { useChatStore } from "@/core/chat/store";
 import { useSendMessage, useSendSecureMessage } from "@/core/api/chat/hooks";
-import { useQueryClient } from "@tanstack/react-query";
+import { useChatStore } from "@/core/chat/store";
+import { useChatInputStore } from "../model/store";
+import { FileUploadButton } from "./components/file-upload-button";
 import { SecureToggle } from "./components/secure-toggle";
 import { SendButton } from "./components/send-button";
+import { UploadedFilesList } from "./components/uploaded-files-list";
 import { WebSearchButton } from "./components/web-search-button";
 
 export function ChatInput() {
@@ -15,23 +17,43 @@ export function ChatInput() {
 	const queryClient = useQueryClient();
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-	const { message, setMessage, clearMessage, webSearchEnabled, setWebSearchEnabled } = useChatInputStore();
-	const { getCurrentSettings, updateCurrentSettings, activeDialogId, setActiveDialogId } = useChatStore();
-	
+	const {
+		message,
+		setMessage,
+		clearMessage,
+		webSearchEnabled,
+		setWebSearchEnabled,
+		uploadedFiles,
+		clearUploadedFiles,
+	} = useChatInputStore();
+	const {
+		getCurrentSettings,
+		updateCurrentSettings,
+		activeDialogId,
+		setActiveDialogId,
+	} = useChatStore();
+
 	const settings = getCurrentSettings();
 	const isSecure = settings.has_encrypted_messages;
 
 	const sendMessageMutation = useSendMessage();
 	const sendSecureMessageMutation = useSendSecureMessage();
-	
-	const isLoading = sendMessageMutation.isPending || sendSecureMessageMutation.isPending;
+
+	const isLoading =
+		sendMessageMutation.isPending || sendSecureMessageMutation.isPending;
 
 	const handleSend = async () => {
 		if (message.trim() && !isLoading) {
 			const trimmedMessage = message.trim();
-			
+
 			// Очищаем input сразу
 			clearMessage();
+
+			// Сохраняем file_ids для текущего сообщения
+			const fileIds = uploadedFiles.map((file) => file.file_id);
+
+			// Очищаем загруженные файлы после начала отправки
+			clearUploadedFiles();
 
 			// Проверяем, нужно ли создать новый чат
 			const isNewChat = !activeDialogId;
@@ -42,52 +64,73 @@ export function ChatInput() {
 				const tempDialogId = `temp-${Date.now()}`;
 				currentDialogId = tempDialogId;
 				setActiveDialogId(tempDialogId);
-				
+
 				// Предзаполняем кеш для временного чата
-				queryClient.setQueryData(['chat', 'messages', tempDialogId], {
-					messages: [{
-						id: `temp-user-${Date.now()}`,
-						content: trimmedMessage,
-						role: "user",
-						timestamp: Date.now(),
-					}],
+				queryClient.setQueryData(["chat", "messages", tempDialogId], {
+					messages: [
+						{
+							id: `temp-user-${Date.now()}`,
+							content: trimmedMessage,
+							role: "user",
+							timestamp: Date.now(),
+						},
+					],
 					has_encrypted_messages: settings.has_encrypted_messages,
-					last_model_info: null
+					last_model_info: null,
 				});
-				
+
 				navigate({ to: `/chat/${tempDialogId}` as any });
 			}
 
 			// Подготавливаем данные для запроса
-			const modelId = webSearchEnabled && !settings.model.includes(':online') 
-				? `${settings.model}:online` 
-				: settings.model;
-			
+			const modelId =
+				webSearchEnabled && !settings.model.includes(":online")
+					? `${settings.model}:online`
+					: settings.model;
+
 			const messageData = {
 				model: modelId,
 				message: trimmedMessage,
 				max_tokens: settings.max_tokens,
 				temperature: settings.temperature,
 				// Добавляем dialog_id если есть активный диалог (но не временный)
-				...(activeDialogId && !activeDialogId.startsWith('temp-') && { dialog_id: activeDialogId }),
+				...(activeDialogId &&
+					!activeDialogId.startsWith("temp-") && { dialog_id: activeDialogId }),
+				// Добавляем file_ids если есть загруженные файлы
+				...(fileIds.length > 0 && { file_ids: fileIds }),
 			};
 
 			try {
 				if (isSecure) {
-					const response = await sendSecureMessageMutation.mutateAsync(messageData);
-					
+					const response =
+						await sendSecureMessageMutation.mutateAsync(messageData);
+
 					// Если это новый диалог и получили реальный dialog_id
-					if (isNewChat && response.dialog_id && response.dialog_id !== currentDialogId) {
+					if (
+						isNewChat &&
+						response.dialog_id &&
+						response.dialog_id !== currentDialogId
+					) {
 						setActiveDialogId(response.dialog_id);
-						navigate({ to: `/chat/${response.dialog_id}`, replace: true } as any);
+						navigate({
+							to: `/chat/${response.dialog_id}`,
+							replace: true,
+						} as any);
 					}
 				} else {
 					const response = await sendMessageMutation.mutateAsync(messageData);
-					
+
 					// Если это новый диалог и получили реальный dialog_id
-					if (isNewChat && response.dialog_id && response.dialog_id !== currentDialogId) {
+					if (
+						isNewChat &&
+						response.dialog_id &&
+						response.dialog_id !== currentDialogId
+					) {
 						setActiveDialogId(response.dialog_id);
-						navigate({ to: `/chat/${response.dialog_id}`, replace: true } as any);
+						navigate({
+							to: `/chat/${response.dialog_id}`,
+							replace: true,
+						} as any);
 					}
 				}
 			} catch (error) {
@@ -120,6 +163,7 @@ export function ChatInput() {
 		<div className="flex flex-col w-full max-w-4xl">
 			{/* Main Input Area */}
 			<div className="flex flex-col bg-white border border-gray-200 border-b-0 rounded-t-2xl shadow-sm">
+				<UploadedFilesList />
 				<textarea
 					ref={textareaRef}
 					value={message}
@@ -137,9 +181,12 @@ export function ChatInput() {
 			{/* Bottom Controls */}
 			<div className="flex items-center justify-between p-4 bg-white border border-gray-200 border-t-0 rounded-b-xl">
 				<div className="flex items-center gap-2">
+					<FileUploadButton disabled={isLoading} />
 					<SecureToggle
 						isSecure={isSecure}
-						onToggle={(secure) => updateCurrentSettings({ has_encrypted_messages: secure })}
+						onToggle={(secure) =>
+							updateCurrentSettings({ has_encrypted_messages: secure })
+						}
 						disabled={isLoading}
 					/>
 					<WebSearchButton
