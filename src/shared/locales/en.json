@@ -86,5 +86,16 @@
 	"message": {
 		"copy": "Copy",
 		"factCheck": "Fact Check"
+	},
+	"factCheck": {
+		"title": "Fact Check",
+		"modelName": "Perplexity: Sonar",
+		"modelDescription": "Perfect for finding current information on the internet; works with real data and fresh news; handles quick analysis of current events.",
+		"checking": "Checking facts...",
+		"error": "Error checking facts",
+		"errorGeneric": "An error occurred while checking facts",
+		"response": "Check Result",
+		"sources": "Sources",
+		"noData": "Click \"Fact Check\" button to start checking"
 	}
 }

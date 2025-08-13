@@ -16,6 +16,7 @@ import MarkdownRenderer from "@/components/ui/markdown-renderer";
 
 type AssistantMessageProps = {
   message: ChatMessage;
+  onFactCheck: (message: string) => void;
 };
 
 // Получить иконку провайдера
@@ -70,7 +71,7 @@ const getProviderFallback = (provider: string) => {
   }
 };
 
-export const AssistantMessage = ({ message }: AssistantMessageProps) => {
+export const AssistantMessage = ({ message, onFactCheck }: AssistantMessageProps) => {
   const { getCurrentSettings } = useChatStore();
   const settings = getCurrentSettings();
 
@@ -95,8 +96,7 @@ export const AssistantMessage = ({ message }: AssistantMessageProps) => {
   };
 
   const handleFactCheck = () => {
-    // TODO: Implement fact check functionality
-    console.log('Fact check requested for message:', message.content);
+    onFactCheck(message.content);
   };
 
   return (

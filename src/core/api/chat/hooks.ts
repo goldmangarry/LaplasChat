@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient, useMutationState } from "@tanstack/react-query";
 import { chatApi } from "./index";
 import { modelsApi } from "../models/index";
-import type { SendMessageRequest, ChatMessage, ModelInfo, UpdateDialogNameRequest, ChatHistoryResponse, Dialog, ChatMessagesResponse } from "./types";
+import type { SendMessageRequest, ChatMessage, ModelInfo, UpdateDialogNameRequest, ChatHistoryResponse, Dialog, ChatMessagesResponse, FactCheckRequest } from "./types";
 
 export const useChatHistory = () => {
 	return useQuery({
@@ -340,5 +340,12 @@ export const useUpdateDialogName = () => {
 			// Инвалидируем историю чатов для обновления
 			queryClient.invalidateQueries({ queryKey: ["chat", "history"] });
 		},
+	});
+};
+
+export const useFactCheck = () => {
+	return useMutation({
+		mutationFn: (factCheckData: FactCheckRequest) => chatApi.factCheck(factCheckData),
+		mutationKey: ['factCheck'],
 	});
 };

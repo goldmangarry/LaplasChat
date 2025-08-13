@@ -77,3 +77,12 @@ export type UpdateDialogNameResponse = {
 	dialog_name: string;
 	updated_at: string;
 };
+
+export type FactCheckRequest = {
+	message: string;
+};
+
+export type FactCheckResponse = {
+	response: string;
+	urls: string[];
+};

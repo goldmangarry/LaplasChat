@@ -7,9 +7,10 @@ import { LoadingMessage } from "./components/loading-message";
 
 type MessageListProps = {
   dialogId: string;
+  onFactCheck: (message: string) => void;
 };
 
-export const MessageList = ({ dialogId }: MessageListProps) => {
+export const MessageList = ({ dialogId, onFactCheck }: MessageListProps) => {
   const { t } = useTranslation();
   const loadingRef = useRef<HTMLDivElement>(null);
   
@@ -76,7 +77,10 @@ export const MessageList = ({ dialogId }: MessageListProps) => {
           {message.role === "user" ? (
             <UserMessage message={message} />
           ) : (
-            <AssistantMessage message={message} />
+            <AssistantMessage 
+              message={message} 
+              onFactCheck={onFactCheck}
+            />
           )}
         </div>
       ))}

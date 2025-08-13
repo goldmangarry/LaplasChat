@@ -8,6 +8,8 @@ import type {
 	SendSecureMessageResponse,
 	UpdateDialogNameRequest,
 	UpdateDialogNameResponse,
+	FactCheckRequest,
+	FactCheckResponse,
 } from "./types";
 
 export const chatApi = {
@@ -66,6 +68,21 @@ export const chatApi = {
 		const response = await apiClient.put<UpdateDialogNameResponse>(
 			CHAT_ENDPOINTS.UPDATE_DIALOG_NAME(dialogId),
 			updateData,
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			},
+		);
+		return response.data;
+	},
+
+	factCheck: async (
+		factCheckData: FactCheckRequest,
+	): Promise<FactCheckResponse> => {
+		const response = await apiClient.post<FactCheckResponse>(
+			CHAT_ENDPOINTS.FACT_CHECK,
+			factCheckData,
 			{
 				headers: {
 					"Content-Type": "application/json",
