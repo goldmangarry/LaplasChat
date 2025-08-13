@@ -1,12 +1,14 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSendMessage, useSendSecureMessage } from "@/core/api/chat/hooks";
 import { useChatStore } from "@/core/chat/store";
 import { useChatInputStore } from "../model/store";
 import { FileUploadButton } from "./components/file-upload-button";
 import { SecureToggle } from "./components/secure-toggle";
+import { SecureModeModal } from "./components/secure-mode-modal";
+import { DisableSecureModeModal } from "./components/disable-secure-mode-modal";
 import { SendButton } from "./components/send-button";
 import { UploadedFilesList } from "./components/uploaded-files-list";
 import { WebSearchButton } from "./components/web-search-button";
@@ -16,6 +18,8 @@ export function ChatInput() {
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const [showSecureModal, setShowSecureModal] = useState(false);
+	const [showDisableSecureModal, setShowDisableSecureModal] = useState(false);
 
 	const {
 		message,
@@ -159,49 +163,82 @@ export function ChatInput() {
 		}
 	};
 
-	return (
-		<div className="flex flex-col w-full max-w-4xl">
-			{/* Main Input Area */}
-			<div className="flex flex-col bg-white border border-gray-200 border-b-0 rounded-t-2xl shadow-sm">
-				<UploadedFilesList />
-				<textarea
-					ref={textareaRef}
-					value={message}
-					onChange={(e) => {
-						setMessage(e.target.value);
-						adjustTextareaHeight();
-					}}
-					onKeyDown={handleKeyDown}
-					placeholder={t("chatInput.placeholder", "Спросите что-нибудь....")}
-					disabled={isLoading}
-					className="w-full p-4 text-xl resize-none bg-transparent outline-none placeholder:text-neutral-500 min-h-[80px] max-h-48 overflow-y-auto"
-				/>
-			</div>
+	const handleDisableSecureMode = () => {
+		// User confirmed - actually disable secure mode
+		updateCurrentSettings({ has_encrypted_messages: false });
+		setShowDisableSecureModal(false);
+	};
 
-			{/* Bottom Controls */}
-			<div className="flex items-center justify-between p-4 bg-white border border-gray-200 border-t-0 rounded-b-xl">
-				<div className="flex items-center gap-2">
-					<FileUploadButton disabled={isLoading} />
-					<SecureToggle
-						isSecure={isSecure}
-						onToggle={(secure) =>
-							updateCurrentSettings({ has_encrypted_messages: secure })
-						}
+	const handleCancelDisableSecureMode = () => {
+		// User cancelled - keep secure mode enabled and close modal
+		setShowDisableSecureModal(false);
+	};
+
+	return (
+		<>
+			<div className="flex flex-col w-full max-w-4xl">
+				{/* Main Input Area */}
+				<div className="flex flex-col bg-white border border-gray-200 border-b-0 rounded-t-2xl shadow-sm">
+					<UploadedFilesList />
+					<textarea
+						ref={textareaRef}
+						value={message}
+						onChange={(e) => {
+							setMessage(e.target.value);
+							adjustTextareaHeight();
+						}}
+						onKeyDown={handleKeyDown}
+						placeholder={t("chatInput.placeholder", "Спросите что-нибудь....")}
 						disabled={isLoading}
-					/>
-					<WebSearchButton
-						isActive={webSearchEnabled}
-						onToggle={setWebSearchEnabled}
-						disabled={isLoading}
+						className="w-full p-4 text-xl resize-none bg-transparent outline-none placeholder:text-neutral-500 min-h-[80px] max-h-48 overflow-y-auto"
 					/>
 				</div>
 
-				<SendButton
-					onSend={handleSend}
-					disabled={!message.trim()}
-					loading={isLoading}
-				/>
+				{/* Bottom Controls */}
+				<div className="flex items-center justify-between p-4 bg-white border border-gray-200 border-t-0 rounded-b-xl">
+					<div className="flex items-center gap-2">
+						<FileUploadButton disabled={isLoading} />
+						<SecureToggle
+							isSecure={isSecure}
+							onToggle={(secure) => {
+								if (secure) {
+									// Enabling secure mode - show info modal and update settings
+									updateCurrentSettings({ has_encrypted_messages: secure });
+									setShowSecureModal(true);
+								} else {
+									// Disabling secure mode - show confirmation modal first
+									setShowDisableSecureModal(true);
+								}
+							}}
+							disabled={isLoading}
+						/>
+						<WebSearchButton
+							isActive={webSearchEnabled}
+							onToggle={setWebSearchEnabled}
+							disabled={isLoading}
+						/>
+					</div>
+
+					<SendButton
+						onSend={handleSend}
+						disabled={!message.trim()}
+						loading={isLoading}
+					/>
+				</div>
 			</div>
-		</div>
+
+			{/* Secure Mode Modal */}
+			<SecureModeModal
+				isOpen={showSecureModal}
+				onClose={() => setShowSecureModal(false)}
+			/>
+
+			{/* Disable Secure Mode Confirmation Modal */}
+			<DisableSecureModeModal
+				isOpen={showDisableSecureModal}
+				onCancel={handleCancelDisableSecureMode}
+				onConfirm={handleDisableSecureMode}
+			/>
+		</>
 	);
 }

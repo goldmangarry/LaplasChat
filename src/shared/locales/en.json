@@ -63,6 +63,7 @@
 		"placeholder": "Ask something....",
 		"send": "Send",
 		"secureMode": "Secure Mode",
+		"secureModeTooltip": "When Secure Mode is enabled, confidential data including company names, personal information, and other sensitive data is not transmitted to external AI models. We recommend using this mode when working with sensitive information",
 		"webSearch": "Web Search",
 		"deepthink": "Deepthink"
 	},
@@ -97,5 +98,16 @@
 		"response": "Check Result",
 		"sources": "Sources",
 		"noData": "Click \"Fact Check\" button to start checking"
+	},
+	"secureMode": {
+		"title": "You have entered secure mode",
+		"description": "Now all your messages undergo local encryption.\nNames, addresses and other personal data are automatically hidden.\nNo data is transmitted outside the platform.",
+		"understood": "Got it"
+	},
+	"disableSecureMode": {
+		"title": "Exit secure mode",
+		"description": "After exiting Secure Mode, your messages and personal data will no longer be encrypted.\nThis may make them accessible to third parties.",
+		"cancel": "Cancel",
+		"confirm": "Got it"
 	}
 }
