@@ -7,6 +7,7 @@ import { useSendMessage, useSendSecureMessage } from "@/core/api/chat/hooks";
 import { useQueryClient } from "@tanstack/react-query";
 import { SecureToggle } from "./components/secure-toggle";
 import { SendButton } from "./components/send-button";
+import { WebSearchButton } from "./components/web-search-button";
 
 export function ChatInput() {
 	const { t } = useTranslation();
@@ -14,7 +15,7 @@ export function ChatInput() {
 	const queryClient = useQueryClient();
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-	const { message, setMessage, clearMessage } = useChatInputStore();
+	const { message, setMessage, clearMessage, webSearchEnabled, setWebSearchEnabled } = useChatInputStore();
 	const { getCurrentSettings, updateCurrentSettings, activeDialogId, setActiveDialogId } = useChatStore();
 	
 	const settings = getCurrentSettings();
@@ -58,8 +59,12 @@ export function ChatInput() {
 			}
 
 			// Подготавливаем данные для запроса
+			const modelId = webSearchEnabled && !settings.model.includes(':online') 
+				? `${settings.model}:online` 
+				: settings.model;
+			
 			const messageData = {
-				model: settings.model,
+				model: modelId,
 				message: trimmedMessage,
 				max_tokens: settings.max_tokens,
 				temperature: settings.temperature,
@@ -131,10 +136,15 @@ export function ChatInput() {
 
 			{/* Bottom Controls */}
 			<div className="flex items-center justify-between p-4 bg-white border border-gray-200 border-t-0 rounded-b-xl">
-				<div className="flex items-center gap-1">
+				<div className="flex items-center gap-2">
 					<SecureToggle
 						isSecure={isSecure}
 						onToggle={(secure) => updateCurrentSettings({ has_encrypted_messages: secure })}
+						disabled={isLoading}
+					/>
+					<WebSearchButton
+						isActive={webSearchEnabled}
+						onToggle={setWebSearchEnabled}
 						disabled={isLoading}
 					/>
 				</div>

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient, useMutationState } from "@tanstack/react-query";
 import { chatApi } from "./index";
 import { modelsApi } from "../models/index";
+import { getDisplayModelId } from "@/shared/lib/model-utils";
 import type { SendMessageRequest, ChatMessage, ModelInfo, UpdateDialogNameRequest, ChatHistoryResponse, Dialog, ChatMessagesResponse, FactCheckRequest } from "./types";
 
 export const useChatHistory = () => {
@@ -85,7 +86,8 @@ export const useSendMessage = () => {
 					let modelInfo: ModelInfo | null = null;
 					try {
 						const modelsData = await modelsApi.getModels();
-						const targetModel = modelsData.models.find(model => model.id === _messageData.model);
+						const displayModelId = getDisplayModelId(_messageData.model);
+						const targetModel = modelsData.models.find(model => model.id === displayModelId);
 						if (targetModel) {
 							modelInfo = {
 								id: targetModel.id,
@@ -215,7 +217,8 @@ export const useSendSecureMessage = () => {
 					let modelInfo: ModelInfo | null = null;
 					try {
 						const modelsData = await modelsApi.getModels();
-						const targetModel = modelsData.models.find(model => model.id === _messageData.model);
+						const displayModelId = getDisplayModelId(_messageData.model);
+						const targetModel = modelsData.models.find(model => model.id === displayModelId);
 						if (targetModel) {
 							modelInfo = {
 								id: targetModel.id,

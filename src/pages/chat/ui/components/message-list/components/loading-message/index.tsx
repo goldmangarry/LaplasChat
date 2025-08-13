@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useChatStore } from "@/core/chat/store";
 import { useModels } from "@/core/api/models/hooks";
 import { usePendingMessages, usePendingSecureMessages } from "@/core/api/chat/hooks";
+import { getDisplayModelId } from "@/shared/lib/model-utils";
 import type { SendMessageRequest } from "@/core/api/chat/types";
 import { AnimatedShinyText } from "@/components/magicui/animated-shiny-text";
 
@@ -113,9 +114,10 @@ export const LoadingMessage = ({ dialogId }: LoadingMessageProps) => {
 
   // Находим модель по ID из pending запроса или используем текущие настройки
   const modelId = pendingRequest?.model || settings.model;
-  const targetModel = models.find(model => model.id === modelId);
+  const displayModelId = getDisplayModelId(modelId);
+  const targetModel = models.find(model => model.id === displayModelId);
 
-  const modelName = targetModel?.name || modelId;
+  const modelName = targetModel?.name || displayModelId;
   const provider = targetModel?.provider || settings.provider;
 
   // Получаем текущее время

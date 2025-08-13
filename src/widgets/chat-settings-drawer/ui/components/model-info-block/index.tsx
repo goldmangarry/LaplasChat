@@ -1,4 +1,5 @@
 import { ProviderIcon } from "@/components/shared/provider-icon";
+import { getDisplayModelId } from "@/shared/lib/model-utils";
 import type { ChatSettings } from "@/core/chat/types";
 
 type ModelInfoBlockProps = {
@@ -75,6 +76,8 @@ const getModelDisplayName = (modelId: string) => {
 };
 
 export const ModelInfoBlock = ({ settings }: ModelInfoBlockProps) => {
+	const displayModelId = getDisplayModelId(settings.model);
+	
 	return (
 		<div className="flex flex-col items-center justify-center gap-2 p-4 pb-8">
 			<div className="flex items-center justify-center w-14 h-14 rounded-full">
@@ -85,11 +88,11 @@ export const ModelInfoBlock = ({ settings }: ModelInfoBlockProps) => {
 			</div>
 			
 			<h3 className="text-center font-medium text-base leading-6 text-black">
-				{getModelDisplayName(settings.model)}
+				{getModelDisplayName(displayModelId)}
 			</h3>
 			
 			<p className="text-center font-normal text-base leading-6 text-neutral-500 px-2">
-				{getModelDescription(settings.model)}
+				{getModelDescription(displayModelId)}
 			</p>
 		</div>
 	);

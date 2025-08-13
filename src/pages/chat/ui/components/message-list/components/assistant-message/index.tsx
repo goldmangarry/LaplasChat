@@ -1,4 +1,5 @@
 import { useChatStore } from "@/core/chat/store";
+import { getDisplayModelId } from "@/shared/lib/model-utils";
 import type { ChatMessage } from "@/core/api/chat/types";
 import { MessageFooter } from "./components/message-footer";
 
@@ -77,7 +78,8 @@ export const AssistantMessage = ({ message, onFactCheck }: AssistantMessageProps
 
   // Получаем данные модели из сообщения или из настроек как fallback
   const modelInfo = message.last_model_info;
-  const modelName = modelInfo?.name || `${settings.provider}: ${settings.model}`;
+  const displayModelId = getDisplayModelId(settings.model);
+  const modelName = modelInfo?.name || `${settings.provider}: ${displayModelId}`;
   const provider = modelInfo?.provider || settings.provider;
 
   // Получаем время сообщения из created_at

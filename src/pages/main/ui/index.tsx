@@ -25,7 +25,7 @@ export const MainPage = (_props: MainPageProps) => {
 		setActiveDialogId,
 	} = useChatStore();
 
-	const { setMessage, clearMessage } = useChatInputStore();
+	const { setMessage, clearMessage, webSearchEnabled } = useChatInputStore();
 	const sendMessageMutation = useSendMessage();
 	const sendSecureMessageMutation = useSendSecureMessage();
 	
@@ -60,8 +60,12 @@ export const MainPage = (_props: MainPageProps) => {
 		navigate({ to: `/chat/${tempDialogId}` });
 
 		// Подготавливаем данные для запроса
+		const modelId = webSearchEnabled && !settings.model.includes(':online') 
+			? `${settings.model}:online` 
+			: settings.model;
+		
 		const messageData = {
-			model: settings.model,
+			model: modelId,
 			message: suggestion.text,
 			max_tokens: settings.max_tokens,
 			temperature: settings.temperature,

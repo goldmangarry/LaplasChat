@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/popover";
 import { ProviderIcon } from "@/components/shared/provider-icon";
 import { useModels } from "@/core/api/models/hooks";
+import { getDisplayModelId } from "@/shared/lib/model-utils";
 import type { ModelSelectorProps } from "../../../types";
 import type { ModelProvider } from "@/core/api/models/types";
 
@@ -123,6 +124,7 @@ type ProviderBlockProps = {
 };
 
 const ProviderBlock = ({ provider, models, selectedModel, onModelChange }: ProviderBlockProps) => {
+  const displaySelectedModel = getDisplayModelId(selectedModel);
   return (
     <div className="space-y-2">
       {/* Заголовок провайдера */}
@@ -141,7 +143,7 @@ const ProviderBlock = ({ provider, models, selectedModel, onModelChange }: Provi
           <ModelItem
             key={model.id}
             model={model}
-            isSelected={selectedModel === model.id}
+            isSelected={displaySelectedModel === model.id}
             onClick={() => onModelChange(model.id, model.provider)}
           />
         ))}
@@ -159,7 +161,8 @@ export const ModelSelector = ({
   const { data: modelsData, isLoading } = useModels();
   
   const models = modelsData?.models || [];
-  const selectedModelData = models.find(model => model.id === selectedModel);
+  const displayModelId = getDisplayModelId(selectedModel);
+  const selectedModelData = models.find(model => model.id === displayModelId);
   
   // Группировка моделей по провайдерам
   const modelsByProvider = models.reduce((acc, model) => {
@@ -203,7 +206,7 @@ export const ModelSelector = ({
           <div className="flex items-center gap-2">
             <ProviderIcon provider={selectedProvider} className="w-4 h-4" />
             <span className="truncate">
-              {selectedModelData?.name || selectedModel}
+              {selectedModelData?.name || displayModelId}
             </span>
           </div>
           <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />

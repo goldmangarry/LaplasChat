@@ -1,5 +1,6 @@
 import { SettingsSlider } from "../settings-slider";
 import { useModels } from "@/core/api/models/hooks";
+import { getDisplayModelId } from "@/shared/lib/model-utils";
 import type { ChatSettingsPanelProps } from "./types";
 
 export const ChatSettingsPanel = ({
@@ -9,7 +10,8 @@ export const ChatSettingsPanel = ({
 	const { data: modelsData } = useModels();
 
 	// Находим текущую модель для получения её max_output
-	const currentModel = modelsData?.models.find(model => model.id === settings.model);
+	const displayModelId = getDisplayModelId(settings.model);
+	const currentModel = modelsData?.models.find(model => model.id === displayModelId);
 	const maxTokens = currentModel?.max_output || 16384; // fallback к дефолтному значению
 
 	const handleTemperatureChange = (temperature: number) => {
