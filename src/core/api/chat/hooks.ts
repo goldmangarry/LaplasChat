@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient, useMutationState } from "@tanstack/react-query";
 import { chatApi } from "./index";
 import { modelsApi } from "../models/index";
-import type { SendMessageRequest, ChatMessage, ModelInfo } from "./types";
+import type { SendMessageRequest, ChatMessage, ModelInfo, UpdateDialogNameRequest, ChatHistoryResponse, Dialog, ChatMessagesResponse } from "./types";
 
 export const useChatHistory = () => {
 	return useQuery({
@@ -39,7 +39,7 @@ export const useSendMessage = () => {
 				};
 
 				// Добавляем оптимистичное сообщение в кеш
-				queryClient.setQueryData(['chat', 'messages', dialogId], (old: any) => {
+				queryClient.setQueryData(['chat', 'messages', dialogId], (old: ChatMessagesResponse | undefined) => {
 					if (!old) {
 						// Если данных нет, создаем базовую структуру
 						return {
@@ -175,7 +175,7 @@ export const useSendSecureMessage = () => {
 					timestamp: Date.now(),
 				};
 
-				queryClient.setQueryData(['chat', 'messages', dialogId], (old: any) => {
+				queryClient.setQueryData(['chat', 'messages', dialogId], (old: ChatMessagesResponse | undefined) => {
 					if (!old) {
 						return {
 							messages: [optimisticUserMessage],
@@ -311,6 +311,33 @@ export const useDeleteChatHistory = () => {
 			queryClient.removeQueries({ queryKey: ["chat", "messages", dialogId] });
 			
 			// Инвалидируем историю чатов для обновления списка
+			queryClient.invalidateQueries({ queryKey: ["chat", "history"] });
+		},
+	});
+};
+
+export const useUpdateDialogName = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({ dialogId, updateData }: { dialogId: string; updateData: UpdateDialogNameRequest }) =>
+			chatApi.updateDialogName(dialogId, updateData),
+		onSuccess: (data, { dialogId }) => {
+			// Обновляем кеш истории чатов с новым именем диалога
+			queryClient.setQueryData(['chat', 'history'], (old: ChatHistoryResponse | undefined) => {
+				if (!old?.dialogs) return old;
+				
+				return {
+					...old,
+					dialogs: old.dialogs.map((dialog: Dialog) =>
+						dialog.id === dialogId
+							? { ...dialog, name: data.dialog_name }
+							: dialog
+					),
+				};
+			});
+			
+			// Инвалидируем историю чатов для обновления
 			queryClient.invalidateQueries({ queryKey: ["chat", "history"] });
 		},
 	});

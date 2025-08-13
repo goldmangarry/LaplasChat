@@ -6,6 +6,8 @@ import type {
 	SendMessageRequest,
 	SendMessageResponse,
 	SendSecureMessageResponse,
+	UpdateDialogNameRequest,
+	UpdateDialogNameResponse,
 } from "./types";
 
 export const chatApi = {
@@ -55,5 +57,21 @@ export const chatApi = {
 
 	deleteChatHistory: async (dialogId: string): Promise<void> => {
 		await apiClient.delete(CHAT_ENDPOINTS.DELETE_CHAT_HISTORY(dialogId));
+	},
+
+	updateDialogName: async (
+		dialogId: string,
+		updateData: UpdateDialogNameRequest,
+	): Promise<UpdateDialogNameResponse> => {
+		const response = await apiClient.put<UpdateDialogNameResponse>(
+			CHAT_ENDPOINTS.UPDATE_DIALOG_NAME(dialogId),
+			updateData,
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			},
+		);
+		return response.data;
 	},
 };

@@ -67,3 +67,13 @@ export type SendSecureMessageResponse = {
 export type DeleteChatHistoryRequest = {
 	dialog_id: string;
 };
+
+export type UpdateDialogNameRequest = {
+	dialog_name: string;
+};
+
+export type UpdateDialogNameResponse = {
+	dialog_id: string;
+	dialog_name: string;
+	updated_at: string;
+};
