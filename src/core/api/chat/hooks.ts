@@ -204,7 +204,69 @@ export const useSendSecureMessage = () => {
 		},
 		onSettled: async (data, _error, _messageData, context) => {
 			if (context?.dialogId) {
-				queryClient.invalidateQueries({ queryKey: ['chat', 'messages', context.dialogId] });
+				// Для существующих чатов с secure сообщениями
+				if (data && !_error && 'encrypted_response' in data) {
+					// Получаем информацию о модели
+					let modelInfo: ModelInfo | null = null;
+					try {
+						const modelsData = await modelsApi.getModels();
+						const displayModelId = getDisplayModelId(_messageData.model);
+						const targetModel = modelsData.models.find(model => model.id === displayModelId);
+						if (targetModel) {
+							modelInfo = {
+								id: targetModel.id,
+								name: targetModel.name,
+								provider: targetModel.provider,
+								max_output: _messageData.max_tokens,
+								temperature: _messageData.temperature
+							};
+						}
+					} catch (error) {
+						console.warn('Failed to fetch model info for existing secure chat:', error);
+					}
+
+					// Обновляем кеш: добавляем encrypted_content к пользовательскому сообщению и ответ ассистента
+					queryClient.setQueryData(['chat', 'messages', context.dialogId], (old: ChatMessagesResponse | undefined) => {
+						if (!old) return old;
+						
+						const updatedMessages = [...old.messages];
+						
+						// Находим последнее сообщение пользователя (оптимистичное) и добавляем к нему encrypted_content
+						let userMessageIndex = -1;
+						for (let i = updatedMessages.length - 1; i >= 0; i--) {
+							if (updatedMessages[i].role === 'user') {
+								userMessageIndex = i;
+								break;
+							}
+						}
+						if (userMessageIndex !== -1) {
+							updatedMessages[userMessageIndex] = {
+								...updatedMessages[userMessageIndex],
+								encrypted_content: data.encrypted_response
+							};
+						}
+						
+						// Добавляем ответ ассистента
+						const assistantMessage: ChatMessage = {
+							id: `assistant-${Date.now()}`,
+							content: data.decrypted_response,
+							role: "assistant",
+							timestamp: Date.now(),
+							last_model_info: modelInfo || undefined
+						};
+						
+						updatedMessages.push(assistantMessage);
+						
+						return {
+							...old,
+							messages: updatedMessages,
+							last_model_info: modelInfo || old.last_model_info
+						};
+					});
+				} else {
+					// При ошибке или для обычных сообщений - инвалидируем
+					queryClient.invalidateQueries({ queryKey: ['chat', 'messages', context.dialogId] });
+				}
 			}
 			
 			// Если получили новый dialog_id, инвалидируем историю чатов
@@ -235,12 +297,13 @@ export const useSendSecureMessage = () => {
 					// Создаем данные для нового чата с ответом сервера
 					queryClient.setQueryData(['chat', 'messages', data.dialog_id], {
 						messages: [
-							// Сообщение пользователя
+							// Сообщение пользователя с encrypted_content
 							{
 								id: `user-${Date.now()}`,
 								content: _messageData.message,
 								role: "user" as const,
 								timestamp: Date.now(),
+								encrypted_content: 'encrypted_response' in data ? data.encrypted_response : undefined,
 							},
 							// Ответ ассистента из сервера (для secure используем decrypted_response) с информацией о модели
 							{
