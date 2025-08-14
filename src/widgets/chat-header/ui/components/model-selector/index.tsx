@@ -1,5 +1,6 @@
 import { ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "@/components/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -18,57 +19,6 @@ import { getDisplayModelId } from "@/shared/lib/model-utils";
 import type { ModelSelectorProps } from "../../../types";
 import type { ModelProvider } from "@/core/api/models/types";
 
-// Мапа переводов названий провайдеров
-const providerLabels: Record<ModelProvider, string> = {
-  openai: "Open AI",
-  anthropic: "Anthropic",
-  perplexity: "Perplexity",
-  google: "Google",
-  "meta-llama": "Meta",
-  mistralai: "Mistral",
-  deepseek: "DeepSeek",
-  qwen: "Qwen",
-  grok: "Grok",
-};
-
-// Мапа описаний моделей согласно предоставленной таблице
-const modelDescriptions: Record<string, string> = {
-  // OpenAI модели
-  "openai/gpt-5-chat": "Превосходна для самых сложных задач в бизнесе; работает с многоступенчатыми процессами и глубоким анализом; справляется с комплексным решением проблем компании.",
-  "openai/gpt-5-mini": "Оптимальна для быстрых решений в высоконагруженных системах; работает с потоковой обработкой и мгновенными ответами; справляется с массовыми запросами в реальном времени.",
-  "openai/gpt-4o": "Уместна для повседневных задач в бизнесе; работает с текстом и изображениями; справляется с точными ответами в процессах компании.",
-  "openai/gpt-4o-mini": "Хороша для массовых чатов и ботов; работает быстро при высокой нагрузке; справляется с типовыми запросами.",
-  "openai/gpt-4-turbo": "Эффективна для стабильных сервисов; работает с шаблонами и формами; справляется с автоматизацией рутин.",
-  
-  // Anthropic модели
-  "anthropic/claude-sonnet-4": "Пригодна для длинных документов и четких выводов; работает с договорами и правилами; справляется с аккуратным суммированием.",
-  "anthropic/claude-opus-4": "Оптимальна для сложной аналитики и материалов для руководства; работает с разнородными материалами; справляется, когда нужна высокая точность.",
-  "anthropic/claude-3.5-haiku": "Полезна для быстрых черновиков и вариантов текстов; работает с короткими запросами; справляется там, где важна скорость.",
-  
-  // Perplexity модели
-  "perplexity/sonar": "Идеальна для поиска актуальной информации в интернете; работает с реальными данными и свежими новостями; справляется с быстрым анализом текущих событий.",
-  "perplexity/sonar-deep-research": "Превосходна для глубокого исследовательского анализа; работает с множественными источниками и детальной проверкой; справляется с комплексными исследовательскими задачами.",
-  
-  // Google модели
-  "google/gemini-2.5-pro": "Рекомендуется для больших наборов файлов; работает с текстом, таблицами и медиа; справляется с анализом презентаций и записей встреч.",
-  "google/gemini-2.5-flash": "Удобна для потоковых задач; работает с классификацией, тегами и типовыми ответами; справляется в реальном времени.",
-  
-  // Meta модели
-  "meta-llama/llama-4-maverick": "Целесообразна для обработки целых документов; работает с большими объемами текста; справляется с настройкой под задачи компании.",
-  "meta-llama/llama-3.3-70b-instruct": "Предпочтительна для работы на собственных серверах; работает с внутренними данными; справляется с адаптацией под лексику и правила компании.",
-  
-  // Mistral модели
-  "mistralai/mistral-small-3.2-24b-instruct": "Практична для ограниченных ресурсов; работает быстро на обычных серверах; справляется со стандартными офисными задачами.",
-  
-  // DeepSeek модели
-  "deepseek/deepseek-chat-v3-0324": "Рекомендуется для инженерных задач; работает с кодом и вычислениями; справляется с автотестами и расчетами.",
-  "deepseek/deepseek-r1:free": "Идеальна для экспериментов и пилотов; работает с задачами, где нужно подробное рассуждение; справляется с быстрой проверкой гипотез.",
-  "deepseek/deepseek-r1": "Оптимальна для важной нагрузки; работает стабильно при длинных рассуждениях; справляется, когда нужен предсказуемый результат.",
-  "deepseek/deepseek-chat-v3-0324:free": "Хороша для прототипов поддержки и FAQ; работает в базовом режиме; справляется с типовыми вопросами клиентов.",
-  
-  // Qwen модели
-  "qwen/qwen3-coder": "Пригодна для разработки; работает с большими проектами кода; справляется с чисткой кода, обновлениями и примерами.",
-};
 
 // Компонент одной модели
 type ModelItemProps = {
@@ -82,7 +32,8 @@ type ModelItemProps = {
 };
 
 const ModelItem = ({ model, isSelected, onClick }: ModelItemProps) => {
-  const description = modelDescriptions[model.id] || "Описание недоступно";
+  const { t } = useTranslation();
+  const description = t(`modelDescriptions.${model.id}`, t("modelDescriptions.unavailable"));
   
   return (
     <button
@@ -124,6 +75,7 @@ type ProviderBlockProps = {
 };
 
 const ProviderBlock = ({ provider, models, selectedModel, onModelChange }: ProviderBlockProps) => {
+  const { t } = useTranslation();
   const displaySelectedModel = getDisplayModelId(selectedModel);
   return (
     <div className="space-y-2">
@@ -133,7 +85,7 @@ const ProviderBlock = ({ provider, models, selectedModel, onModelChange }: Provi
           <ProviderIcon provider={provider} className="w-6 h-6" />
         </div>
         <span className="font-medium text-sm text-foreground">
-          {providerLabels[provider] || provider}
+          {t(`providers.${provider}`, provider)}
         </span>
       </div>
       

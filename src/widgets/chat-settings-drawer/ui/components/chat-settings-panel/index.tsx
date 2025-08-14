@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { SettingsSlider } from "../settings-slider";
 import { useModels } from "@/core/api/models/hooks";
 import { getDisplayModelId } from "@/shared/lib/model-utils";
@@ -7,6 +8,7 @@ export const ChatSettingsPanel = ({
 	settings,
 	onSettingsChange,
 }: ChatSettingsPanelProps) => {
+	const { t } = useTranslation();
 	const { data: modelsData } = useModels();
 
 	// Находим текущую модель для получения её max_output
@@ -26,30 +28,30 @@ export const ChatSettingsPanel = ({
 		<div className="flex flex-col gap-6">
 			{/* Temperature Slider */}
 			<SettingsSlider
-				label="Temperature"
+				label={t("chatSettings.temperature")}
 				value={settings.temperature}
 				min={0}
 				max={2}
 				step={0.1}
-				leftLabel="Less accuracy"
-				rightLabel="More creativity"
+				leftLabel={t("chatSettings.tooltips.lessAccuracy")}
+				rightLabel={t("chatSettings.tooltips.moreCreativity")}
 				onChange={handleTemperatureChange}
 				showTooltip={true}
-				tooltipContent="Controls randomness in responses. Lower values make the model more focused and deterministic, while higher values increase creativity and variability."
+				tooltipContent={t("chatSettings.tooltips.temperature")}
 			/>
 
 			{/* Output Length (Max Tokens) Slider */}
 			<SettingsSlider
-				label="Output Length"
+				label={t("chatSettings.maxTokens")}
 				value={Math.min(settings.max_tokens, maxTokens)}
 				min={1000}
 				max={maxTokens}
 				step={1000}
-				leftLabel="Shorter"
-				rightLabel="Longer"
+				leftLabel={t("chatSettings.tooltips.shorter")}
+				rightLabel={t("chatSettings.tooltips.longer")}
 				onChange={handleMaxTokensChange}
 				showTooltip={true}
-				tooltipContent={`Maximum number of tokens the model can generate in a single response. One token is roughly 3-4 characters or 0.75 words in English. Current model supports up to ${maxTokens} tokens.`}
+				tooltipContent={t("chatSettings.tooltips.outputLength", { maxTokens })}
 			/>
 		</div>
 	);

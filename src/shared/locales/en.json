@@ -79,10 +79,56 @@
 		"maxTokens": "Max Tokens",
 		"temperature": "Temperature",
 		"reset": "Reset",
-		"apply": "Apply"
+		"apply": "Apply",
+		"tooltips": {
+			"temperature": "Controls randomness in responses. Lower values make the model more focused and deterministic, while higher values increase creativity and variability.",
+			"outputLength": "Maximum number of tokens the model can generate in a single response. One token is roughly 3-4 characters or 0.75 words in English. Current model supports up to {{maxTokens}} tokens.",
+			"lessAccuracy": "Less accuracy",
+			"moreCreativity": "More creativity",
+			"shorter": "Shorter",
+			"longer": "Longer"
+		}
 	},
 	"common": {
-		"close": "Close"
+		"close": "Close",
+		"laplasLogo": "Laplas Logo",
+		"toggleSidebar": "Toggle Sidebar",
+		"copyToClipboard": "Copy to clipboard",
+		"copiedCodeToClipboard": "Copied code to clipboard"
+	},
+	"providers": {
+		"openai": "Open AI",
+		"anthropic": "Anthropic",
+		"perplexity": "Perplexity",
+		"google": "Google",
+		"meta-llama": "Meta",
+		"mistralai": "Mistral",
+		"deepseek": "DeepSeek",
+		"qwen": "Qwen",
+		"grok": "Grok"
+	},
+	"modelDescriptions": {
+		"openai/gpt-5-chat": "Excellent for the most complex business tasks; works with multi-step processes and deep analysis; handles complex company problem solving.",
+		"openai/gpt-5-mini": "Optimal for fast solutions in high-load systems; works with streaming processing and instant responses; handles massive real-time requests.",
+		"openai/gpt-4o": "Suitable for everyday business tasks; works with text and images; handles accurate responses in company processes.",
+		"openai/gpt-4o-mini": "Good for mass chats and bots; works quickly under high load; handles typical requests.",
+		"openai/gpt-4-turbo": "Effective for stable services; works with templates and forms; handles routine automation.",
+		"anthropic/claude-sonnet-4": "Suitable for long documents and clear conclusions; works with contracts and regulations; handles accurate summarization.",
+		"anthropic/claude-opus-4": "Optimal for complex analytics and management materials; works with diverse materials; handles when high accuracy is needed.",
+		"anthropic/claude-3.5-haiku": "Useful for quick drafts and text variations; works with short requests; handles where speed is important.",
+		"perplexity/sonar": "Perfect for finding current information on the internet; works with real data and fresh news; handles quick analysis of current events.",
+		"perplexity/sonar-deep-research": "Excellent for deep research analysis; works with multiple sources and detailed verification; handles complex research tasks.",
+		"google/gemini-2.5-pro": "Recommended for large file sets; works with text, tables and media; handles analysis of presentations and meeting records.",
+		"google/gemini-2.5-flash": "Convenient for streaming tasks; works with classification, tags and typical responses; handles in real time.",
+		"meta-llama/llama-4-maverick": "Appropriate for processing entire documents; works with large amounts of text; handles customization for company tasks.",
+		"meta-llama/llama-3.3-70b-instruct": "Preferable for work on own servers; works with internal data; handles adaptation to company lexicon and rules.",
+		"mistralai/mistral-small-3.2-24b-instruct": "Practical for limited resources; works quickly on regular servers; handles standard office tasks.",
+		"deepseek/deepseek-chat-v3-0324": "Recommended for engineering tasks; works with code and calculations; handles automated tests and calculations.",
+		"deepseek/deepseek-r1:free": "Perfect for experiments and pilots; works with tasks requiring detailed reasoning; handles quick hypothesis testing.",
+		"deepseek/deepseek-r1": "Optimal for important workloads; works stably with long reasoning; handles when predictable results are needed.",
+		"deepseek/deepseek-chat-v3-0324:free": "Good for support prototypes and FAQ; works in basic mode; handles typical customer questions.",
+		"qwen/qwen3-coder": "Suitable for development; works with large code projects; handles code cleanup, updates and examples.",
+		"unavailable": "Description unavailable"
 	},
 	"message": {
 		"copy": "Copy",
