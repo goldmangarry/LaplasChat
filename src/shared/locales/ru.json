@@ -151,7 +151,11 @@
 	},
 	"message": {
 		"copy": "Копировать",
-		"factCheck": "Проверка фактов"
+		"factCheck": "Проверка фактов",
+		"encryptedContent": {
+			"title": "Зашифрованное содержимое",
+			"viewEncryptedContent": "Показать зашифрованное содержимое"
+		}
 	},
 	"factCheck": {
 		"title": "Проверка фактов",

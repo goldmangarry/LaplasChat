@@ -151,7 +151,11 @@
 	},
 	"message": {
 		"copy": "Copy",
-		"factCheck": "Fact Check"
+		"factCheck": "Fact Check",
+		"encryptedContent": {
+			"title": "Encrypted Content",
+			"viewEncryptedContent": "View encrypted content"
+		}
 	},
 	"factCheck": {
 		"title": "Fact Check",
