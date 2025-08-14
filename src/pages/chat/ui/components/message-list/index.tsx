@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useChatMessages, usePendingMessages, usePendingSecureMessages } from "@/core/api/chat/hooks";
 import { useTranslation } from "react-i18next";
 import { UserMessage } from "./components/user-message";
@@ -13,6 +13,10 @@ type MessageListProps = {
 export const MessageList = ({ dialogId, onFactCheck }: MessageListProps) => {
   const { t } = useTranslation();
   const loadingRef = useRef<HTMLDivElement>(null);
+  const messagesRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isFirstRender = useRef(true);
+  const prevMessagesLength = useRef(0);
   
   // Получаем сообщения из React Query кеша
   const { 
@@ -34,15 +38,47 @@ export const MessageList = ({ dialogId, onFactCheck }: MessageListProps) => {
   // НО только если у нас уже есть сообщения (чтобы не показывать loader при первой загрузке)
   const shouldShowLoader = hasPendingMessage || (isFetchingMessages && messages.length > 0);
 
-  // Автоскролл к элементу loading при появлении pending сообщения
+  // Скролл к loader при его появлении
   useEffect(() => {
     if (shouldShowLoader && loadingRef.current) {
       loadingRef.current.scrollIntoView({ 
         behavior: 'smooth', 
-        block: 'nearest' 
+        block: 'start'
       });
     }
   }, [shouldShowLoader]);
+
+  // Скролл вниз при первом появлении сообщений
+  useEffect(() => {
+    if (messages.length > 0 && isFirstRender.current && containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+      isFirstRender.current = false;
+      prevMessagesLength.current = messages.length;
+    }
+  }, [messages.length > 0]);
+
+  // Скролл к новому сообщению ИИ при его появлении (только когда добавляется новое сообщение)
+  useEffect(() => {
+    // Проверяем, что это не первая загрузка и добавилось новое сообщение
+    if (isFirstRender.current || messages.length <= prevMessagesLength.current) {
+      prevMessagesLength.current = messages.length;
+      return;
+    }
+    
+    // Найдем последнее сообщение от ассистента
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage?.role === 'assistant') {
+      const messageRef = messagesRefs.current[lastMessage.id || `message-${messages.length - 1}`];
+      if (messageRef) {
+        messageRef.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start'
+        });
+      }
+    }
+    
+    prevMessagesLength.current = messages.length;
+  }, [messages]);
 
   if (messagesError) {
     return (
@@ -65,29 +101,37 @@ export const MessageList = ({ dialogId, onFactCheck }: MessageListProps) => {
   }
 
   return (
-    <div className="flex flex-col space-y-4 h-full overflow-y-auto px-4 py-4">
+    <div ref={containerRef} className="flex flex-col space-y-4 h-full overflow-y-auto px-4 py-4">
       {/* Сообщения из кеша (включая оптимистичные) */}
-      {messages.map((message, index) => (
-        <div
-          key={message.id || `message-${index}`}
-          className={`flex ${
-            message.role === "user" ? "justify-end" : "justify-start"
-          }`}
-        >
-          {message.role === "user" ? (
-            <UserMessage message={message} />
-          ) : (
-            <AssistantMessage 
-              message={message} 
-              onFactCheck={onFactCheck}
-            />
-          )}
-        </div>
-      ))}
+      {messages.map((message, index) => {
+        const messageKey = message.id || `message-${index}`;
+        return (
+          <div
+            key={messageKey}
+            ref={(el) => {
+              if (message.role === "assistant") {
+                messagesRefs.current[messageKey] = el;
+              }
+            }}
+            className={`flex ${
+              message.role === "user" ? "justify-end" : "justify-start"
+            }`}
+          >
+            {message.role === "user" ? (
+              <UserMessage message={message} />
+            ) : (
+              <AssistantMessage 
+                message={message} 
+                onFactCheck={onFactCheck}
+              />
+            )}
+          </div>
+        );
+      })}
       
       {/* Loader для pending мутаций и фоновых запросов */}
       {shouldShowLoader && (
-        <div className="flex justify-start">
+        <div ref={loadingRef} className="flex justify-start">
           <LoadingMessage dialogId={dialogId} />
         </div>
       )}

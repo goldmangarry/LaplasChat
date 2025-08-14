@@ -50,7 +50,8 @@ export const ChatPage = ({ dialogId }: ChatPageProps) => {
 
 			<div className="flex flex-col flex-1 px-[10%] min-h-0">
 				<div className="flex-1 overflow-hidden">
-					<MessageList 
+					<MessageList
+						key={dialogId} 
 						dialogId={dialogId} 
 						onFactCheck={handleFactCheck}
 					/>
