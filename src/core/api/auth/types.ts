@@ -1,5 +1,5 @@
 export type LoginRequest = {
-	username: string; // email address
+	username: string;
 	password: string;
 };
 
@@ -21,32 +21,10 @@ export type RefreshTokenResponse = {
 	expires_in: number;
 };
 
-export type RegisterRequest = {
-	email: string;
-	password: string;
-	first_name: string;
-	last_name: string;
-};
-
-export type RegisterResponse = {
-	id: string;
-	email: string;
-	first_name: string;
-	last_name: string;
-	created_at: string;
-};
-
-export type ChangePasswordRequest = {
-	current_password: string;
-	new_password: string;
-};
-
 export type UserProfile = {
 	id: string;
 	email: string;
 	first_name: string;
 	last_name: string;
 	avatar_url: string;
-	created_at: string;
-	updated_at: string;
 };

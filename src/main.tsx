@@ -1,26 +1,29 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { ChakraProvider, createSystem, defaultConfig } from '@chakra-ui/react'
-import { createRouter, RouterProvider } from '@tanstack/react-router'
-import { routeTree } from '@/routeTree.gen'
-import './routes/index.css'
+import { QueryClientProvider } from "@tanstack/react-query";
+import { createRouter, RouterProvider } from "@tanstack/react-router";
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { queryClient } from "@/core/api/query-client";
+import { routeTree } from "@/routeTree.gen";
+import "@/shared/lib/i18n";
+import "./routes/index.css";
 
 // Create a new router instance
-const router = createRouter({ routeTree })
+const router = createRouter({ routeTree });
 
 // Register the router instance for type safety
-declare module '@tanstack/react-router' {
-  interface Register {
-    router: typeof router
-  }
+declare module "@tanstack/react-router" {
+	interface Register {
+		router: typeof router;
+	}
 }
 
-const system = createSystem(defaultConfig)
+const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error("Root element not found");
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <ChakraProvider value={system}>
-      <RouterProvider router={router} />
-    </ChakraProvider>
-  </StrictMode>,
-) 
+createRoot(rootElement).render(
+	<StrictMode>
+		<QueryClientProvider client={queryClient}>
+			<RouterProvider router={router} />
+		</QueryClientProvider>
+	</StrictMode>,
+);

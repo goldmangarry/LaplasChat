@@ -1,24 +1,13 @@
 import { apiClient } from "../config";
-import { AUTH_ENDPOINTS, LOGIN_FORM_CONFIG } from "./constants";
-import type {
-	ChangePasswordRequest,
-	LoginRequest,
-	LoginResponse,
-	RefreshTokenRequest,
-	RefreshTokenResponse,
-	RegisterRequest,
-	UserProfile,
-} from "./types";
+import { AUTH_ENDPOINTS } from "./constants";
+import type { LoginRequest, LoginResponse, UserProfile, RefreshTokenRequest, RefreshTokenResponse } from "./types";
 
 export const authApi = {
-	async login(credentials: LoginRequest): Promise<LoginResponse> {
-		const formData = new URLSearchParams({
-			username: credentials.username,
-			password: credentials.password,
-			scope: LOGIN_FORM_CONFIG.SCOPE,
-			client_id: LOGIN_FORM_CONFIG.CLIENT_ID,
-			client_secret: LOGIN_FORM_CONFIG.CLIENT_SECRET,
-		});
+	login: async (credentials: LoginRequest): Promise<LoginResponse> => {
+		const formData = new URLSearchParams();
+		formData.append("username", credentials.username);
+		formData.append("password", credentials.password);
+		formData.append("grant_type", "password");
 
 		const response = await apiClient.post<LoginResponse>(
 			AUTH_ENDPOINTS.LOGIN,
@@ -33,42 +22,21 @@ export const authApi = {
 		return response.data;
 	},
 
-	async refreshToken(refreshToken: string): Promise<RefreshTokenResponse> {
+	me: async (): Promise<UserProfile> => {
+		const response = await apiClient.get<UserProfile>(AUTH_ENDPOINTS.ME);
+		return response.data;
+	},
+
+	refreshToken: async (request: RefreshTokenRequest): Promise<RefreshTokenResponse> => {
 		const response = await apiClient.post<RefreshTokenResponse>(
 			AUTH_ENDPOINTS.REFRESH,
-			{ refresh_token: refreshToken } satisfies RefreshTokenRequest,
+			request,
 			{
 				headers: {
 					"Content-Type": "application/json",
 				},
 			},
 		);
-
-		return response.data;
-	},
-
-	async register(userData: RegisterRequest): Promise<void> {
-		await apiClient.post(AUTH_ENDPOINTS.REGISTER, userData, {
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
-	},
-
-	async changePassword(data: ChangePasswordRequest): Promise<void> {
-		await apiClient.post(AUTH_ENDPOINTS.CHANGE_PASSWORD, data, {
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
-	},
-
-	async getMe(): Promise<UserProfile> {
-		const response = await apiClient.get<UserProfile>(AUTH_ENDPOINTS.ME);
 		return response.data;
 	},
 };
-
-export * from "./constants";
-export * from "./helpers";
-export * from "./types";

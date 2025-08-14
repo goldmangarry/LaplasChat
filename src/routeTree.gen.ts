@@ -11,7 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthOauthCallbackGoogleRouteImport } from './routes/auth.oauth.callback.google'
+import { Route as ChatDialogIdRouteImport } from './routes/chat.$dialogId'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -23,40 +23,40 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthOauthCallbackGoogleRoute = AuthOauthCallbackGoogleRouteImport.update({
-  id: '/auth/oauth/callback/google',
-  path: '/auth/oauth/callback/google',
+const ChatDialogIdRoute = ChatDialogIdRouteImport.update({
+  id: '/chat/$dialogId',
+  path: '/chat/$dialogId',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/auth/oauth/callback/google': typeof AuthOauthCallbackGoogleRoute
+  '/chat/$dialogId': typeof ChatDialogIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/auth/oauth/callback/google': typeof AuthOauthCallbackGoogleRoute
+  '/chat/$dialogId': typeof ChatDialogIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/auth/oauth/callback/google': typeof AuthOauthCallbackGoogleRoute
+  '/chat/$dialogId': typeof ChatDialogIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/auth/oauth/callback/google'
+  fullPaths: '/' | '/login' | '/chat/$dialogId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/auth/oauth/callback/google'
-  id: '__root__' | '/' | '/login' | '/auth/oauth/callback/google'
+  to: '/' | '/login' | '/chat/$dialogId'
+  id: '__root__' | '/' | '/login' | '/chat/$dialogId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
-  AuthOauthCallbackGoogleRoute: typeof AuthOauthCallbackGoogleRoute
+  ChatDialogIdRoute: typeof ChatDialogIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -75,11 +75,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/oauth/callback/google': {
-      id: '/auth/oauth/callback/google'
-      path: '/auth/oauth/callback/google'
-      fullPath: '/auth/oauth/callback/google'
-      preLoaderRoute: typeof AuthOauthCallbackGoogleRouteImport
+    '/chat/$dialogId': {
+      id: '/chat/$dialogId'
+      path: '/chat/$dialogId'
+      fullPath: '/chat/$dialogId'
+      preLoaderRoute: typeof ChatDialogIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -88,7 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
-  AuthOauthCallbackGoogleRoute: AuthOauthCallbackGoogleRoute,
+  ChatDialogIdRoute: ChatDialogIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

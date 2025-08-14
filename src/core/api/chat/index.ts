@@ -1,39 +1,114 @@
 import { apiClient } from "../config";
 import { CHAT_ENDPOINTS } from "./constants";
-import type { 
-  DialogHistoryResponse, 
-  ChatMessagesResponse,
-  UpdateDialogRequest,
-  UpdateDialogResponse 
+import type {
+	ChatHistoryResponse,
+	ChatMessagesResponse,
+	SendMessageRequest,
+	SendMessageResponse,
+	SendSecureMessageResponse,
+	UpdateDialogNameRequest,
+	UpdateDialogNameResponse,
+	FactCheckRequest,
+	FactCheckResponse,
+	UploadFilesResponse,
 } from "./types";
 
 export const chatApi = {
-  async getHistory(): Promise<DialogHistoryResponse> {
-    const response = await apiClient.get<DialogHistoryResponse>(
-      CHAT_ENDPOINTS.HISTORY
-    );
-    return response.data;
-  },
+	getHistory: async (): Promise<ChatHistoryResponse> => {
+		const response = await apiClient.get<ChatHistoryResponse>(
+			CHAT_ENDPOINTS.HISTORY,
+		);
+		return response.data;
+	},
 
-  async getChatMessages(dialogId: string): Promise<ChatMessagesResponse> {
-    const response = await apiClient.get<ChatMessagesResponse>(
-      CHAT_ENDPOINTS.CHAT_MESSAGES(dialogId)
-    );
-    return response.data;
-  },
+	sendMessage: async (
+		messageData: SendMessageRequest,
+	): Promise<SendMessageResponse> => {
+		const response = await apiClient.post<SendMessageResponse>(
+			CHAT_ENDPOINTS.SEND_MESSAGE,
+			messageData,
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			},
+		);
+		return response.data;
+	},
 
-  async deleteChat(dialogId: string): Promise<void> {
-    await apiClient.delete(CHAT_ENDPOINTS.DELETE_CHAT(dialogId));
-  },
+	getChatMessages: async (dialogId: string): Promise<ChatMessagesResponse> => {
+		const response = await apiClient.get<ChatMessagesResponse>(
+			CHAT_ENDPOINTS.CHAT_MESSAGES(dialogId),
+		);
+		return response.data;
+	},
 
-  async updateChat(dialogId: string, data: UpdateDialogRequest): Promise<UpdateDialogResponse> {
-    const response = await apiClient.put<UpdateDialogResponse>(
-      CHAT_ENDPOINTS.UPDATE_CHAT(dialogId),
-      data
-    );
-    return response.data;
-  },
+	sendSecureMessage: async (
+		messageData: SendMessageRequest,
+	): Promise<SendSecureMessageResponse> => {
+		const response = await apiClient.post<SendSecureMessageResponse>(
+			CHAT_ENDPOINTS.SEND_SECURE_MESSAGE,
+			messageData,
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			},
+		);
+		return response.data;
+	},
+
+	deleteChatHistory: async (dialogId: string): Promise<void> => {
+		await apiClient.delete(CHAT_ENDPOINTS.DELETE_CHAT_HISTORY(dialogId));
+	},
+
+	updateDialogName: async (
+		dialogId: string,
+		updateData: UpdateDialogNameRequest,
+	): Promise<UpdateDialogNameResponse> => {
+		const response = await apiClient.put<UpdateDialogNameResponse>(
+			CHAT_ENDPOINTS.UPDATE_DIALOG_NAME(dialogId),
+			updateData,
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			},
+		);
+		return response.data;
+	},
+
+	factCheck: async (
+		factCheckData: FactCheckRequest,
+	): Promise<FactCheckResponse> => {
+		const response = await apiClient.post<FactCheckResponse>(
+			CHAT_ENDPOINTS.FACT_CHECK,
+			factCheckData,
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			},
+		);
+		return response.data;
+	},
+
+	uploadFiles: async (files: File[]): Promise<UploadFilesResponse> => {
+		const formData = new FormData();
+		
+		files.forEach((file) => {
+			formData.append("files", file);
+		});
+
+		const response = await apiClient.post<UploadFilesResponse>(
+			CHAT_ENDPOINTS.UPLOAD,
+			formData,
+			{
+				headers: {
+					"Content-Type": "multipart/form-data",
+				},
+			},
+		);
+		return response.data;
+	},
 };
-
-export * from "./constants";
-export * from "./types";

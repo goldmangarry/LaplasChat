@@ -1,14 +1,35 @@
-# laplas-chat
+# LaplasChat
 
-React-based chat application built with modern web technologies.
+Modern React-based AI chat application built with enterprise-grade architecture and cutting-edge technologies.
 
 ## Tech Stack
 
-- React + TypeScript + Vite
-- Chakra UI v3 for UI components
-- TanStack Router for routing
-- Zustand for state management
-- ESLint for code quality
+- **Frontend**: React 19.1.0 + TypeScript 5.8.3 + Vite 7.0.0
+- **UI Components**: shadcn/ui + Tailwind CSS 4
+- **Routing**: TanStack Router (file-based routing)
+- **State Management**: Zustand for global state and business logic
+- **Forms**: React Hook Form with validation
+- **HTTP Client**: Axios for API communication
+- **Internationalization**: i18next with React integration
+- **Code Quality**: ESLint 9.29.0 with TypeScript support
+
+## Architecture
+
+The project follows a 4-layer architecture pattern for maintainability and scalability:
+
+1. **Core Layer** (`src/core/`) - Domain business logic and API interactions
+2. **Pages Layer** (`src/pages/`) - Route-level components
+3. **Widgets Layer** (`src/widgets/`) - Complex reusable components
+4. **Components Layer** (`src/components/`) - Simple UI components (shadcn/ui + shared)
+
+### Key Features
+
+- **Type-Safe Development**: Comprehensive TypeScript configuration with strict mode
+- **Modern UI**: shadcn/ui components with Tailwind CSS utilities
+- **Internationalization**: Multi-language support (EN/RU) with i18next
+- **Form Management**: Robust form handling with React Hook Form
+- **State Management**: Zustand for simple, effective global state
+- **Performance**: Optimized builds with Vite and modern ES2022 target
 
 ## Development
 
@@ -16,82 +37,52 @@ React-based chat application built with modern web technologies.
 # Install dependencies
 yarn install
 
-# Start development server
+# Start development server with HMR
 yarn dev
 
 # Build for production
 yarn build
 
+# Preview production build
+yarn preview
+
 # Run linting
 yarn lint
 ```
 
-## Template Info
+## Code Conventions
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### TypeScript Guidelines
+- Use `type` instead of `interface` for better composability
+- Avoid `enum` - use const assertions and union types
+- Leverage modern TypeScript features (const assertions, template literals)
 
-Currently, two official plugins are available:
+### Styling
+- **Tailwind CSS 4** for utility-first styling
+- **shadcn/ui components** for consistent design system
+- Built-in dark/light theme support
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Internationalization
+- **CRITICAL**: Never use hardcoded text in components
+- Always use translation constants with `useTranslation` hook
+- Translation files: `src/shared/locales/en.json`, `src/shared/locales/ru.json`
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Project Structure
+```
+src/
+├── main.tsx              # Application entry point
+├── core/                 # Business logic and API
+├── pages/                # Route-level components
+├── widgets/              # Complex reusable components  
+├── components/           # Simple UI components
+├── routes/               # TanStack Router files
+└── assets/              # Static assets
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Contributing
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. Follow the established architecture patterns
+2. Use shadcn/ui components with Tailwind utilities
+3. Implement proper TypeScript typing
+4. Use i18n translation constants for all text
+5. Run `yarn lint` and `yarn build` before committing
