@@ -50,7 +50,26 @@
 	"user": {
 		"logout": "Выйти",
 		"loggingOut": "Выходим...",
-		"changePassword": "Изменить пароль"
+		"changePassword": "Изменить пароль",
+		"changePasswordModal": {
+			"title": "Изменить пароль",
+			"description": "Введите текущий пароль и выберите новый.",
+			"currentPassword": "Текущий пароль",
+			"newPassword": "Новый пароль",
+			"confirmPassword": "Подтвердите новый пароль",
+			"changePasswordButton": "Изменить пароль",
+			"changingPassword": "Изменяем...",
+			"cancelButton": "Отменить",
+			"validation": {
+				"currentPasswordRequired": "Введите текущий пароль",
+				"newPasswordRequired": "Введите новый пароль",
+				"confirmPasswordRequired": "Подтвердите пароль",
+				"passwordMinLength": "Пароль должен содержать минимум {{min}} символов",
+				"passwordMaxLength": "Пароль должен содержать не более {{max}} символов",
+				"passwordComplexity": "Пароль должен содержать заглавные и строчные буквы, цифры и специальные символы",
+				"passwordsDoNotMatch": "Пароли не совпадают"
+			}
+		}
 	},
 	"chatHeader": {
 		"model": "Модель",

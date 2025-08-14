@@ -50,7 +50,26 @@
 	"user": {
 		"logout": "Log out",
 		"loggingOut": "Logging out...",
-		"changePassword": "Change password"
+		"changePassword": "Change password",
+		"changePasswordModal": {
+			"title": "Change Password",
+			"description": "Enter your current password and choose a new one.",
+			"currentPassword": "Current Password",
+			"newPassword": "New Password",
+			"confirmPassword": "Confirm New Password",
+			"changePasswordButton": "Change Password",
+			"changingPassword": "Changing...",
+			"cancelButton": "Cancel",
+			"validation": {
+				"currentPasswordRequired": "Current password is required",
+				"newPasswordRequired": "New password is required",
+				"confirmPasswordRequired": "Please confirm your password",
+				"passwordMinLength": "Password must be at least {{min}} characters",
+				"passwordMaxLength": "Password must be no more than {{max}} characters",
+				"passwordComplexity": "Password must contain uppercase and lowercase letters, numbers, and special characters",
+				"passwordsDoNotMatch": "Passwords do not match"
+			}
+		}
 	},
 	"chatHeader": {
 		"model": "Model",

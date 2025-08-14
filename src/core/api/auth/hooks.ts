@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { authApi } from "./index";
-import type { LoginRequest } from "./types";
+import type { LoginRequest, ChangePasswordRequest } from "./types";
 
 export const useLogin = () => {
 	return useMutation({
@@ -57,5 +57,11 @@ export const useUserProfile = () => {
 		queryKey: ["auth", "me"],
 		queryFn: () => authApi.me(),
 		enabled: !!localStorage.getItem("access_token"),
+	});
+};
+
+export const useChangePassword = () => {
+	return useMutation({
+		mutationFn: (request: ChangePasswordRequest) => authApi.changePassword(request),
 	});
 };

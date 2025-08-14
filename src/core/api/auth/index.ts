@@ -1,6 +1,6 @@
 import { apiClient } from "../config";
 import { AUTH_ENDPOINTS } from "./constants";
-import type { LoginRequest, LoginResponse, UserProfile, RefreshTokenRequest, RefreshTokenResponse } from "./types";
+import type { LoginRequest, LoginResponse, UserProfile, RefreshTokenRequest, RefreshTokenResponse, ChangePasswordRequest, ChangePasswordResponse } from "./types";
 
 export const authApi = {
 	login: async (credentials: LoginRequest): Promise<LoginResponse> => {
@@ -30,6 +30,19 @@ export const authApi = {
 	refreshToken: async (request: RefreshTokenRequest): Promise<RefreshTokenResponse> => {
 		const response = await apiClient.post<RefreshTokenResponse>(
 			AUTH_ENDPOINTS.REFRESH,
+			request,
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			},
+		);
+		return response.data;
+	},
+
+	changePassword: async (request: ChangePasswordRequest): Promise<ChangePasswordResponse> => {
+		const response = await apiClient.post<ChangePasswordResponse>(
+			AUTH_ENDPOINTS.CHANGE_PASSWORD,
 			request,
 			{
 				headers: {

@@ -28,3 +28,13 @@ export type UserProfile = {
 	last_name: string;
 	avatar_url: string;
 };
+
+export type ChangePasswordRequest = {
+	current_password: string;
+	new_password: string;
+};
+
+export type ChangePasswordResponse = {
+	success: boolean;
+	message: string;
+};
