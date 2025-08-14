@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import { useSendMessage, useSendSecureMessage } from "@/core/api/chat/hooks";
 import { useChatStore } from "@/core/chat/store";
 import { useChatInputStore } from "../model/store";
+import type { AttachedFile } from "@/core/api/chat/types";
+import type { UploadedFileInfo } from "../model/types";
 import { DisableSecureModeModal } from "./components/disable-secure-mode-modal";
 import { FileUploadButton } from "./components/file-upload-button";
 import { SecureModeModal } from "./components/secure-mode-modal";
@@ -12,6 +14,17 @@ import { SecureToggle } from "./components/secure-toggle";
 import { SendButton } from "./components/send-button";
 import { UploadedFilesList } from "./components/uploaded-files-list";
 import { WebSearchButton } from "./components/web-search-button";
+
+// Helper функция для преобразования загруженных файлов в AttachedFile формат
+const convertUploadedFilesToAttachedFiles = (uploadedFiles: UploadedFileInfo[]): AttachedFile[] => {
+	return uploadedFiles.map(file => ({
+		id: file.file_id,
+		filename: file.filename,
+		content_type: 'application/octet-stream', // Базовый тип, так как не храним его в UploadedFileInfo
+		file_size: 0, // Размер не сохраняем в UploadedFileInfo
+		created_at: new Date().toISOString(),
+	}));
+};
 
 export function ChatInput() {
 	const { t } = useTranslation();
@@ -69,6 +82,11 @@ export function ChatInput() {
 				currentDialogId = tempDialogId;
 				setActiveDialogId(tempDialogId);
 
+				// Преобразуем загруженные файлы в формат AttachedFile
+				const attachedFiles = uploadedFiles.length > 0 
+					? convertUploadedFilesToAttachedFiles(uploadedFiles)
+					: undefined;
+
 				// Предзаполняем кеш для временного чата
 				queryClient.setQueryData(["chat", "messages", tempDialogId], {
 					messages: [
@@ -77,6 +95,7 @@ export function ChatInput() {
 							content: trimmedMessage,
 							role: "user",
 							timestamp: Date.now(),
+							attached_files: attachedFiles,
 						},
 					],
 					has_encrypted_messages: settings.has_encrypted_messages,

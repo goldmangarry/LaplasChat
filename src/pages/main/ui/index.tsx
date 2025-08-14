@@ -12,6 +12,19 @@ import type { ChatSettings } from "@/core/chat/types";
 import { PromptSuggestion } from "./components/prompt-suggestion";
 import { createDefaultSuggestions } from "./components/prompt-suggestion/constants";
 import type { PromptSuggestionItem } from "./components/prompt-suggestion/types";
+import type { AttachedFile } from "@/core/api/chat/types";
+import type { UploadedFileInfo } from "@/features/chat-input/model/types";
+
+// Helper функция для преобразования загруженных файлов в AttachedFile формат
+const convertUploadedFilesToAttachedFiles = (uploadedFiles: UploadedFileInfo[]): AttachedFile[] => {
+	return uploadedFiles.map(file => ({
+		id: file.file_id,
+		filename: file.filename,
+		content_type: 'application/octet-stream', // Базовый тип, так как не храним его в UploadedFileInfo
+		file_size: 0, // Размер не сохраняем в UploadedFileInfo
+		created_at: new Date().toISOString(),
+	}));
+};
 
 export const MainPage = (_props: MainPageProps) => {
 	const { t } = useTranslation();
@@ -25,7 +38,7 @@ export const MainPage = (_props: MainPageProps) => {
 		setActiveDialogId,
 	} = useChatStore();
 
-	const { setMessage, clearMessage, webSearchEnabled } = useChatInputStore();
+	const { setMessage, clearMessage, webSearchEnabled, uploadedFiles } = useChatInputStore();
 	const sendMessageMutation = useSendMessage();
 	const sendSecureMessageMutation = useSendSecureMessage();
 	
@@ -45,6 +58,11 @@ export const MainPage = (_props: MainPageProps) => {
 		const tempDialogId = `temp-${Date.now()}`;
 		setActiveDialogId(tempDialogId);
 		
+		// Преобразуем загруженные файлы в формат AttachedFile
+		const attachedFiles = uploadedFiles.length > 0 
+			? convertUploadedFilesToAttachedFiles(uploadedFiles)
+			: undefined;
+		
 		// Предзаполняем кеш для временного чата
 		queryClient.setQueryData(['chat', 'messages', tempDialogId], {
 			messages: [{
@@ -52,6 +70,7 @@ export const MainPage = (_props: MainPageProps) => {
 				content: suggestion.text,
 				role: "user",
 				timestamp: Date.now(),
+				attached_files: attachedFiles,
 			}],
 			has_encrypted_messages: settings.has_encrypted_messages,
 			last_model_info: null
@@ -63,12 +82,17 @@ export const MainPage = (_props: MainPageProps) => {
 		const modelId = webSearchEnabled && !settings.model.includes(':online') 
 			? `${settings.model}:online` 
 			: settings.model;
+
+		// Сохраняем file_ids для запроса
+		const fileIds = uploadedFiles.map((file) => file.file_id);
 		
 		const messageData = {
 			model: modelId,
 			message: suggestion.text,
 			max_tokens: settings.max_tokens,
 			temperature: settings.temperature,
+			// Добавляем file_ids если есть загруженные файлы
+			...(fileIds.length > 0 && { file_ids: fileIds }),
 		};
 
 		try {
