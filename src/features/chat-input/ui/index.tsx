@@ -5,10 +5,10 @@ import { useTranslation } from "react-i18next";
 import { useSendMessage, useSendSecureMessage } from "@/core/api/chat/hooks";
 import { useChatStore } from "@/core/chat/store";
 import { useChatInputStore } from "../model/store";
-import { FileUploadButton } from "./components/file-upload-button";
-import { SecureToggle } from "./components/secure-toggle";
-import { SecureModeModal } from "./components/secure-mode-modal";
 import { DisableSecureModeModal } from "./components/disable-secure-mode-modal";
+import { FileUploadButton } from "./components/file-upload-button";
+import { SecureModeModal } from "./components/secure-mode-modal";
+import { SecureToggle } from "./components/secure-toggle";
 import { SendButton } from "./components/send-button";
 import { UploadedFilesList } from "./components/uploaded-files-list";
 import { WebSearchButton } from "./components/web-search-button";
@@ -176,8 +176,7 @@ export function ChatInput() {
 
 	return (
 		<>
-			<div className="flex flex-col w-full max-w-4xl">
-				{/* Main Input Area */}
+			<div className="flex flex-col w-full">
 				<div className="flex flex-col bg-white border border-gray-200 border-b-0 rounded-t-2xl shadow-sm">
 					<UploadedFilesList />
 					<textarea

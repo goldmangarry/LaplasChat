@@ -108,3 +108,8 @@ export type UploadedFile = {
 export type UploadFilesResponse = {
 	files: UploadedFile[];
 };
+
+export type FileDownloadResponse = {
+	download_url: string;
+	expires_in: string;
+};

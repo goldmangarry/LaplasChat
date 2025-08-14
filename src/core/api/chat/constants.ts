@@ -7,4 +7,5 @@ export const CHAT_ENDPOINTS = {
 	CHAT_MESSAGES: (dialogId: string) => `/api/chat/history/${dialogId}`,
 	DELETE_CHAT_HISTORY: (dialogId: string) => `/api/chat/history/${dialogId}`,
 	UPDATE_DIALOG_NAME: (dialogId: string) => `/api/chat/history/${dialogId}`,
+	FILE_DOWNLOAD: (fileId: string) => `/api/chat/files/${fileId}/download`,
 } as const;

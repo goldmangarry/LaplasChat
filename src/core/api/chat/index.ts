@@ -11,6 +11,7 @@ import type {
 	FactCheckRequest,
 	FactCheckResponse,
 	UploadFilesResponse,
+	FileDownloadResponse,
 } from "./types";
 
 export const chatApi = {
@@ -108,6 +109,13 @@ export const chatApi = {
 					"Content-Type": "multipart/form-data",
 				},
 			},
+		);
+		return response.data;
+	},
+
+	getFileDownloadUrl: async (fileId: string): Promise<FileDownloadResponse> => {
+		const response = await apiClient.get<FileDownloadResponse>(
+			CHAT_ENDPOINTS.FILE_DOWNLOAD(fileId),
 		);
 		return response.data;
 	},

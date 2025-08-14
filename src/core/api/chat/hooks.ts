@@ -359,3 +359,13 @@ export const useUploadFiles = () => {
 		mutationKey: ['uploadFiles'],
 	});
 };
+
+export const useFileDownloadUrl = (fileId: string) => {
+	return useQuery({
+		queryKey: ["chat", "file", "download", fileId],
+		queryFn: () => chatApi.getFileDownloadUrl(fileId),
+		enabled: !!fileId,
+		staleTime: 0, // Всегда запрашиваем свежую ссылку
+		gcTime: 0, // Не кешируем результат
+	});
+};
