@@ -36,8 +36,9 @@ type ChatItemProps = {
 export function ChatItem({ chat, onDeleteClick }: ChatItemProps) {
   const { isMobile } = useSidebar()
   const { t } = useTranslation()
-  const { setActiveDialogId, applyChatSettingsFromDialog } = useChatStore()
+  const { activeDialogId, setActiveDialogId, applyChatSettingsFromDialog } = useChatStore()
   const updateDialogName = useUpdateDialogName()
+  const isActive = activeDialogId === chat.id
   
   const [isEditing, setIsEditing] = useState(false)
   const [editingName, setEditingName] = useState(chat.name)
@@ -126,11 +127,18 @@ export function ChatItem({ chat, onDeleteClick }: ChatItemProps) {
               setActiveDialogId(chat.id);
               applyChatSettingsFromDialog(chat);
             }}
+            className={`
+              flex items-center gap-2 w-full px-2 py-1.5 rounded-md transition-colors duration-200
+              ${isActive 
+                ? 'bg-sidebar-accent' 
+                : 'hover:bg-sidebar-accent'
+              }
+            `}
           >
             {chat.has_encrypted_messages && (
-              <ShieldCheck className="text-stone-500" />
+              <ShieldCheck className="h-4 w-4 flex-shrink-0 text-stone-500" />
             )}
-            <span>{chat.name}</span>
+            <span className="truncate">{chat.name}</span>
           </Link>
         )}
       </SidebarMenuButton>
