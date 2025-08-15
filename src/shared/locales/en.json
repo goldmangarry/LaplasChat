@@ -8,6 +8,7 @@
 		"forgotPassword": "Forgot your password?",
 		"loginButton": "Login",
 		"loading": "Logging in...",
+		"processingAuthentication": "Processing authentication...",
 		"orContinueWith": "Or continue with",
 		"noAccount": "Don't have an account?",
 		"signUp": "Sign up",

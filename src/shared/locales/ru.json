@@ -8,6 +8,7 @@
 		"forgotPassword": "Забыли пароль?",
 		"loginButton": "Войти",
 		"loading": "Входим...",
+		"processingAuthentication": "Обрабатываем аутентификацию...",
 		"orContinueWith": "Или продолжить с помощью",
 		"noAccount": "Нет аккаунта?",
 		"signUp": "Зарегистрироваться",
