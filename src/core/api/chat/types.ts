@@ -92,9 +92,15 @@ export type FactCheckRequest = {
 	message: string;
 };
 
+export type FactCheckAnnotation = {
+	url: string;
+	text: string;
+	header: string;
+};
+
 export type FactCheckResponse = {
 	response: string;
-	urls: string[];
+	annotations: FactCheckAnnotation[];
 };
 
 export type UploadedFile = {

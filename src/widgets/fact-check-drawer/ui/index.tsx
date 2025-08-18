@@ -92,16 +92,16 @@ export const FactCheckDrawer = ({
 									<div className="h-px bg-stone-200"></div>
 								</div>
 
-								{/* URLs Section */}
-								{factCheckMutation.data.urls &&
-									factCheckMutation.data.urls.length > 0 && (
+								{/* Annotations Section */}
+								{factCheckMutation.data.annotations &&
+									factCheckMutation.data.annotations.length > 0 && (
 										<div>
 											<h3 className="font-semibold text-stone-900">
 												{t("factCheck.sources")}
 											</h3>
 											<div className="mt-3 space-y-3">
-												{factCheckMutation.data.urls.map((url) => (
-													<LinkCard key={url} url={url} />
+												{factCheckMutation.data.annotations.map((annotation, index) => (
+													<LinkCard key={`${annotation.url}-${index}`} annotation={annotation} />
 												))}
 											</div>
 										</div>
