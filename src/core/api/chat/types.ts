@@ -13,6 +13,8 @@ export type Dialog = {
 	name: string;
 	has_encrypted_messages: boolean;
 	last_model_info: ModelInfo;
+	created_at: string;
+	updated_at: string;
 };
 
 export type ChatHistoryResponse = {

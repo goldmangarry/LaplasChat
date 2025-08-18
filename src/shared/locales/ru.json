@@ -30,6 +30,8 @@
 	"chat": {
 		"newChat": "Новый чат",
 		"chats": "Чаты",
+		"thisWeek": "На этой неделе",
+		"lastWeek": "На прошлой неделе",
 		"renameChat": "Переименовать",
 		"deleteChat": "Удалить",
 		"you": "Вы",

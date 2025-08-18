@@ -11,6 +11,7 @@ import { DeleteChatModal } from "./delete-chat-modal"
 import { ChatItem } from "./chat-item"
 import { useChatHistory, useDeleteChatHistory } from "@/core/api/chat/hooks"
 import { useChatStore } from "@/core/chat/store"
+import { isChatFromThisWeek } from "./utils"
 
 export function NavChats() {
   const { t } = useTranslation()
@@ -23,6 +24,10 @@ export function NavChats() {
   const [chatToDelete, setChatToDelete] = useState<{ id: string; name: string } | null>(null)
   
   const chats = chatHistory?.dialogs || []
+  
+  // Группируем чаты по временным периодам
+  const thisWeekChats = chats.filter(chat => isChatFromThisWeek(chat.updated_at))
+  const lastWeekChats = chats.filter(chat => !isChatFromThisWeek(chat.updated_at))
   
   // Получаем текущий dialogId из роута или из store
   const currentDialogId = (params as any)?.dialogId || activeDialogId
@@ -63,16 +68,40 @@ export function NavChats() {
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>{t('chat.chats')}</SidebarGroupLabel>
-      <SidebarMenu>
-        {chats.map((chat) => (
-          <ChatItem
-            key={chat.id}
-            chat={chat}
-            onDeleteClick={handleDeleteClick}
-          />
-        ))}
-      </SidebarMenu>
+      
+      {/* Чаты этой недели */}
+      {thisWeekChats.length > 0 && (
+        <>
+          <SidebarGroupLabel className="opacity-70">{t('chat.thisWeek')}</SidebarGroupLabel>
+          <SidebarMenu>
+            {thisWeekChats.map((chat) => (
+              <ChatItem
+                key={chat.id}
+                chat={chat}
+                onDeleteClick={handleDeleteClick}
+              />
+            ))}
+          </SidebarMenu>
+        </>
+      )}
+      
+      {/* Чаты прошлых недель */}
+      {lastWeekChats.length > 0 && (
+        <>
+          <SidebarGroupLabel className="opacity-70">{t('chat.lastWeek')}</SidebarGroupLabel>
+          <SidebarMenu>
+            {lastWeekChats.map((chat) => (
+              <ChatItem
+                key={chat.id}
+                chat={chat}
+                onDeleteClick={handleDeleteClick}
+              />
+            ))}
+          </SidebarMenu>
+        </>
+      )}
 
+      
       <DeleteChatModal
         isOpen={!!chatToDelete}
         chatName={chatToDelete?.name || ''}

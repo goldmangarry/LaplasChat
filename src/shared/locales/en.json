@@ -30,6 +30,8 @@
 	"chat": {
 		"newChat": "New Chat",
 		"chats": "Chats",
+		"thisWeek": "This week",
+		"lastWeek": "Last week",
 		"renameChat": "Rename",
 		"deleteChat": "Delete",
 		"you": "You",
