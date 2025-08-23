@@ -57,7 +57,7 @@ export const ChatPage = ({ dialogId }: ChatPageProps) => {
 					/>
 				</div>
 
-				<div className="flex-shrink-0 p-0 sm:p-4">
+				<div className="flex-shrink-0 p-0 sm:px-4 py-4">
 					<ChatInput />
 				</div>
 			</div>
