@@ -14,7 +14,7 @@ function ChatPageComponent() {
 		<>
 			<ChatSidebar />
 			<SidebarInset className="overflow-x-hidden">
-				<div className="flex max-h-screen flex-1 flex-col max-w-full">
+				<div className="flex flex-1 max-h-[100dvh] flex-col max-w-full">
 					<ChatPage dialogId={dialogId} />
 				</div>
 			</SidebarInset>
