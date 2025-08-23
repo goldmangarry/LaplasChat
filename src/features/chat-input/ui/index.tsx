@@ -9,6 +9,9 @@ import type { AttachedFile } from "@/core/api/chat/types";
 import type { UploadedFileInfo } from "../model/types";
 import { DisableSecureModeModal } from "./components/disable-secure-mode-modal";
 import { FileUploadButton } from "./components/file-upload-button";
+import { MobileOptionsMenu } from "./components/mobile-options-menu";
+import { MobileSecureIndicator } from "./components/mobile-secure-indicator";
+import { MobileWebSearchIndicator } from "./components/mobile-websearch-indicator";
 import { SecureModeModal } from "./components/secure-mode-modal";
 import { SecureToggle } from "./components/secure-toggle";
 import { SendButton } from "./components/send-button";
@@ -214,7 +217,8 @@ export function ChatInput() {
 
 				{/* Bottom Controls */}
 				<div className="flex items-center justify-between p-4 bg-white border border-gray-200 border-t-0 rounded-b-xl">
-					<div className="flex items-center gap-2">
+					{/* Desktop Controls */}
+					<div className="hidden sm:flex items-center gap-2">
 						<FileUploadButton disabled={isLoading} />
 						<SecureToggle
 							isSecure={isSecure}
@@ -235,6 +239,40 @@ export function ChatInput() {
 							onToggle={setWebSearchEnabled}
 							disabled={isLoading}
 						/>
+					</div>
+
+					{/* Mobile Controls */}
+					<div className="flex sm:hidden items-center gap-2">
+						<MobileOptionsMenu
+							isSecure={isSecure}
+							onSecureToggle={(secure) => {
+								if (secure) {
+									// Enabling secure mode - show info modal and update settings
+									updateCurrentSettings({ has_encrypted_messages: secure });
+									setShowSecureModal(true);
+								} else {
+									// Disabling secure mode - show confirmation modal first
+									setShowDisableSecureModal(true);
+								}
+							}}
+							webSearchEnabled={webSearchEnabled}
+							onWebSearchToggle={setWebSearchEnabled}
+							disabled={isLoading}
+						/>
+						
+						{/* Mobile Mode Indicators */}
+						{isSecure && (
+							<MobileSecureIndicator
+								onClose={() => setShowDisableSecureModal(true)}
+								disabled={isLoading}
+							/>
+						)}
+						{webSearchEnabled && (
+							<MobileWebSearchIndicator
+								onClose={() => setWebSearchEnabled(false)}
+								disabled={isLoading}
+							/>
+						)}
 					</div>
 
 					<SendButton

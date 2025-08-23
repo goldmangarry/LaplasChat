@@ -88,6 +88,7 @@
 		"secureModeTooltip": "When Secure Mode is enabled, confidential data including company names, personal information, and other sensitive data is not transmitted to external AI models. We recommend using this mode when working with sensitive information",
 		"webSearch": "Web Search",
 		"webSearchTooltip": "Search the web for current information and real-time data to enhance responses with up-to-date facts",
+		"attachFile": "Attach File",
 		"deepthink": "Deepthink"
 	},
 	"suggestions": {

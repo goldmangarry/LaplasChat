@@ -41,14 +41,24 @@ export const ChatHeader = ({
 			</div>
 			<AnimateIcon animateOnHover>
 				<div className="flex items-center gap-2">
+					{/* Desktop version - icon + text */}
 					<Button
 						variant="secondary"
 						size="default"
 						onClick={handleModelSettingsClick}
-						className="h-9 gap-2 transition-colors"
+						className="hidden sm:flex h-9 gap-2 transition-colors"
 					>
 						<Settings className="h-4 w-4" />
 						{t("chatHeader.modelSettings")}
+					</Button>
+					{/* Mobile version - icon only */}
+					<Button
+						variant="secondary"
+						size="icon"
+						onClick={handleModelSettingsClick}
+						className="sm:hidden h-9 w-9 transition-colors"
+					>
+						<Settings className="h-4 w-4" />
 					</Button>
 				</div>
 			</AnimateIcon>
