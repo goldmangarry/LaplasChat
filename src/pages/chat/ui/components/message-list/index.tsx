@@ -101,7 +101,7 @@ export const MessageList = ({ dialogId, onFactCheck }: MessageListProps) => {
   }
 
   return (
-    <div ref={containerRef} className="flex flex-col space-y-4 h-full max-h-full overflow-y-auto sm:px-4 sm:py-4">
+    <div ref={containerRef} className="flex flex-col space-y-4 h-full overflow-y-auto sm:px-4 sm:py-4">
       {/* Сообщения из кеша (включая оптимистичные) */}
       {messages.map((message, index) => {
         const messageKey = message.id || `message-${index}`;

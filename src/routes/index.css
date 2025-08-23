@@ -126,10 +126,4 @@
 	body {
 		@apply bg-background text-foreground;
 	}
-	
-	/* Ensure full height on mobile devices */
-	html, body, #root {
-		height: 100vh;
-		height: 100dvh; /* Use dynamic viewport height on supporting browsers */
-	}
 }
