@@ -13,9 +13,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Drawer,
+  DrawerContent,
+} from "@/components/ui/drawer";
 import { ProviderIcon } from "@/components/shared/provider-icon";
 import { useModels } from "@/core/api/models/hooks";
 import { getDisplayModelId } from "@/shared/lib/model-utils";
+import { useIsMobile } from "@/components/hooks/use-mobile";
 import type { ModelSelectorProps } from "../../../types";
 import type { ModelProvider } from "@/core/api/models/types";
 
@@ -111,6 +116,7 @@ export const ModelSelector = ({
 }: ModelSelectorProps) => {
   const [open, setOpen] = useState(false);
   const { data: modelsData, isLoading } = useModels();
+  const isMobile = useIsMobile();
   
   const models = modelsData?.models || [];
   const displayModelId = getDisplayModelId(selectedModel);
@@ -125,18 +131,20 @@ export const ModelSelector = ({
     return acc;
   }, {} as Record<ModelProvider, typeof models>);
 
-  // Разделение на две колонки с явным размещением провайдеров
   const providerEntries = Object.entries(modelsByProvider);
   
-  // Левая колонка: OpenAI, Anthropic, Perplexity
-  const leftColumnProviders = providerEntries.filter(([provider]) => 
-    ['openai', 'anthropic', 'perplexity'].includes(provider)
-  );
+  // Для мобильных - одна колонка, для десктопа - две колонки
+  const leftColumnProviders = isMobile 
+    ? [] 
+    : providerEntries.filter(([provider]) => 
+        ['openai', 'anthropic', 'perplexity'].includes(provider)
+      );
   
-  // Правая колонка: все остальные (включая Google)
-  const rightColumnProviders = providerEntries.filter(([provider]) => 
-    !['openai', 'anthropic', 'perplexity'].includes(provider)
-  );
+  const rightColumnProviders = isMobile 
+    ? providerEntries // Все провайдеры в одну колонку
+    : providerEntries.filter(([provider]) => 
+        !['openai', 'anthropic', 'perplexity'].includes(provider)
+      );
   
   const handleModelSelect = (modelId: string, provider: ModelProvider) => {
     if (selectedModel !== modelId) {
@@ -144,56 +152,82 @@ export const ModelSelector = ({
     }
     setOpen(false);
   };
+
+  const triggerButton = (
+    <Button
+      variant="outline"
+      role="combobox"
+      aria-expanded={open}
+      className="w-[250px] sm:w-[300px] justify-between"
+      disabled={isLoading}
+      onClick={() => setOpen(true)}
+    >
+      <div className="flex items-center gap-2">
+        <ProviderIcon provider={selectedProvider} className="w-4 h-4" />
+        <span className="truncate">
+          {selectedModelData?.name || displayModelId}
+        </span>
+      </div>
+      <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
+    </Button>
+  );
+
+  const content = (
+    <Command className="border-none p-0" shouldFilter={false}>
+      <CommandList className="max-h-[600px] overflow-y-auto" tabIndex={-1}>
+        <div className={cn(
+          isMobile ? "space-y-4" : "grid grid-cols-2 gap-3"
+        )}>
+          {!isMobile && (
+            <div className="space-y-4">
+              {leftColumnProviders.map(([provider, providerModels]) => (
+                <ProviderBlock
+                  key={provider}
+                  provider={provider as ModelProvider}
+                  models={providerModels}
+                  selectedModel={selectedModel}
+                  onModelChange={handleModelSelect}
+                />
+              ))}
+            </div>
+          )}
+          
+          <div className="space-y-4">
+            {rightColumnProviders.map(([provider, providerModels]) => (
+              <ProviderBlock
+                key={provider}
+                provider={provider as ModelProvider}
+                models={providerModels}
+                selectedModel={selectedModel}
+                onModelChange={handleModelSelect}
+              />
+            ))}
+          </div>
+        </div>
+      </CommandList>
+    </Command>
+  );
   
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={setOpen}>
+        {triggerButton}
+        <DrawerContent className="max-h-[80vh]">
+          <div className="px-4 pt-4 pb-4">
+            {content}
+          </div>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-[300px] justify-between"
-          disabled={isLoading}
-        >
-          <div className="flex items-center gap-2">
-            <ProviderIcon provider={selectedProvider} className="w-4 h-4" />
-            <span className="truncate">
-              {selectedModelData?.name || displayModelId}
-            </span>
-          </div>
-          <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
-        </Button>
+        {triggerButton}
       </PopoverTrigger>
       <PopoverContent className="w-[680px] p-3" align="start">
-        <Command className="border-none p-0" shouldFilter={false}>
-          <CommandList className="max-h-[600px] overflow-y-auto" tabIndex={-1}>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-4">
-                {leftColumnProviders.map(([provider, providerModels]) => (
-                  <ProviderBlock
-                    key={provider}
-                    provider={provider as ModelProvider}
-                    models={providerModels}
-                    selectedModel={selectedModel}
-                    onModelChange={handleModelSelect}
-                  />
-                ))}
-              </div>
-              
-              <div className="space-y-4">
-                {rightColumnProviders.map(([provider, providerModels]) => (
-                  <ProviderBlock
-                    key={provider}
-                    provider={provider as ModelProvider}
-                    models={providerModels}
-                    selectedModel={selectedModel}
-                    onModelChange={handleModelSelect}
-                  />
-                ))}
-              </div>
-            </div>
-          </CommandList>
-        </Command>
+        {content}
       </PopoverContent>
     </Popover>
   );

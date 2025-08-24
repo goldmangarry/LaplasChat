@@ -34,7 +34,7 @@ type ChatItemProps = {
 }
 
 export function ChatItem({ chat, onDeleteClick }: ChatItemProps) {
-  const { isMobile } = useSidebar()
+  const { isMobile, setOpenMobile } = useSidebar()
   const { t } = useTranslation()
   const { activeDialogId, setActiveDialogId, applyChatSettingsFromDialog } = useChatStore()
   const updateDialogName = useUpdateDialogName()
@@ -126,6 +126,9 @@ export function ChatItem({ chat, onDeleteClick }: ChatItemProps) {
             onClick={() => {
               setActiveDialogId(chat.id);
               applyChatSettingsFromDialog(chat);
+              if (isMobile) {
+                setOpenMobile(false);
+              }
             }}
             className={`
               flex items-center gap-2 w-full px-2 py-1.5 rounded-md transition-colors duration-200
