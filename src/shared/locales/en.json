@@ -183,5 +183,9 @@
 		"description": "After exiting Secure Mode, your messages and personal data will no longer be encrypted.\nThis may make them accessible to third parties.",
 		"cancel": "Cancel",
 		"confirm": "Got it"
+	},
+	"workflow": {
+		"title": "Workflow",
+		"placeholder": "Workflow feature coming soon..."
 	}
 }
