@@ -2,6 +2,7 @@ import type { NodeProps } from "@xyflow/react";
 import { Handle, Position } from "@xyflow/react";
 import { Clock, MoreHorizontal, UserPlus, ArrowLeft, ArrowRight, Trash2 } from "lucide-react";
 import { useState, memo } from "react";
+import { useTranslation } from "react-i18next";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -22,6 +23,7 @@ type TaskNodeProps = NodeProps & {
 };
 
 export const TaskNode = memo(function TaskNode(props: TaskNodeProps) {
+	const { t } = useTranslation();
 	const { onAddLeftNode, onAddRightNode, onDeleteNode } = props;
 	const data = props.data as TaskNodeData;
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -42,13 +44,13 @@ export const TaskNode = memo(function TaskNode(props: TaskNodeProps) {
 	const getStatusText = () => {
 		switch (data.status) {
 			case "pending":
-				return "Pending";
+				return t("workflow.status.pending");
 			case "completed":
-				return "Completed";
+				return t("workflow.status.completed");
 			case "in_progress":
-				return "In Progress";
+				return t("workflow.status.inProgress");
 			default:
-				return "Pending";
+				return t("workflow.status.pending");
 		}
 	};
 
@@ -83,7 +85,9 @@ export const TaskNode = memo(function TaskNode(props: TaskNodeProps) {
 					<div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
 						<UserPlus className="w-5 h-5 text-muted-foreground" />
 					</div>
-					<span className="text-foreground font-medium">{data.assignee}</span>
+					<span className="text-foreground font-medium">
+						{data.assignee === "Unassigned" ? t("workflow.assignee.unassigned") : data.assignee}
+					</span>
 				</div>
 				<DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
 					<DropdownMenuTrigger asChild>
@@ -95,21 +99,21 @@ export const TaskNode = memo(function TaskNode(props: TaskNodeProps) {
 							<MoreHorizontal className="w-4 h-4 text-muted-foreground" />
 						</button>
 					</DropdownMenuTrigger>
-					<DropdownMenuContent className="w-48" align="end">
+					<DropdownMenuContent className="w-56" align="end">
 						<DropdownMenuItem onClick={handleAddLeftNode} className="flex items-center gap-2">
 							<ArrowLeft className="w-4 h-4" />
-							Add left node
+							{t("workflow.actions.addLeftNode")}
 						</DropdownMenuItem>
 						<DropdownMenuItem onClick={handleAddRightNode} className="flex items-center gap-2">
 							<ArrowRight className="w-4 h-4" />
-							Add right node
+							{t("workflow.actions.addRightNode")}
 						</DropdownMenuItem>
 						<DropdownMenuItem 
 							onClick={handleDeleteTask} 
 							className="flex items-center gap-2 text-red-600 focus:text-red-600"
 						>
 							<Trash2 className="w-4 h-4" />
-							Delete task
+							{t("workflow.actions.deleteTask")}
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>

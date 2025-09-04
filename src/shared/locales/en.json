@@ -29,6 +29,8 @@
 	},
 	"chat": {
 		"newChat": "New Chat",
+		"workflow": "Workflow",
+		"soon": "Soon",
 		"chats": "Chats",
 		"thisWeek": "This week",
 		"lastWeek": "Last week",
@@ -186,6 +188,19 @@
 	},
 	"workflow": {
 		"title": "Workflow",
-		"placeholder": "Workflow feature coming soon..."
+		"placeholder": "Workflow feature coming soon...",
+		"status": {
+			"pending": "Pending",
+			"completed": "Completed",
+			"inProgress": "In Progress"
+		},
+		"actions": {
+			"addLeftNode": "Add left node",
+			"addRightNode": "Add right node",
+			"deleteTask": "Delete task"
+		},
+		"assignee": {
+			"unassigned": "Unassigned"
+		}
 	}
 }

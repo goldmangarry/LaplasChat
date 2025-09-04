@@ -5,10 +5,12 @@ import {
 	type Edge,
 	type Node,
 	ReactFlow,
+	ReactFlowProvider,
 	useEdgesState,
 	useNodesState,
+	useReactFlow,
 } from "@xyflow/react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useLayoutEffect, useMemo } from "react";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { TaskNode } from "@/components/workflow/task-node";
 import { ChatSidebar } from "@/widgets/chat-sidebar";
@@ -17,6 +19,15 @@ import "@xyflow/react/dist/style.css";
 function WorkflowPageContent() {
 	const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
 	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+	const { fitView } = useReactFlow();
+
+	useLayoutEffect(() => {
+		// Fit view with some padding after initial render
+		const timer = setTimeout(() => {
+			fitView({ padding: 0.1, maxZoom: 0.8 });
+		}, 10);
+		return () => clearTimeout(timer);
+	}, [fitView]);
 
 	const onConnect = useCallback(
 		(params: any) => {
@@ -158,7 +169,7 @@ const initialNodes: Node[] = [
 		type: "taskNode",
 		position: { x: 100, y: 100 },
 		data: {
-			title: "Define blog editorial goals and themes",
+			title: "Provide product details",
 			assignee: "Unassigned",
 			status: "pending",
 		},
@@ -168,7 +179,37 @@ const initialNodes: Node[] = [
 		type: "taskNode",
 		position: { x: 500, y: 100 },
 		data: {
-			title: "Create content calendar",
+			title: "Research environmental impact",
+			assignee: "Unassigned",
+			status: "pending",
+		},
+	},
+	{
+		id: "3",
+		type: "taskNode",
+		position: { x: 900, y: 100 },
+		data: {
+			title: "Draft press release",
+			assignee: "Unassigned",
+			status: "pending",
+		},
+	},
+	{
+		id: "4",
+		type: "taskNode",
+		position: { x: 1300, y: 100 },
+		data: {
+			title: "Edit and send to media contacts",
+			assignee: "Unassigned",
+			status: "pending",
+		},
+	},
+	{
+		id: "5",
+		type: "taskNode",
+		position: { x: 500, y: 350 },
+		data: {
+			title: "Gather customer testimonials",
 			assignee: "Unassigned",
 			status: "pending",
 		},
@@ -180,6 +221,31 @@ const initialEdges: Edge[] = [
 		id: "e1-2",
 		source: "1",
 		target: "2",
+		style: { strokeDasharray: "5,5" },
+	},
+	{
+		id: "e1-5",
+		source: "1",
+		target: "5",
+		style: { strokeDasharray: "5,5" },
+	},
+	{
+		id: "e2-3",
+		source: "2",
+		target: "3",
+		style: { strokeDasharray: "5,5" },
+	},
+	{
+		id: "e3-4",
+		source: "3",
+		target: "4",
+		style: { strokeDasharray: "5,5" },
+	},
+	{
+		id: "e5-3",
+		source: "5",
+		target: "3",
+		style: { strokeDasharray: "5,5" },
 	},
 ];
 
@@ -188,7 +254,9 @@ function WorkflowPage() {
 		<>
 			<ChatSidebar />
 			<SidebarInset>
-				<WorkflowPageContent />
+				<ReactFlowProvider>
+					<WorkflowPageContent />
+				</ReactFlowProvider>
 			</SidebarInset>
 		</>
 	);
