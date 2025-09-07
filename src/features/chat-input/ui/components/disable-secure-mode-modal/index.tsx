@@ -20,14 +20,14 @@ export function DisableSecureModeModal({
   return (
     <Dialog open={isOpen} onOpenChange={onCancel}>
       <DialogContent 
-        className="max-w-sm sm:max-w-md bg-white border border-gray-200 shadow-lg"
+        className="max-w-sm sm:max-w-md shadow-lg"
         showCloseButton={false}
       >
         <DialogHeader className="gap-2">
-          <DialogTitle className="text-lg font-semibold text-gray-900">
+          <DialogTitle className="text-lg font-semibold">
             {t('disableSecureMode.title')}
           </DialogTitle>
-          <DialogDescription className="text-sm text-gray-600 text-left leading-relaxed">
+          <DialogDescription className="text-sm text-left leading-relaxed">
             {t('disableSecureMode.description')}
           </DialogDescription>
         </DialogHeader>
@@ -36,13 +36,13 @@ export function DisableSecureModeModal({
           <Button
             variant="outline"
             onClick={onCancel}
-            className="w-full sm:w-auto bg-white hover:bg-gray-50 text-gray-900 text-sm font-medium px-4 py-2 h-9 border border-gray-200 shadow-sm"
+            className="w-full sm:w-auto text-sm font-medium px-4 py-2 h-9 shadow-sm"
           >
             {t('disableSecureMode.cancel')}
           </Button>
           <Button
             onClick={onConfirm}
-            className="w-full sm:w-auto bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 h-9 shadow-sm"
+            className="w-full sm:w-auto text-sm font-medium px-4 py-2 h-9 shadow-sm"
           >
             {t('disableSecureMode.confirm')}
           </Button>

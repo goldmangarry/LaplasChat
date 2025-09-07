@@ -20,19 +20,19 @@ export const PromptSuggestion = ({
           <button
             type="button"
             onClick={() => handleSuggestionClick(suggestion)}
-            className="flex items-start gap-2 p-2 border border-stone-200 bg-stone-50 rounded-lg text-left hover:bg-stone-100 transition-colors"
+            className="flex items-start gap-2 p-2 border border-border bg-muted rounded-lg text-left hover:bg-muted/80 transition-colors"
           >
             {/* Icon Container */}
             <div className="flex items-center justify-center p-1 flex-shrink-0 mt-1">
               <IconComponent 
                 size={16} 
-                className="text-stone-500" 
+                className="text-muted-foreground" 
                 strokeWidth={1.5}
               />
             </div>
             
             {/* Text Content */}
-            <span className="text-stone-800 text-base leading-6 font-normal">
+            <span className="text-foreground text-base leading-6 font-normal">
               {suggestion.text}
             </span>
           </button>

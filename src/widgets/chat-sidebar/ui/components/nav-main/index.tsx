@@ -40,9 +40,9 @@ export function NavMain() {
             <SidebarMenuButton 
             onClick={handleNewChat} 
             tooltip={t("chat.newChat")}
-            className="w-60 h-10 gap-2 rounded-md py-3 px-2 hover:bg-[#F3F0EE] transition-colors font-sans font-normal text-sm leading-none tracking-normal text-stone-800"
+            className="w-60 h-10 gap-2 rounded-md py-3 px-2 hover:bg-sidebar-accent transition-colors font-sans font-normal text-sm leading-none tracking-normal"
           >
-            <MessageCircleMore className="text-stone-500" />
+            <MessageCircleMore className="text-muted-foreground" />
             <span>{t("chat.newChat")}</span>
           </SidebarMenuButton>
           </AnimateIcon>
@@ -51,9 +51,9 @@ export function NavMain() {
             <SidebarMenuButton 
             onClick={handleWorkflow} 
             tooltip={t("chat.workflow")}
-            className="w-60 h-10 gap-2 rounded-md py-3 px-2 hover:bg-[#F3F0EE] transition-colors font-sans font-normal text-sm leading-none tracking-normal text-stone-800"
+            className="w-60 h-10 gap-2 rounded-md py-3 px-2 hover:bg-sidebar-accent transition-colors font-sans font-normal text-sm leading-none tracking-normal"
           >
-            <Workflow className="text-stone-500" size={16} />
+            <Workflow className="text-muted-foreground" size={16} />
             <span className="flex items-center gap-2">
               {t("chat.workflow")}
               <Badge variant="secondary" className="text-xs">

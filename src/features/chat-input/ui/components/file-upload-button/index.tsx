@@ -56,10 +56,10 @@ export const FileUploadButton = ({ disabled }: FileUploadButtonProps) => {
 			<button
 				onClick={handleButtonClick}
 				disabled={disabled || uploadFilesMutation.isPending}
-				className="flex items-center justify-center w-10 h-10 rounded-lg bg-white hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+				className="flex items-center justify-center w-10 h-10 rounded-lg bg-background border border-border hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 			>
 				<Paperclip 
-					className="w-4 h-4 text-stone-800" 
+					className="w-4 h-4 text-foreground" 
 					strokeWidth={1.33} 
 				/>
 			</button>

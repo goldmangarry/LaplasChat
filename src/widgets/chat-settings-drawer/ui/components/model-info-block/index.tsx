@@ -48,11 +48,11 @@ export const ModelInfoBlock = ({ settings }: ModelInfoBlockProps) => {
 				/>
 			</div>
 			
-			<h3 className="text-center font-medium text-base leading-6 text-black">
+			<h3 className="text-center font-medium text-base leading-6">
 				{getModelDisplayName(displayModelId)}
 			</h3>
 			
-			<p className="text-center font-normal text-base leading-6 text-neutral-500 px-2">
+			<p className="text-center font-normal text-base leading-6 text-muted-foreground px-2">
 				{t(`modelDescriptions.${displayModelId}`, t("modelDescriptions.unavailable"))}
 			</p>
 		</div>

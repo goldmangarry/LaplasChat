@@ -56,6 +56,9 @@
 		"logout": "Log out",
 		"loggingOut": "Logging out...",
 		"changePassword": "Change password",
+		"toggleTheme": "Toggle theme",
+		"lightTheme": "Light theme",
+		"darkTheme": "Dark theme",
 		"changePasswordModal": {
 			"title": "Change Password",
 			"description": "Enter your current password and choose a new one.",

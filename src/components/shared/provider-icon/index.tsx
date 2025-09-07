@@ -10,6 +10,7 @@ import MetaIcon from "@/assets/icons/meta-color.svg";
 import MistralIcon from "@/assets/icons/mistral-color.svg";
 import DeepseekIcon from "@/assets/icons/deepseek-color.svg";
 import QwenIcon from "@/assets/icons/qwen-color.svg";
+import { useTheme } from "@/core/theme";
 
 type ProviderIconProps = {
   provider: ModelProvider;
@@ -17,6 +18,19 @@ type ProviderIconProps = {
 };
 
 export const ProviderIcon = ({ provider, className = "w-4 h-4" }: ProviderIconProps) => {
+  const { theme } = useTheme();
+
+  const getIconStyle = () => {
+    // Провайдеры, которые нуждаются в белом цвете для темной темы
+    const needsWhiteInDark = ["openai", "perplexity"];
+    
+    if (needsWhiteInDark.includes(provider) && theme === "dark") {
+      return { filter: "brightness(0) invert(1)" };
+    }
+    
+    return {};
+  };
+
   const getIcon = () => {
     switch (provider) {
       case "openai":
@@ -47,6 +61,7 @@ export const ProviderIcon = ({ provider, className = "w-4 h-4" }: ProviderIconPr
       src={getIcon()} 
       alt={`${provider} icon`} 
       className={className}
+      style={getIconStyle()}
     />
   );
 };

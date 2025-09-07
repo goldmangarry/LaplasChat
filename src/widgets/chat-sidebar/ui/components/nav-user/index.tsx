@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useUserProfile, useLogout } from "@/core/api/auth/hooks"
 import { ChangePasswordModal } from "@/components/shared/change-password-modal"
+import { ThemeToggle } from "@/components/shared/theme-toggle"
 import { AVATAR_SIZE, DROPDOWN_MENU_WIDTH, DEFAULT_AVATAR_FALLBACK, SIDE_OFFSET } from "./constants"
 import { LogOut } from "@/components/animate-ui/icons/log-out"
 import { AnimateIcon } from "@/components/animate-ui/icons/icon"
@@ -56,7 +57,7 @@ export function NavUser() {
     <>
       <SidebarMenu>
         <SidebarMenuItem>
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
                 size="lg"
@@ -93,6 +94,7 @@ export function NavUser() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
+                <ThemeToggle />
                 <DropdownMenuItem onClick={handleChangePassword}>
                   <KeyRound />
                   {t('user.changePassword')}

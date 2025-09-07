@@ -4,8 +4,12 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { queryClient } from "@/core/api/query-client";
 import { routeTree } from "@/routeTree.gen";
+import { initializeTheme } from "@/core/theme";
 import "@/shared/lib/i18n";
 import "./routes/index.css";
+
+// Initialize theme
+initializeTheme();
 
 // Create a new router instance
 const router = createRouter({ routeTree });

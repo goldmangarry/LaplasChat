@@ -199,7 +199,7 @@ export function ChatInput() {
 	return (
 		<>
 			<div className="flex flex-col w-full">
-				<div className="flex flex-col bg-white border border-gray-200 border-b-0 rounded-t-2xl shadow-sm">
+				<div className="flex flex-col bg-background border border-border border-b-0 rounded-t-2xl shadow-sm">
 					<UploadedFilesList />
 					<textarea
 						ref={textareaRef}
@@ -211,12 +211,12 @@ export function ChatInput() {
 						onKeyDown={handleKeyDown}
 						placeholder={t("chatInput.placeholder", "Спросите что-нибудь....")}
 						disabled={isLoading}
-						className="w-full p-4 text-xl resize-none bg-transparent outline-none placeholder:text-neutral-500 min-h-[80px] max-h-48 overflow-y-auto"
+						className="w-full p-4 text-xl resize-none bg-transparent outline-none placeholder:text-muted-foreground min-h-[80px] max-h-48 overflow-y-auto text-foreground"
 					/>
 				</div>
 
 				{/* Bottom Controls */}
-				<div className="flex items-center justify-between p-4 bg-white border border-gray-200 border-t-0 rounded-b-xl">
+				<div className="flex items-center justify-between p-4 bg-background border border-border border-t-0 rounded-b-xl">
 					{/* Desktop Controls */}
 					<div className="hidden sm:flex items-center gap-2">
 						<FileUploadButton disabled={isLoading} />

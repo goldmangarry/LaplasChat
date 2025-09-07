@@ -146,7 +146,7 @@ export function ChatItem({ chat, onDeleteClick }: ChatItemProps) {
         )}
       </SidebarMenuButton>
       {!isEditing && (
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <SidebarMenuAction showOnHover>
               <MoreHorizontal />

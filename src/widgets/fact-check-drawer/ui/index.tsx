@@ -40,11 +40,11 @@ export const FactCheckDrawer = ({
 							<ProviderIcon provider="perplexity" className="w-14 h-14" />
 						</div>
 
-						<h3 className="text-center font-medium text-base leading-6 text-black mt-2">
+						<h3 className="text-center font-medium text-base leading-6 mt-2">
 							{t("factCheck.modelName")}
 						</h3>
 
-						<p className="text-center font-normal text-base leading-6 text-neutral-500 px-2 mt-1">
+						<p className="text-center font-normal text-base leading-6 text-muted-foreground px-2 mt-1">
 							{t("factCheck.modelDescription")}
 						</p>
 					</div>
@@ -52,8 +52,8 @@ export const FactCheckDrawer = ({
 					<div className="px-4 pt-6 pb-4">
 						{factCheckMutation.isPending && (
 							<div className="flex items-center justify-center py-8">
-								<div className="animate-spin w-6 h-6 border-2 border-stone-300 border-t-stone-600 rounded-full"></div>
-								<span className="ml-3 text-stone-600">
+								<div className="animate-spin w-6 h-6 border-2 border-muted border-t-foreground rounded-full"></div>
+								<span className="ml-3 text-muted-foreground">
 									{t("factCheck.checking")}
 								</span>
 							</div>
@@ -75,12 +75,12 @@ export const FactCheckDrawer = ({
 						{factCheckMutation.data && (
 							<div>
 								{/* Response Section */}
-								<h3 className="font-semibold text-stone-900">
+								<h3 className="font-semibold text-card-foreground">
 									{t("factCheck.response")}
 								</h3>
 
 								<div className="mt-3 rounded-lg">
-									<div className="text-stone-700 text-sm leading-relaxed">
+									<div className="text-sm leading-relaxed">
 										<MarkdownRenderer>
 											{factCheckMutation.data.response}
 										</MarkdownRenderer>
@@ -89,14 +89,14 @@ export const FactCheckDrawer = ({
 
 								{/* Divider */}
 								<div className="py-6">
-									<div className="h-px bg-stone-200"></div>
+									<div className="h-px bg-border"></div>
 								</div>
 
 								{/* Annotations Section */}
 								{factCheckMutation.data.annotations &&
 									factCheckMutation.data.annotations.length > 0 && (
 										<div>
-											<h3 className="font-semibold text-stone-900">
+											<h3 className="font-semibold">
 												{t("factCheck.sources")}
 											</h3>
 											<div className="mt-3 space-y-3">
@@ -112,7 +112,7 @@ export const FactCheckDrawer = ({
 						{!factCheckMutation.isPending &&
 							!factCheckMutation.data &&
 							!factCheckMutation.isError && (
-								<div className="text-center py-8 text-stone-500">
+								<div className="text-center py-8 text-muted-foreground">
 									{t("factCheck.noData")}
 								</div>
 							)}

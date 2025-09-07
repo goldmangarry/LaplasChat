@@ -22,25 +22,25 @@ export const WebSearchButton = ({ isActive = false, onToggle, disabled }: WebSea
 			onClick={handleClick}
 			className={`flex items-center justify-center gap-2 h-10 px-4 rounded-lg shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
 				isActive
-					? "bg-amber-100 border border-amber-500 hover:bg-amber-200"
-					: "bg-white border border-gray-200 hover:bg-gray-50"
+					? "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border"
+					: "bg-background border border-border hover:bg-muted"
 			}`}
 		>
 			<Globe 
-				className={`w-4 h-4 ${isActive ? "text-amber-900" : "text-stone-800"}`} 
+				className={`w-4 h-4 ${isActive ? "text-secondary-foreground" : "text-foreground"}`} 
 				strokeWidth={1.33} 
 			/>
-			<span className={`text-sm font-medium ${isActive ? "text-amber-900" : "text-stone-800"}`}>
+			<span className={`text-sm font-medium ${isActive ? "text-secondary-foreground" : "text-foreground"}`}>
 				{t("chatInput.webSearch")}
 			</span>
 			{isActive ? (
-				<X className="w-4 h-4 text-amber-900 opacity-50" strokeWidth={1.33} />
+				<X className="w-4 h-4 text-secondary-foreground opacity-50" strokeWidth={1.33} />
 			) : (
 				<Tooltip>
 					<TooltipTrigger asChild>
 						<Info 
 							onClick={(e) => e.stopPropagation()} 
-							className="w-4 h-4 text-stone-800 opacity-50 cursor-help" 
+							className="w-4 h-4 text-muted-foreground opacity-50 cursor-help" 
 						/>
 					</TooltipTrigger>
 					<TooltipContent className="max-w-xs">

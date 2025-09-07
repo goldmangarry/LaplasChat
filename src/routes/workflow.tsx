@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
 	Background,
-	Controls,
 	type Edge,
 	type Node,
 	ReactFlow,
@@ -157,7 +156,6 @@ function WorkflowPageContent() {
 				selectNodesOnDrag={false}
 			>
 				<Background />
-				<Controls />
 			</ReactFlow>
 		</div>
 	);

@@ -5,69 +5,8 @@ import { usePendingMessages, usePendingSecureMessages } from "@/core/api/chat/ho
 import { getDisplayModelId } from "@/shared/lib/model-utils";
 import type { SendMessageRequest } from "@/core/api/chat/types";
 import { AnimatedShinyText } from "@/components/magicui/animated-shiny-text";
+import { ProviderIcon } from "@/components/shared/provider-icon";
 
-// Импорты иконок провайдеров
-import AnthropicIcon from "@/assets/icons/anthropic.svg";
-import DeepSeekIcon from "@/assets/icons/deepseek-color.svg";
-import GoogleIcon from "@/assets/icons/google.svg";
-import GrokIcon from "@/assets/icons/grok.svg";
-import MetaIcon from "@/assets/icons/meta-color.svg";
-import MistralIcon from "@/assets/icons/mistral-color.svg";
-import OpenAIIcon from "@/assets/icons/openai.svg";
-import PerplexityIcon from "@/assets/icons/perplexity.svg";
-import QwenIcon from "@/assets/icons/qwen-color.svg";
-
-// Получить иконку провайдера
-const getProviderIcon = (provider: string) => {
-  switch (provider) {
-    case 'openai':
-      return OpenAIIcon;
-    case 'anthropic':
-      return AnthropicIcon;
-    case 'perplexity':
-      return PerplexityIcon;
-    case 'google':
-      return GoogleIcon;
-    case 'meta-llama':
-      return MetaIcon;
-    case 'mistralai':
-      return MistralIcon;
-    case 'deepseek':
-      return DeepSeekIcon;
-    case 'qwen':
-      return QwenIcon;
-    case 'grok':
-      return GrokIcon;
-    default:
-      return null;
-  }
-};
-
-// Получить фоллбэк текст для аватара
-const getProviderFallback = (provider: string) => {
-  switch (provider) {
-    case 'openai':
-      return 'OA';
-    case 'anthropic':
-      return 'AN';
-    case 'perplexity':
-      return 'PP';
-    case 'google':
-      return 'GO';
-    case 'meta-llama':
-      return 'ME';
-    case 'mistralai':
-      return 'MI';
-    case 'deepseek':
-      return 'DS';
-    case 'qwen':
-      return 'QW';
-    case 'grok':
-      return 'GR';
-    default:
-      return provider.substring(0, 2).toUpperCase();
-  }
-};
 
 // Текстовки для обычных сообщений (смена каждые 5 секунд)
 const NORMAL_LOADING_TEXTS = [
@@ -123,8 +62,6 @@ export const LoadingMessage = ({ dialogId }: LoadingMessageProps) => {
   // Получаем текущее время
   const currentTime = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 
-  const ProviderIcon = getProviderIcon(provider);
-  const providerFallback = getProviderFallback(provider);
 
   // Выбираем соответствующий массив текстовок и интервал
   const loadingTexts = isSecure ? SECURE_LOADING_TEXTS : NORMAL_LOADING_TEXTS;
@@ -146,30 +83,23 @@ export const LoadingMessage = ({ dialogId }: LoadingMessageProps) => {
         <div className="flex items-center gap-2">
           {/* Аватар провайдера */}
           <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden">
-            {ProviderIcon ? (
-              <img 
-                src={ProviderIcon} 
-                alt={provider}
-                className="w-8 h-8 object-contain"
-              />
-            ) : (
-              <span className="text-xs font-medium text-stone-600">
-                {providerFallback}
-              </span>
-            )}
+            <ProviderIcon 
+              provider={provider as any}
+              className="w-8 h-8 object-contain"
+            />
           </div>
           
           {/* Название модели */}
-          <span className="text-base font-medium text-stone-600">
+          <span className="text-base font-medium text-muted-foreground">
             {modelName}
           </span>
         </div>
         
         {/* Разделитель */}
-        <div className="w-px h-5 bg-stone-200"></div>
+        <div className="w-px h-5 bg-border"></div>
         
         {/* Время */}
-        <span className="text-base text-stone-600">
+        <span className="text-base text-muted-foreground">
           {currentTime}
         </span>
       </div>

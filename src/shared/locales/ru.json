@@ -56,6 +56,9 @@
 		"logout": "Выйти",
 		"loggingOut": "Выходим...",
 		"changePassword": "Изменить пароль",
+		"toggleTheme": "Переключить тему",
+		"lightTheme": "Светлая тема",
+		"darkTheme": "Темная тема",
 		"changePasswordModal": {
 			"title": "Изменить пароль",
 			"description": "Введите текущий пароль и выберите новый.",

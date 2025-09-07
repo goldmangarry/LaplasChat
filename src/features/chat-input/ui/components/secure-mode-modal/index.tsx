@@ -16,14 +16,14 @@ export function SecureModeModal({ isOpen, onClose }: SecureModeModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="max-w-sm sm:max-w-md bg-white border border-gray-200 shadow-lg"
+        className="max-w-sm sm:max-w-md shadow-lg"
         showCloseButton={false}
       >
         <DialogHeader className="gap-2">
-          <DialogTitle className="text-lg font-semibold text-gray-900">
+          <DialogTitle className="text-lg font-semibold">
             {t('secureMode.title')}
           </DialogTitle>
-          <DialogDescription className="text-sm text-gray-600 text-left leading-relaxed">
+          <DialogDescription className="text-sm text-left leading-relaxed">
             {t('secureMode.description')}
           </DialogDescription>
         </DialogHeader>
@@ -31,7 +31,7 @@ export function SecureModeModal({ isOpen, onClose }: SecureModeModalProps) {
         <DialogFooter className="flex justify-end pt-4">
           <Button
             onClick={onClose}
-            className="w-full sm:w-auto bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium px-4 py-2 h-9 shadow-sm"
+            className="w-full sm:w-auto text-sm font-medium px-4 py-2 h-9 shadow-sm"
           >
             {t('secureMode.understood')}
           </Button>

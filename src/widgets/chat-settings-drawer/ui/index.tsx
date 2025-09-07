@@ -49,7 +49,7 @@ export const ChatSettingsDrawer = ({
 				<ModelInfoBlock settings={settings} />
 
 				<div className="px-4">
-					<div className="h-px bg-stone-200"></div>
+					<div className="h-px bg-border"></div>
 				</div>
 
 				<div className="pt-4 px-4">

@@ -31,14 +31,14 @@ export const MessageFooter = ({ onCopy, onFactCheck }: MessageFooterProps) => {
       {/* Copy Button */}
       <button
         onClick={handleCopy}
-        className="flex items-center gap-2 px-2 py-[10px] rounded-lg hover:bg-stone-100 transition-colors"
+        className="flex items-center gap-2 px-2 py-[10px] rounded-lg hover:bg-accent transition-colors text-foreground hover:text-muted-foreground"
       >
         {isCopied ? (
           <Check className="w-4 h-4 text-green-600" />
         ) : (
-          <Copy className="w-4 h-4 text-stone-700" />
+          <Copy className="w-4 h-4" />
         )}
-        <span className="text-sm font-medium text-stone-700">
+        <span className="text-sm font-medium">
           {t('message.copy')}
         </span>
       </button>
@@ -46,10 +46,10 @@ export const MessageFooter = ({ onCopy, onFactCheck }: MessageFooterProps) => {
       {/* Fact Check Button */}
       <button
         onClick={onFactCheck}
-        className="flex items-center gap-2 px-2 py-[10px] rounded-lg hover:bg-stone-100 transition-colors"
+        className="flex items-center gap-2 px-2 py-[10px] rounded-lg hover:bg-accent transition-colors text-foreground hover:text-muted-foreground"
       >
-        <SearchCheck className="w-4 h-4 text-stone-700" />
-        <span className="text-sm font-medium text-stone-700">
+        <SearchCheck className="w-4 h-4" />
+        <span className="text-sm font-medium">
           {t('message.factCheck')}
         </span>
       </button>

@@ -9,7 +9,7 @@ export const UploadedFilesList = () => {
 	}
 
 	return (
-		<div className="flex flex-wrap gap-2 p-4 bg-white rounded-t-2xl">
+		<div className="flex flex-wrap gap-2 p-4 bg-background rounded-t-2xl">
 			{uploadedFiles.map((file) => (
 				<FilePreview
 					key={file.file_id}

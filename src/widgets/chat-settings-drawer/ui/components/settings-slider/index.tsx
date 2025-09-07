@@ -45,13 +45,13 @@ export const SettingsSlider = ({
 			{/* Label and Input Row */}
 			<div className="flex justify-between items-center w-full gap-10">
 				<div className="flex items-center gap-1">
-					<span className="text-sm font-normal text-stone-800">
+					<span className="text-sm font-normal">
 						{label}
 					</span>
 					{showTooltip && tooltipContent && (
 						<Tooltip>
 							<TooltipTrigger asChild>
-								<Info className="w-4 h-4 text-stone-800 opacity-50 cursor-help" />
+								<Info className="w-4 h-4 text-muted-foreground cursor-help" />
 							</TooltipTrigger>
 							<TooltipContent side="top" className="max-w-xs">
 								<p>{tooltipContent}</p>
@@ -67,7 +67,7 @@ export const SettingsSlider = ({
 							onChange={handleInputChange}
 							onBlur={handleInputBlur}
 							autoFocus={false}
-							className="w-full h-8 px-3 text-sm text-center text-stone-800 bg-white border border-neutral-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+							className="w-full h-8 px-3 text-sm text-center bg-background border border-border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
 						/>
 					</div>
 				</div>
@@ -92,10 +92,10 @@ export const SettingsSlider = ({
 
 			{/* Labels */}
 			<div className="flex justify-between items-center w-full gap-12">
-				<span className="text-xs font-medium text-stone-800 opacity-50">
+				<span className="text-xs font-medium text-muted-foreground">
 					{leftLabel}
 				</span>
-				<span className="text-xs font-medium text-stone-800 opacity-50">
+				<span className="text-xs font-medium text-muted-foreground">
 					{rightLabel}
 				</span>
 			</div>
