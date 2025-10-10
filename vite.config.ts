@@ -37,7 +37,7 @@ export default defineConfig({
 	server: {
 		proxy: {
 			"/api": {
-				target: "https://main-apilaplas-backend.onrender.com",
+				target: process.env.VITE_API_URL || "https://main-apilaplas-backend.onrender.com",
 				changeOrigin: true,
 				rewrite: (path) => path.replace(/^\/api/, ""),
 				secure: false,
