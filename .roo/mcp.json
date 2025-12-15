@@ -1,0 +1,24 @@
+{
+	"mcpServers": {
+		"Figma Dev Mode MCP": {
+			"type": "sse",
+			"url": "http://127.0.0.1:3845/sse",
+			"alwaysAllow": [
+				"get_code",
+				"get_variable_defs",
+				"get_code_connect_map",
+				"get_image"
+			]
+		},
+		"context7": {
+			"command": "npx",
+			"args": ["-y", "@upstash/context7-mcp"],
+			"alwaysAllow": ["resolve-library-id", "get-library-docs"]
+		},
+		"playwright": {
+			"command": "npx",
+			"args": ["-y", "@playwright/mcp"],
+			"alwaysAllow": ["browser_navigate"]
+		}
+	}
+}
