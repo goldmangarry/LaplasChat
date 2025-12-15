@@ -157,6 +157,8 @@
 		"deepseek/deepseek-r1": "Optimal for important workloads; works stably with long reasoning; handles when predictable results are needed.",
 		"deepseek/deepseek-chat-v3-0324:free": "Good for support prototypes and FAQ; works in basic mode; handles typical customer questions.",
 		"qwen/qwen3-coder": "Suitable for development; works with large code projects; handles code cleanup, updates and examples.",
+		"openai/gpt-5.2": "For complex tasks with multi-step logic: analytics, working with long documents, design, scenarios, strategy. Helps business analyze contracts, reports, large tables and decision scenarios with low error rates.",
+		"openai/gpt-5.2-pro": "For critical business cases where accuracy, stability and work with sensitive processes are important. Used for automation of complex business processes, development and code audit, financial and legal analytics at the corporate level.",
 		"unavailable": "Description unavailable"
 	},
 	"message": {

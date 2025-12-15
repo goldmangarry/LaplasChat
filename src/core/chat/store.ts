@@ -3,7 +3,7 @@ import type { ChatSettings, ChatState, ChatActions } from "./types";
 import type { Model } from "../api/models/types";
 
 const DEFAULT_CHAT_SETTINGS: ChatSettings = {
-  model: "openai/gpt-5-chat",
+  model: "openai/gpt-5.2",
   provider: "openai",
   max_tokens: 4000,
   temperature: 0.7,
@@ -73,7 +73,7 @@ export const useChatStore = create<ChatState & ChatActions>((set, get) => ({
   // Применить настройки чата из данных диалога
   applyChatSettingsFromDialog: (dialog) => {
     const { id, last_model_info, has_encrypted_messages } = dialog;
-    
+
     if (last_model_info) {
       const chatSettings: ChatSettings = {
         model: last_model_info.id,
@@ -82,7 +82,7 @@ export const useChatStore = create<ChatState & ChatActions>((set, get) => ({
         temperature: last_model_info.temperature,
         has_encrypted_messages,
       };
-      
+
       get().updateChatSettings(id, chatSettings);
     }
   },
@@ -92,17 +92,17 @@ export const useChatStore = create<ChatState & ChatActions>((set, get) => ({
     const selectedModel = availableModels.find(model => model.id === modelId);
     const state = get();
     const currentSettings = state.getCurrentSettings();
-    
+
     if (selectedModel) {
       // Корректируем max_tokens если текущее значение превышает максимум новой модели
       const correctedMaxTokens = Math.min(currentSettings.max_tokens, selectedModel.max_output);
-      
+
       const updatedSettings = {
         model: modelId,
         provider: provider as ChatSettings['provider'],
         max_tokens: correctedMaxTokens,
       };
-      
+
       state.updateCurrentSettings(updatedSettings);
     } else {
       // Если модель не найдена, обновляем только модель и провайдер

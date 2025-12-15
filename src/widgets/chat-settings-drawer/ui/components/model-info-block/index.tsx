@@ -30,6 +30,8 @@ const getModelDisplayName = (modelId: string) => {
 		"deepseek/deepseek-r1": "DeepSeek: DeepSeek R1",
 		"deepseek/deepseek-r1:free": "DeepSeek: DeepSeek R1 (free)",
 		"deepseek/deepseek-chat-v3-0324:free": "DeepSeek: DeepSeek V3 0324 (free)",
+		"openai/gpt-5.2": "OpenAI: ChatGPT 5.2",
+		"openai/gpt-5.2-pro": "OpenAI: ChatGPT 5.2 Pro",
 		"qwen/qwen3-coder": "Qwen: Qwen3 Coder",
 	};
 	return modelNames[modelId] || modelId;
@@ -38,20 +40,20 @@ const getModelDisplayName = (modelId: string) => {
 export const ModelInfoBlock = ({ settings }: ModelInfoBlockProps) => {
 	const { t } = useTranslation();
 	const displayModelId = getDisplayModelId(settings.model);
-	
+
 	return (
 		<div className="flex flex-col items-center justify-center gap-2 p-4 pb-8">
 			<div className="flex items-center justify-center w-14 h-14 rounded-full">
-				<ProviderIcon 
-					provider={settings.provider} 
-					className="w-14 h-14" 
+				<ProviderIcon
+					provider={settings.provider}
+					className="w-14 h-14"
 				/>
 			</div>
-			
+
 			<h3 className="text-center font-medium text-base leading-6">
 				{getModelDisplayName(displayModelId)}
 			</h3>
-			
+
 			<p className="text-center font-normal text-base leading-6 text-muted-foreground px-2">
 				{t(`modelDescriptions.${displayModelId}`, t("modelDescriptions.unavailable"))}
 			</p>
