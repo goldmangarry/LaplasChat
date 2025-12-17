@@ -25,9 +25,11 @@ export const chatApi = {
 	sendMessage: async (
 		messageData: SendMessageRequest,
 	): Promise<SendMessageResponse> => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { max_tokens, ...requestData } = messageData;
 		const response = await apiClient.post<SendMessageResponse>(
 			CHAT_ENDPOINTS.SEND_MESSAGE,
-			messageData,
+			requestData,
 			{
 				headers: {
 					"Content-Type": "application/json",
@@ -47,9 +49,11 @@ export const chatApi = {
 	sendSecureMessage: async (
 		messageData: SendMessageRequest,
 	): Promise<SendSecureMessageResponse> => {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { max_tokens, ...requestData } = messageData;
 		const response = await apiClient.post<SendSecureMessageResponse>(
 			CHAT_ENDPOINTS.SEND_SECURE_MESSAGE,
-			messageData,
+			requestData,
 			{
 				headers: {
 					"Content-Type": "application/json",
@@ -96,7 +100,7 @@ export const chatApi = {
 
 	uploadFiles: async (files: File[]): Promise<UploadFilesResponse> => {
 		const formData = new FormData();
-		
+
 		files.forEach((file) => {
 			formData.append("files", file);
 		});
