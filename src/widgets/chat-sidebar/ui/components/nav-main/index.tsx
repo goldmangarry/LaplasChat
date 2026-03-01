@@ -9,10 +9,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Badge } from "@/components/ui/badge"
 import { MessageCircleMore } from "@/components/animate-ui/icons/message-circle-more"
 import { AnimateIcon } from "@/components/animate-ui/icons/icon"
-import { Workflow } from "lucide-react"
 import { useChatStore } from "@/core/chat/store"
 
 export function NavMain() {
@@ -21,15 +19,8 @@ export function NavMain() {
   const { setActiveDialogId } = useChatStore()
 
   const handleNewChat = () => {
-    // Убираем активный чат из состояния
     setActiveDialogId(null)
-    // Переходим на главную страницу
     navigate({ to: "/" })
-  }
-
-  const handleWorkflow = () => {
-    // Переходим на страницу workflow
-    navigate({ to: "/workflow" })
   }
 
   return (
@@ -37,30 +28,15 @@ export function NavMain() {
       <SidebarMenu>
         <SidebarMenuItem>
           <AnimateIcon animateOnHover animateOnTap>
-            <SidebarMenuButton 
-            onClick={handleNewChat} 
+            <SidebarMenuButton
+            onClick={handleNewChat}
             tooltip={t("chat.newChat")}
-            className="w-60 h-10 gap-2 rounded-md py-3 px-2 hover:bg-sidebar-accent transition-colors font-sans font-normal text-sm leading-none tracking-normal"
+            className="w-60 h-10 gap-2 rounded-md py-3 px-2 bg-[#6c56f0] text-white hover:bg-[#5b46e0] transition-colors font-sans font-medium text-sm leading-none tracking-normal"
           >
-            <MessageCircleMore className="text-muted-foreground" />
+            <MessageCircleMore className="text-white" />
             <span>{t("chat.newChat")}</span>
           </SidebarMenuButton>
           </AnimateIcon>
-        </SidebarMenuItem>
-        <SidebarMenuItem>
-            <SidebarMenuButton 
-            onClick={handleWorkflow} 
-            tooltip={t("chat.workflow")}
-            className="w-60 h-10 gap-2 rounded-md py-3 px-2 hover:bg-sidebar-accent transition-colors font-sans font-normal text-sm leading-none tracking-normal"
-          >
-            <Workflow className="text-muted-foreground" size={16} />
-            <span className="flex items-center gap-2">
-              {t("chat.workflow")}
-              <Badge variant="secondary" className="text-xs">
-                {t("chat.soon")}
-              </Badge>
-            </span>
-          </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>

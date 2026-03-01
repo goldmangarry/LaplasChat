@@ -13,7 +13,7 @@ export const getFileTypeInfo = (filename: string): FileTypeInfo => {
 		case 'doc':
 			return {
 				type: 'document',
-				label: 'Документ',
+				label: 'Document',
 				icon: 'FileText'
 			};
 		
@@ -21,7 +21,7 @@ export const getFileTypeInfo = (filename: string): FileTypeInfo => {
 		case 'xls':
 			return {
 				type: 'spreadsheet',
-				label: 'Таблица',
+				label: 'Spreadsheet',
 				icon: 'Sheet'
 			};
 		
@@ -29,7 +29,7 @@ export const getFileTypeInfo = (filename: string): FileTypeInfo => {
 		case 'ppt':
 			return {
 				type: 'presentation',
-				label: 'Презентация',
+				label: 'Presentation',
 				icon: 'Presentation'
 			};
 		
@@ -37,14 +37,14 @@ export const getFileTypeInfo = (filename: string): FileTypeInfo => {
 		case 'md':
 			return {
 				type: 'text',
-				label: 'Текстовый файл',
+				label: 'Text File',
 				icon: 'FileText'
 			};
 		
 		default:
 			return {
 				type: 'document',
-				label: 'Документ',
+				label: 'Document',
 				icon: 'FileText'
 			};
 	}

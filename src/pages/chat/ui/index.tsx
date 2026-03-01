@@ -20,7 +20,7 @@ export const ChatPage = ({ dialogId }: ChatPageProps) => {
 	const [factCheckMessage, setFactCheckMessage] = useState("");
 	const factCheckMutation = useFactCheck();
 
-	// Применяем настройки чата при монтировании или изменении dialogId
+	// Apply chat settings on mount or when dialogId changes
 	useEffect(() => {
 		if (dialogId && chatHistory?.dialogs) {
 			setActiveDialogId(dialogId);
@@ -35,7 +35,7 @@ export const ChatPage = ({ dialogId }: ChatPageProps) => {
 
 	const settings = getCurrentSettings();
 
-	// Обработчик для fact check
+	// Fact check handler
 	const handleFactCheck = (message: string) => {
 		setFactCheckMessage(message);
 		factCheckMutation.mutate({ message });

@@ -34,16 +34,4 @@ export default defineConfig({
 			},
 		},
 	},
-	server: {
-		proxy: {
-			"/api": {
-				target: "https://main-apilaplas-backend.onrender.com",
-				changeOrigin: true,
-				rewrite: (path) => path.replace(/^\/api/, ""),
-				secure: false,
-				timeout: 300000, // 5 minutes
-				proxyTimeout: 300000, // 5 minutes
-			},
-		},
-	},
 });

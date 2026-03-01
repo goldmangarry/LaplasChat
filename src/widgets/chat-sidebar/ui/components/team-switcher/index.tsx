@@ -5,11 +5,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-import laplasLogo from '@/assets/icons/laplas-chat.svg'
-
 export function TeamSwitcher() {
   const { t } = useTranslation();
-  
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -17,8 +15,8 @@ export function TeamSwitcher() {
           size="lg"
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         >
-          <div className={`size-8 text-sidebar-primary-foreground flex aspect-square items-center justify-center rounded-lg`}>
-            <img src={laplasLogo} alt={t("common.laplasLogo")} className="w-full size-4 h-full flex-1" />
+          <div className="size-8 flex aspect-square items-center justify-center rounded-full overflow-hidden">
+            <img src="/logo.svg" alt={t("common.laplasLogo")} className="w-8 h-8" />
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate text-[18px] font-bold leading-none tracking-normal">

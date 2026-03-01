@@ -1,8 +1,13 @@
 {
 	"name": "laplas-chat",
-	"private": true,
-	"version": "0.0.0",
+	"version": "1.0.0",
+	"description": "Open source AI chat application with multi-model support via OpenRouter",
 	"type": "module",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/goldmangarry/laplasai.git"
+	},
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc -b && vite build",
@@ -27,7 +32,6 @@
 		"@tailwindcss/vite": "^4.1.11",
 		"@tanstack/react-query": "^5.84.2",
 		"@tanstack/react-router": "^1.130.2",
-		"@xyflow/react": "^12.8.4",
 		"axios": "^1.11.0",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",

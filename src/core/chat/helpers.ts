@@ -1,5 +1,5 @@
 /**
- * Генерация временного чата при отправке первого сообщения
+ * Generate a temporary chat when sending the first message
  */
 export const generateTempChat = (userMessage: string) => {
   const tempDialogId = `temp-${crypto.randomUUID()}`;
@@ -8,7 +8,7 @@ export const generateTempChat = (userMessage: string) => {
 };
 
 /**
- * Обновление URL с временного ID на реальный без перезагрузки страницы
+ * Update URL from temporary ID to real ID without page reload
  */
 export const updateUrlWithRealId = (tempId: string, realId: string) => {
   if (window.location.pathname === `/chat/${tempId}`) {
@@ -17,14 +17,14 @@ export const updateUrlWithRealId = (tempId: string, realId: string) => {
 };
 
 /**
- * Проверка является ли ID временным
+ * Check if the ID is temporary
  */
 export const isTempDialogId = (dialogId: string): boolean => {
   return dialogId.startsWith('temp-');
 };
 
 /**
- * Извлечение UUID из временного ID
+ * Extract UUID from temporary ID
  */
 export const extractTempUuid = (tempId: string): string | null => {
   if (!isTempDialogId(tempId)) {

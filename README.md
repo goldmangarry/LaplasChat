@@ -1,88 +1,131 @@
 # LaplasChat
 
-Modern React-based AI chat application built with enterprise-grade architecture and cutting-edge technologies.
+Open source AI chat application with multi-model support and built-in privacy protection.
+
+## Features
+
+- **Multi-Model Support** — Access 20+ AI models (GPT-5, Claude, Gemini, Llama, DeepSeek, etc.) through OpenRouter or direct API keys
+- **Secure Mode** — Local data anonymization via Ollama before sending to AI providers
+- **Fact Checking** — Verify AI responses using Perplexity Sonar
+- **Web Search** — Enhance responses with real-time web data
+- **Deepthink** — Extended reasoning for complex questions
+- **Dark/Light Theme** — Toggle between themes
+- **Responsive UI** — Built with shadcn/ui and Tailwind CSS 4
 
 ## Tech Stack
 
-- **Frontend**: React 19.1.0 + TypeScript 5.8.3 + Vite 7.0.0
-- **UI Components**: shadcn/ui + Tailwind CSS 4
-- **Routing**: TanStack Router (file-based routing)
-- **State Management**: Zustand for global state and business logic
-- **Forms**: React Hook Form with validation
-- **HTTP Client**: Axios for API communication
-- **Internationalization**: i18next with React integration
-- **Code Quality**: ESLint 9.29.0 with TypeScript support
+- **Frontend**: React 19 + TypeScript 5.8 + Vite 7
+- **UI**: shadcn/ui + Tailwind CSS 4
+- **Routing**: TanStack Router (file-based)
+- **State**: Zustand (client) + TanStack Query (server)
+- **Storage**: IndexedDB (local chat history)
+- **HTTP**: Axios
+- **i18n**: i18next
 
-## Architecture
+## Quick Start
 
-The project follows a 4-layer architecture pattern for maintainability and scalability:
+### Prerequisites
 
-1. **Core Layer** (`src/core/`) - Domain business logic and API interactions
-2. **Pages Layer** (`src/pages/`) - Route-level components
-3. **Widgets Layer** (`src/widgets/`) - Complex reusable components
-4. **Components Layer** (`src/components/`) - Simple UI components (shadcn/ui + shared)
+- Node.js 20+
+- Yarn
+- An [OpenRouter API key](https://openrouter.ai/keys)
 
-### Key Features
-
-- **Type-Safe Development**: Comprehensive TypeScript configuration with strict mode
-- **Modern UI**: shadcn/ui components with Tailwind CSS utilities
-- **Internationalization**: Multi-language support (EN/RU) with i18next
-- **Form Management**: Robust form handling with React Hook Form
-- **State Management**: Zustand for simple, effective global state
-- **Performance**: Optimized builds with Vite and modern ES2022 target
-
-## Development
+### Development
 
 ```bash
+# Clone the repository
+git clone https://github.com/nicknash/laplaschat.git
+cd laplaschat
+
 # Install dependencies
 yarn install
 
-# Start development server with HMR
+# Start development server
 yarn dev
-
-# Build for production
-yarn build
-
-# Preview production build
-yarn preview
-
-# Run linting
-yarn lint
 ```
 
-## Code Conventions
+Open http://localhost:5173 and enter your OpenRouter API key on the onboarding screen.
 
-### TypeScript Guidelines
-- Use `type` instead of `interface` for better composability
-- Avoid `enum` - use const assertions and union types
-- Leverage modern TypeScript features (const assertions, template literals)
+### Production Build
 
-### Styling
-- **Tailwind CSS 4** for utility-first styling
-- **shadcn/ui components** for consistent design system
-- Built-in dark/light theme support
+```bash
+yarn build
+yarn preview
+```
 
-### Internationalization
-- **CRITICAL**: Never use hardcoded text in components
-- Always use translation constants with `useTranslation` hook
-- Translation files: `src/shared/locales/en.json`, `src/shared/locales/ru.json`
+### Docker
 
-### Project Structure
+```bash
+# Build the image
+docker build -t laplaschat .
+
+# Run the container
+docker run -p 3000:80 laplaschat
+```
+
+Open http://localhost:3000.
+
+## Project Structure
+
 ```
 src/
-├── main.tsx              # Application entry point
-├── core/                 # Business logic and API
-├── pages/                # Route-level components
-├── widgets/              # Complex reusable components  
-├── components/           # Simple UI components
-├── routes/               # TanStack Router files
-└── assets/              # Static assets
+├── core/           # Business logic & API layer
+│   ├── api/        # API config, chat, models
+│   ├── api-key/    # API key store (localStorage)
+│   ├── chat/       # Chat state management
+│   ├── ollama/     # Ollama integration (Secure Mode)
+│   ├── storage/    # IndexedDB chat storage
+│   └── theme/      # Theme management
+├── pages/          # Route-level components
+│   ├── main/       # Main chat page
+│   ├── chat/       # Chat dialog page
+│   ├── landing/    # Landing page
+│   └── onboarding/ # API key onboarding
+├── widgets/        # Complex reusable components
+│   └── chat-sidebar/
+├── features/       # Business feature components
+│   └── chat-input/
+├── components/     # UI components (shadcn/ui + shared)
+├── routes/         # TanStack Router file-based routes
+└── shared/         # Shared utilities & i18n
+    ├── lib/
+    └── locales/    # en.json
 ```
+
+## Architecture
+
+The project follows a 5-layer architecture:
+
+1. **Core** — Domain logic, API clients, stores (framework-independent)
+2. **Pages** — Route-level components
+3. **Widgets** — Complex reusable business components
+4. **Features** — Self-contained business functions
+5. **Components** — Simple UI elements (shadcn/ui)
+
+### API Keys
+
+No backend server is required. All API calls go directly from the browser:
+
+- **OpenRouter** (primary) — Single key for access to all models
+- **OpenAI** (optional) — Direct access to OpenAI models
+- **Anthropic** (optional) — Direct access to Claude models
+- **Google** (optional) — Direct access to Gemini models
+
+Keys are stored in `localStorage` and never sent to any server except the respective API providers.
+
+### Secure Mode
+
+When enabled, messages are processed through a local Ollama model before being sent to AI providers. Personal data (names, addresses, companies) is replaced with placeholders locally and never leaves your machine.
 
 ## Contributing
 
-1. Follow the established architecture patterns
-2. Use shadcn/ui components with Tailwind utilities
-3. Implement proper TypeScript typing
-4. Use i18n translation constants for all text
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Follow existing code conventions (TypeScript strict, `type` over `interface`, no `enum`)
+4. Use i18n translation keys for all text — no hardcoded strings
 5. Run `yarn lint` and `yarn build` before committing
+6. Submit a pull request
+
+## License
+
+MIT

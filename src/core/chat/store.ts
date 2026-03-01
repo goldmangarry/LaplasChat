@@ -41,7 +41,7 @@ export const useChatStore = create<ChatState & ChatActions>((set, get) => ({
     const state = get();
     const { activeDialogId, chatSettings, defaultSettings } = state;
 
-    // Если есть активный чат - возвращаем его настройки или дефолтные
+    // If there is an active chat - return its settings or defaults
     if (activeDialogId && chatSettings.has(activeDialogId)) {
       const chatSettings_ = chatSettings.get(activeDialogId);
       if (chatSettings_) {
@@ -49,7 +49,7 @@ export const useChatStore = create<ChatState & ChatActions>((set, get) => ({
       }
     }
 
-    // Нет активного чата → дефолтные настройки
+    // No active chat -> default settings
     return defaultSettings;
   },
 
@@ -58,10 +58,10 @@ export const useChatStore = create<ChatState & ChatActions>((set, get) => ({
     const { activeDialogId } = state;
 
     if (!activeDialogId) {
-      // Нет активного чата → обновляем дефолтные настройки
+      // No active chat -> update default settings
       get().updateDefaultSettings(settings);
     } else {
-      // Существующий чат → обновляем настройки чата
+      // Existing chat -> update chat settings
       get().updateChatSettings(activeDialogId, settings);
     }
   },
@@ -70,7 +70,7 @@ export const useChatStore = create<ChatState & ChatActions>((set, get) => ({
     set({ isSettingsDrawerOpen: isOpen });
   },
 
-  // Применить настройки чата из данных диалога
+  // Apply chat settings from dialog data
   applyChatSettingsFromDialog: (dialog) => {
     const { id, last_model_info, has_encrypted_messages } = dialog;
 
@@ -78,7 +78,7 @@ export const useChatStore = create<ChatState & ChatActions>((set, get) => ({
       const chatSettings: ChatSettings = {
         model: last_model_info.id,
         provider: last_model_info.provider,
-        max_tokens: last_model_info.max_output, // Используем max_output модели как max_tokens
+        max_tokens: last_model_info.max_output, // Use model's max_output as max_tokens
         temperature: last_model_info.temperature,
         has_encrypted_messages,
       };
@@ -87,14 +87,14 @@ export const useChatStore = create<ChatState & ChatActions>((set, get) => ({
     }
   },
 
-  // Корректировать max_tokens при изменении модели
+  // Adjust max_tokens when changing models
   updateModelWithTokensCorrection: (modelId: string, provider: string, availableModels: Model[]) => {
     const selectedModel = availableModels.find(model => model.id === modelId);
     const state = get();
     const currentSettings = state.getCurrentSettings();
 
     if (selectedModel) {
-      // Корректируем max_tokens если текущее значение превышает максимум новой модели
+      // Adjust max_tokens if the current value exceeds the new model's maximum
       const correctedMaxTokens = Math.min(currentSettings.max_tokens, selectedModel.max_output);
 
       const updatedSettings = {
@@ -105,7 +105,7 @@ export const useChatStore = create<ChatState & ChatActions>((set, get) => ({
 
       state.updateCurrentSettings(updatedSettings);
     } else {
-      // Если модель не найдена, обновляем только модель и провайдер
+      // If the model is not found, update only the model and provider
       state.updateCurrentSettings({ model: modelId, provider: provider as ChatSettings['provider'] });
     }
   },

@@ -1,36 +1,6 @@
 {
-	"login": {
-		"title": "Welcome back",
-		"subtitle": "Login to your Laplas Chat account",
-		"email": "Email",
-		"emailPlaceholder": "m@example.com",
-		"password": "Password",
-		"forgotPassword": "Forgot your password?",
-		"loginButton": "Login",
-		"loading": "Logging in...",
-		"processingAuthentication": "Processing authentication...",
-		"orContinueWith": "Or continue with",
-		"noAccount": "Don't have an account?",
-		"signUp": "Sign up",
-		"termsAndPrivacy": "By clicking continue, you agree to our <termsLink>{{termsText}}</termsLink> and <privacyLink>{{privacyText}}</privacyLink>.",
-		"termsOfService": "Terms of Service",
-		"privacyPolicy": "Privacy Policy",
-		"socialLogin": {
-			"apple": "Login with Apple",
-			"google": "Login with Google",
-			"meta": "Login with Meta"
-		},
-		"errors": {
-			"invalidCredentials": "Invalid email or password",
-			"networkError": "Network error. Please try again",
-			"emailRequired": "Email is required",
-			"passwordRequired": "Password is required"
-		}
-	},
 	"chat": {
 		"newChat": "New Chat",
-		"workflow": "Workflow",
-		"soon": "Soon",
 		"chats": "Chats",
 		"thisWeek": "This week",
 		"lastWeek": "Last week",
@@ -45,6 +15,7 @@
 		"tempChatStart": "Temporary chat started",
 		"errorLoadingMessages": "Error loading messages",
 		"typing": "typing...",
+		"sendError": "Failed to send message",
 		"deleteChatModal": {
 			"title": "Delete chat?",
 			"description": "Do you want to delete the chat \"{{chatName}}\"? This action is irreversible and all messages will be permanently lost.",
@@ -53,31 +24,9 @@
 		}
 	},
 	"user": {
-		"logout": "Log out",
-		"loggingOut": "Logging out...",
-		"changePassword": "Change password",
 		"toggleTheme": "Toggle theme",
 		"lightTheme": "Light theme",
-		"darkTheme": "Dark theme",
-		"changePasswordModal": {
-			"title": "Change Password",
-			"description": "Enter your current password and choose a new one.",
-			"currentPassword": "Current Password",
-			"newPassword": "New Password",
-			"confirmPassword": "Confirm New Password",
-			"changePasswordButton": "Change Password",
-			"changingPassword": "Changing...",
-			"cancelButton": "Cancel",
-			"validation": {
-				"currentPasswordRequired": "Current password is required",
-				"newPasswordRequired": "New password is required",
-				"confirmPasswordRequired": "Please confirm your password",
-				"passwordMinLength": "Password must be at least {{min}} characters",
-				"passwordMaxLength": "Password must be no more than {{max}} characters",
-				"passwordComplexity": "Password must contain uppercase and lowercase letters, numbers, and special characters",
-				"passwordsDoNotMatch": "Passwords do not match"
-			}
-		}
+		"darkTheme": "Dark theme"
 	},
 	"chatHeader": {
 		"model": "Model",
@@ -88,6 +37,7 @@
 	},
 	"chatInput": {
 		"placeholder": "Ask something....",
+		"securePlaceholder": "Ask something privately....",
 		"send": "Send",
 		"secureMode": "Secure Mode",
 		"secureModeTooltip": "When Secure Mode is enabled, confidential data including company names, personal information, and other sensitive data is not transmitted to external AI models. We recommend using this mode when working with sensitive information",
@@ -97,9 +47,9 @@
 		"deepthink": "Deepthink"
 	},
 	"suggestions": {
-		"aiBusinessScaling": "How do large companies scale AI in key business processes?",
-		"aiHealthcare": "What AI solutions do healthcare organizations use for diagnosis and treatment?",
-		"nlpCustomerSupport": "How do companies use NLP to automate customer support?"
+		"aiDataCollection": "What data do AI companies collect from your conversations, and who has access?",
+		"localAnonymization": "How does local anonymization protect your privacy when using AI models?",
+		"businessSecrets": "What are the real risks of sharing business secrets with commercial AI chatbots?"
 	},
 	"chatSettings": {
 		"title": "Chat Settings",
@@ -123,10 +73,13 @@
 		"laplasLogo": "Laplas Logo",
 		"toggleSidebar": "Toggle Sidebar",
 		"copyToClipboard": "Copy to clipboard",
-		"copiedCodeToClipboard": "Copied code to clipboard"
+		"copiedCodeToClipboard": "Copied code to clipboard",
+		"settings": "Settings",
+		"apiKey": "API Key",
+		"secureModePrompt": "Secure Mode Prompt"
 	},
 	"providers": {
-		"openai": "Open AI",
+		"openai": "OpenAI",
 		"anthropic": "Anthropic",
 		"perplexity": "Perplexity",
 		"google": "Google",
@@ -157,16 +110,30 @@
 		"deepseek/deepseek-r1": "Optimal for important workloads; works stably with long reasoning; handles when predictable results are needed.",
 		"deepseek/deepseek-chat-v3-0324:free": "Good for support prototypes and FAQ; works in basic mode; handles typical customer questions.",
 		"qwen/qwen3-coder": "Suitable for development; works with large code projects; handles code cleanup, updates and examples.",
-		"openai/gpt-5.2": "For complex tasks with multi-step logic: analytics, working with long documents, design, scenarios, strategy. Helps business analyze contracts, reports, large tables and decision scenarios with low error rates.",
-		"openai/gpt-5.2-pro": "For critical business cases where accuracy, stability and work with sensitive processes are important. Used for automation of complex business processes, development and code audit, financial and legal analytics at the corporate level.",
-		"unavailable": "Description unavailable"
+		"openai/gpt-5.2": "For complex tasks with multi-step logic: analytics, working with long documents, design, scenarios, strategy.",
+		"openai/gpt-5.2-pro": "For critical business cases where accuracy, stability and work with sensitive processes are important.",
+		"openai/o1": "Optimized for reasoning-heavy tasks; excels at math, science, and step-by-step problem solving.",
+		"openai/o1-mini": "Lightweight reasoning model; fast and cost-effective for logic and coding tasks.",
+		"openai/o3": "Advanced reasoning model; handles complex multi-step logic with high accuracy.",
+		"openai/o3-mini": "Compact reasoning model; efficient for quick analytical tasks.",
+		"openai/o4-mini": "Next-gen compact reasoning; balances speed and accuracy for everyday logic tasks.",
+		"x-ai/grok-3": "Powerful general-purpose model from xAI; strong at reasoning, coding, and creative tasks.",
+		"x-ai/grok-3-mini": "Fast and efficient model from xAI; good for quick responses and everyday tasks.",
+		"x-ai/grok-2": "Versatile model from xAI; handles text generation, analysis, and conversation well.",
+		"anthropic/claude-sonnet-4.5": "Advanced model for nuanced analysis and creative tasks; excels at long-form writing and complex reasoning.",
+		"anthropic/claude-opus-4.5": "Most capable Anthropic model; best for research, strategy, and tasks requiring deep understanding.",
+		"anthropic/claude-haiku-4.5": "Ultra-fast model for high-throughput tasks; ideal for chat, classification, and quick responses.",
+		"google/gemini-2.0-flash": "Fast multimodal model; handles text, images, and code with low latency.",
+		"meta-llama/llama-4-scout": "Efficient model for text understanding and generation; great balance of quality and speed.",
+		"qwen/qwen3-235b-a22b": "Large-scale model with strong multilingual and reasoning capabilities.",
+		"unavailable": "Select a model to see its description"
 	},
 	"message": {
 		"copy": "Copy",
 		"factCheck": "Fact Check",
 		"encryptedContent": {
-			"title": "Encrypted Content",
-			"viewEncryptedContent": "View encrypted content"
+			"title": "Anonymized Message Sent to AI",
+			"viewEncryptedContent": "View what was sent to the AI model"
 		}
 	},
 	"factCheck": {
@@ -191,21 +158,46 @@
 		"cancel": "Cancel",
 		"confirm": "Got it"
 	},
-	"workflow": {
-		"title": "Workflow",
-		"placeholder": "Workflow feature coming soon...",
-		"status": {
-			"pending": "Pending",
-			"completed": "Completed",
-			"inProgress": "In Progress"
-		},
-		"actions": {
-			"addLeftNode": "Add left node",
-			"addRightNode": "Add right node",
-			"deleteTask": "Delete task"
-		},
-		"assignee": {
-			"unassigned": "Unassigned"
-		}
+	"onboarding": {
+		"title": "Welcome to LaplasChat",
+		"subtitle": "Open source AI chat with all major models",
+		"description": "Enter your API key to get started. OpenRouter gives you access to 20+ models from all major providers with a single key.",
+		"apiKeyLabel": "OpenRouter API Key",
+		"apiKeyPlaceholder": "sk-or-...",
+		"getKey": "Get your API key at openrouter.ai",
+		"start": "Get Started",
+		"invalidKey": "Please enter a valid API key",
+		"save": "Save",
+		"removeKey": "Remove Key",
+		"secureModeTitle": "Secure Mode Settings",
+		"secureModeDescription": "Secure Mode uses a local AI model (via Ollama) to anonymize your messages before sending them to commercial AI providers. Private data like names, companies, and addresses are replaced with placeholders and never leave your machine.",
+		"secureModePromptLabel": "System Prompt",
+		"secureModePromptHint": "This prompt is sent to the AI model when Secure Mode is enabled. It instructs the model how to handle sensitive data.",
+		"resetDefault": "Reset to Default",
+		"directKeysTitle": "Direct Provider Keys (Optional)",
+		"directKeysDescription": "Optionally add API keys for direct provider access. These are not required if you use OpenRouter.",
+		"openaiKeyLabel": "OpenAI API Key",
+		"openaiKeyPlaceholder": "sk-...",
+		"getOpenaiKey": "Get key at platform.openai.com",
+		"anthropicKeyLabel": "Anthropic API Key",
+		"anthropicKeyPlaceholder": "sk-ant-...",
+		"getAnthropicKey": "Get key at console.anthropic.com",
+		"googleKeyLabel": "Google Gemini API Key",
+		"googleKeyPlaceholder": "AI...",
+		"getGoogleKey": "Get key at aistudio.google.com",
+		"recommended": "Recommended"
+	},
+	"ollama": {
+		"connected": "Ollama connected",
+		"notDetected": "Ollama not detected",
+		"downloadOllama": "Download Ollama",
+		"downloadModel": "Download",
+		"downloading": "Downloading...",
+		"installed": "Installed",
+		"selectModel": "Anonymization Model",
+		"modelHint": "This local model handles encryption and decryption of your private data. It runs entirely on your machine via Ollama.",
+		"refresh": "Refresh",
+		"installHint": "Ollama is required for Secure Mode. Download and install it to enable local AI anonymization.",
+		"installSteps": "After installing, launch Ollama and click \"Refresh\" above to connect."
 	}
 }

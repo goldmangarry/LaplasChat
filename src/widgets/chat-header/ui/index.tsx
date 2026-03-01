@@ -20,7 +20,7 @@ export const ChatHeader = ({
 		model: string,
 		provider: typeof settings.provider,
 	) => {
-		// Используем новую функцию для корректировки max_tokens
+		// Use the new function for max_tokens adjustment
 		const availableModels = modelsData?.models || [];
 		updateModelWithTokensCorrection(model, provider, availableModels);
 	};
@@ -46,7 +46,7 @@ export const ChatHeader = ({
 						variant="secondary"
 						size="default"
 						onClick={handleModelSettingsClick}
-						className="hidden sm:flex h-9 gap-2 transition-colors"
+						className="hidden sm:flex h-9 gap-2 transition-colors bg-[#f0eeff] dark:bg-[#6c56f0]/15 border border-[#6c56f0]/20 dark:border-[#6c56f0]/30 text-[#6c56f0] dark:text-[#a78bfa] hover:bg-[#e8e0ff] dark:hover:bg-[#6c56f0]/25"
 					>
 						<Settings className="h-4 w-4" />
 						{t("chatHeader.modelSettings")}
@@ -56,7 +56,7 @@ export const ChatHeader = ({
 						variant="secondary"
 						size="icon"
 						onClick={handleModelSettingsClick}
-						className="sm:hidden h-9 w-9 transition-colors"
+						className="sm:hidden h-9 w-9 transition-colors bg-[#f0eeff] dark:bg-[#6c56f0]/15 border border-[#6c56f0]/20 dark:border-[#6c56f0]/30 text-[#6c56f0] dark:text-[#a78bfa] hover:bg-[#e8e0ff] dark:hover:bg-[#6c56f0]/25"
 					>
 						<Settings className="h-4 w-4" />
 					</Button>

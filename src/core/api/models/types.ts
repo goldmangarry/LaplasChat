@@ -7,7 +7,7 @@ export type ModelProvider =
 	| "mistralai"
 	| "deepseek"
 	| "qwen"
-	| "grok";
+	| "x-ai";
 
 export type Model = {
 	id: string;
@@ -19,4 +19,28 @@ export type Model = {
 
 export type ModelsResponse = {
 	models: Model[];
+};
+
+export type OpenRouterModel = {
+	id: string;
+	name: string;
+	context_length: number;
+	top_provider: {
+		context_length: number;
+		max_completion_tokens: number | null;
+		is_moderated: boolean;
+	} | null;
+	architecture: {
+		modality: string;
+		input_modalities: string[];
+		output_modalities: string[];
+	} | null;
+	pricing: {
+		prompt: string;
+		completion: string;
+	} | null;
+};
+
+export type OpenRouterModelsResponse = {
+	data: OpenRouterModel[];
 };

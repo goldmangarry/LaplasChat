@@ -11,10 +11,10 @@ export const ChatSettingsPanel = ({
 	const { t } = useTranslation();
 	const { data: modelsData } = useModels();
 
-	// Находим текущую модель для получения её max_output
+	// Find the current model to get its max_output
 	const displayModelId = getDisplayModelId(settings.model);
 	const currentModel = modelsData?.models.find(model => model.id === displayModelId);
-	const maxTokens = currentModel?.max_output || 16384; // fallback к дефолтному значению
+	const maxTokens = currentModel?.max_output || 16384; // fallback to default value
 
 	const handleTemperatureChange = (temperature: number) => {
 		onSettingsChange({ temperature });

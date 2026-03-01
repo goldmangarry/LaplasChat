@@ -2,32 +2,18 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSendMessage, useSendSecureMessage } from "@/core/api/chat/hooks";
+import { useSendMessage } from "@/core/api/chat/hooks";
+import { useApiKeyStore } from "@/core/api-key";
 import { useChatStore } from "@/core/chat/store";
 import { useChatInputStore } from "../model/store";
-import type { AttachedFile } from "@/core/api/chat/types";
-import type { UploadedFileInfo } from "../model/types";
 import { DisableSecureModeModal } from "./components/disable-secure-mode-modal";
-import { FileUploadButton } from "./components/file-upload-button";
 import { MobileOptionsMenu } from "./components/mobile-options-menu";
 import { MobileSecureIndicator } from "./components/mobile-secure-indicator";
 import { MobileWebSearchIndicator } from "./components/mobile-websearch-indicator";
 import { SecureModeModal } from "./components/secure-mode-modal";
 import { SecureToggle } from "./components/secure-toggle";
 import { SendButton } from "./components/send-button";
-import { UploadedFilesList } from "./components/uploaded-files-list";
 import { WebSearchButton } from "./components/web-search-button";
-
-// Helper функция для преобразования загруженных файлов в AttachedFile формат
-const convertUploadedFilesToAttachedFiles = (uploadedFiles: UploadedFileInfo[]): AttachedFile[] => {
-	return uploadedFiles.map(file => ({
-		id: file.file_id,
-		filename: file.filename,
-		content_type: 'application/octet-stream', // Базовый тип, так как не храним его в UploadedFileInfo
-		file_size: 0, // Размер не сохраняем в UploadedFileInfo
-		created_at: new Date().toISOString(),
-	}));
-};
 
 export function ChatInput() {
 	const { t } = useTranslation();
@@ -43,8 +29,6 @@ export function ChatInput() {
 		clearMessage,
 		webSearchEnabled,
 		setWebSearchEnabled,
-		uploadedFiles,
-		clearUploadedFiles,
 	} = useChatInputStore();
 	const {
 		getCurrentSettings,
@@ -52,45 +36,32 @@ export function ChatInput() {
 		activeDialogId,
 		setActiveDialogId,
 	} = useChatStore();
+	const { getSecureModePrompt, getOllamaModel } = useApiKeyStore();
 
 	const settings = getCurrentSettings();
 	const isSecure = settings.has_encrypted_messages;
 
 	const sendMessageMutation = useSendMessage();
-	const sendSecureMessageMutation = useSendSecureMessage();
 
-	const isLoading =
-		sendMessageMutation.isPending || sendSecureMessageMutation.isPending;
+	const isLoading = sendMessageMutation.isPending;
 
 	const handleSend = async () => {
 		if (message.trim() && !isLoading) {
 			const trimmedMessage = message.trim();
 
-			// Очищаем input сразу
+			// Clear input immediately
 			clearMessage();
 
-			// Сохраняем file_ids для текущего сообщения
-			const fileIds = uploadedFiles.map((file) => file.file_id);
-
-			// Очищаем загруженные файлы после начала отправки
-			clearUploadedFiles();
-
-			// Проверяем, нужно ли создать новый чат
+			// Check if we need to create a new chat
 			const isNewChat = !activeDialogId;
 			let currentDialogId = activeDialogId;
 
-			// Если это новый чат, создаем временный ID и сразу навигируем
+			// If this is a new chat, create a temporary ID and navigate immediately
 			if (isNewChat) {
 				const tempDialogId = `temp-${Date.now()}`;
 				currentDialogId = tempDialogId;
 				setActiveDialogId(tempDialogId);
 
-				// Преобразуем загруженные файлы в формат AttachedFile
-				const attachedFiles = uploadedFiles.length > 0 
-					? convertUploadedFilesToAttachedFiles(uploadedFiles)
-					: undefined;
-
-				// Предзаполняем кеш для временного чата
 				queryClient.setQueryData(["chat", "messages", tempDialogId], {
 					messages: [
 						{
@@ -98,7 +69,6 @@ export function ChatInput() {
 							content: trimmedMessage,
 							role: "user",
 							timestamp: Date.now(),
-							attached_files: attachedFiles,
 						},
 					],
 					has_encrypted_messages: settings.has_encrypted_messages,
@@ -108,7 +78,7 @@ export function ChatInput() {
 				navigate({ to: `/chat/${tempDialogId}` as any });
 			}
 
-			// Подготавливаем данные для запроса
+			// Prepare request data
 			const modelId =
 				webSearchEnabled && !settings.model.includes(":online")
 					? `${settings.model}:online`
@@ -119,49 +89,32 @@ export function ChatInput() {
 				message: trimmedMessage,
 				max_tokens: settings.max_tokens,
 				temperature: settings.temperature,
-				// Добавляем dialog_id если есть активный диалог (но не временный)
 				...(activeDialogId &&
 					!activeDialogId.startsWith("temp-") && { dialog_id: activeDialogId }),
-				// Добавляем file_ids если есть загруженные файлы
-				...(fileIds.length > 0 && { file_ids: fileIds }),
+				// Pass secure mode flag and prompt
+				...(isSecure && {
+					secure_mode: true,
+					secure_mode_prompt: getSecureModePrompt(),
+					ollama_model: getOllamaModel(),
+				}),
 			};
 
 			try {
-				if (isSecure) {
-					const response =
-						await sendSecureMessageMutation.mutateAsync(messageData);
+				const response = await sendMessageMutation.mutateAsync(messageData);
 
-					// Если это новый диалог и получили реальный dialog_id
-					if (
-						isNewChat &&
-						response.dialog_id &&
-						response.dialog_id !== currentDialogId
-					) {
-						setActiveDialogId(response.dialog_id);
-						navigate({
-							to: `/chat/${response.dialog_id}`,
-							replace: true,
-						} as any);
-					}
-				} else {
-					const response = await sendMessageMutation.mutateAsync(messageData);
-
-					// Если это новый диалог и получили реальный dialog_id
-					if (
-						isNewChat &&
-						response.dialog_id &&
-						response.dialog_id !== currentDialogId
-					) {
-						setActiveDialogId(response.dialog_id);
-						navigate({
-							to: `/chat/${response.dialog_id}`,
-							replace: true,
-						} as any);
-					}
+				if (
+					isNewChat &&
+					response.dialog_id &&
+					response.dialog_id !== currentDialogId
+				) {
+					setActiveDialogId(response.dialog_id);
+					navigate({
+						to: `/chat/${response.dialog_id}`,
+						replace: true,
+					} as any);
 				}
 			} catch (error) {
 				console.error("Failed to send message:", error);
-				// При ошибке в новом чате возвращаемся на главную
 				if (isNewChat) {
 					setActiveDialogId(null);
 					navigate({ to: "/", replace: true } as any);
@@ -186,13 +139,11 @@ export function ChatInput() {
 	};
 
 	const handleDisableSecureMode = () => {
-		// User confirmed - actually disable secure mode
 		updateCurrentSettings({ has_encrypted_messages: false });
 		setShowDisableSecureModal(false);
 	};
 
 	const handleCancelDisableSecureMode = () => {
-		// User cancelled - keep secure mode enabled and close modal
 		setShowDisableSecureModal(false);
 	};
 
@@ -200,7 +151,6 @@ export function ChatInput() {
 		<>
 			<div className="flex flex-col w-full">
 				<div className="flex flex-col bg-background border border-border border-b-0 rounded-t-2xl shadow-sm">
-					<UploadedFilesList />
 					<textarea
 						ref={textareaRef}
 						value={message}
@@ -209,9 +159,9 @@ export function ChatInput() {
 							adjustTextareaHeight();
 						}}
 						onKeyDown={handleKeyDown}
-						placeholder={t("chatInput.placeholder", "Спросите что-нибудь....")}
+						placeholder={isSecure ? t("chatInput.securePlaceholder", "Ask something privately....") : t("chatInput.placeholder", "Ask something....")}
 						disabled={isLoading}
-						className="w-full p-4 text-xl resize-none bg-transparent outline-none placeholder:text-muted-foreground min-h-[80px] max-h-48 overflow-y-auto text-foreground"
+						className="w-full p-4 text-base resize-none bg-transparent outline-none placeholder:text-muted-foreground min-h-[80px] max-h-48 overflow-y-auto text-foreground"
 					/>
 				</div>
 
@@ -219,16 +169,13 @@ export function ChatInput() {
 				<div className="flex items-center justify-between p-4 bg-background border border-border border-t-0 rounded-b-xl">
 					{/* Desktop Controls */}
 					<div className="hidden sm:flex items-center gap-2">
-						<FileUploadButton disabled={isLoading} />
 						<SecureToggle
 							isSecure={isSecure}
 							onToggle={(secure) => {
 								if (secure) {
-									// Enabling secure mode - show info modal and update settings
 									updateCurrentSettings({ has_encrypted_messages: secure });
 									setShowSecureModal(true);
 								} else {
-									// Disabling secure mode - show confirmation modal first
 									setShowDisableSecureModal(true);
 								}
 							}}
@@ -247,11 +194,9 @@ export function ChatInput() {
 							isSecure={isSecure}
 							onSecureToggle={(secure) => {
 								if (secure) {
-									// Enabling secure mode - show info modal and update settings
 									updateCurrentSettings({ has_encrypted_messages: secure });
 									setShowSecureModal(true);
 								} else {
-									// Disabling secure mode - show confirmation modal first
 									setShowDisableSecureModal(true);
 								}
 							}}
@@ -259,8 +204,7 @@ export function ChatInput() {
 							onWebSearchToggle={setWebSearchEnabled}
 							disabled={isLoading}
 						/>
-						
-						{/* Mobile Mode Indicators */}
+
 						{isSecure && (
 							<MobileSecureIndicator
 								onClose={() => setShowDisableSecureModal(true)}
@@ -283,13 +227,11 @@ export function ChatInput() {
 				</div>
 			</div>
 
-			{/* Secure Mode Modal */}
 			<SecureModeModal
 				isOpen={showSecureModal}
 				onClose={() => setShowSecureModal(false)}
 			/>
 
-			{/* Disable Secure Mode Confirmation Modal */}
 			<DisableSecureModeModal
 				isOpen={showDisableSecureModal}
 				onCancel={handleCancelDisableSecureMode}

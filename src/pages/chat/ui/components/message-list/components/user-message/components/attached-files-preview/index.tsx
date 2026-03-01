@@ -19,34 +19,34 @@ const getFileTypeInfo = (filename: string): FileTypeInfo => {
     case 'doc':
       return {
         type: 'document',
-        label: 'Документ'
+        label: 'Document'
       };
     
     case 'xlsx':
     case 'xls':
       return {
         type: 'spreadsheet',
-        label: 'Таблица'
+        label: 'Spreadsheet'
       };
     
     case 'pptx':
     case 'ppt':
       return {
         type: 'presentation',
-        label: 'Презентация'
+        label: 'Presentation'
       };
     
     case 'txt':
     case 'md':
       return {
         type: 'text',
-        label: 'Текстовый файл'
+        label: 'Text File'
       };
     
     default:
       return {
         type: 'document',
-        label: 'Документ'
+        label: 'Document'
       };
   }
 };
@@ -57,45 +57,14 @@ type FileItemProps = {
 
 const FileItem = ({ file }: FileItemProps) => {
   const fileTypeInfo = getFileTypeInfo(file.filename);
-  
-  const handleDownload = async () => {
-    try {
-      // Получаем ссылку на скачивание через API
-      const response = await fetch(`/api/chat/files/${file.id}/download`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to get download URL');
-      }
-      
-      const data = await response.json();
-      
-      // Создаем временный элемент для скачивания
-      const link = document.createElement('a');
-      link.href = data.download_url;
-      link.download = file.filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error('Download failed:', error);
-    }
-  };
 
   return (
     <div
-      onClick={handleDownload}
-      className="flex items-start gap-3 p-3 bg-gray-50 border border-gray-200 rounded-lg max-w-sm cursor-pointer hover:bg-gray-100 hover:border-gray-300 transition-colors"
+      className="flex items-start gap-3 p-3 bg-gray-50 border border-gray-200 rounded-lg max-w-sm"
     >
-      {/* File Icon */}
       <div className="flex-shrink-0 mt-1">
         <FileText className="w-5 h-5 text-gray-600" strokeWidth={1.5} />
       </div>
-
-      {/* File Info */}
       <div className="flex-1 min-w-0">
         <div className="text-sm font-medium text-gray-900 truncate">
           {file.filename}

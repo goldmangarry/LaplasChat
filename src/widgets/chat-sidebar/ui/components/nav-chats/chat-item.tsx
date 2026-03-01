@@ -44,7 +44,7 @@ export function ChatItem({ chat, onDeleteClick }: ChatItemProps) {
   const [editingName, setEditingName] = useState(chat.name)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Фокус на инпут при входе в режим редактирования
+  // Focus the input when entering edit mode
   useEffect(() => {
     if (isEditing && inputRef.current) {
       inputRef.current.focus()
@@ -72,7 +72,7 @@ export function ChatItem({ chat, onDeleteClick }: ChatItemProps) {
       setIsEditing(false)
     } catch (error) {
       console.error("Failed to rename chat:", error)
-      // Возвращаем исходное имя при ошибке
+      // Revert to original name on error
       setEditingName(chat.name)
       setIsEditing(false)
     }

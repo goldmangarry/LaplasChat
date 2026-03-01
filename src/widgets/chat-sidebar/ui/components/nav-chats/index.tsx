@@ -25,11 +25,11 @@ export function NavChats() {
   
   const chats = chatHistory?.dialogs || []
   
-  // Группируем чаты по временным периодам
+  // Group chats by time periods
   const thisWeekChats = chats.filter(chat => isChatFromThisWeek(chat.updated_at))
   const lastWeekChats = chats.filter(chat => !isChatFromThisWeek(chat.updated_at))
   
-  // Получаем текущий dialogId из роута или из store
+  // Get the current dialogId from the route or from the store
   const currentDialogId = (params as any)?.dialogId || activeDialogId
 
   const handleDeleteClick = (chatId: string, chatName: string) => {
@@ -42,22 +42,22 @@ export function NavChats() {
     const isCurrentChat = chatToDelete.id === currentDialogId
     const chatIdToDelete = chatToDelete.id
     
-    // Закрываем модалку сразу
+    // Close the modal immediately
     setChatToDelete(null)
     
     try {
       await deleteChat.mutateAsync(chatIdToDelete)
       
-      // Если удаляемый чат - текущий активный чат
+      // If the chat being deleted is the currently active chat
       if (isCurrentChat) {
-        // Сбрасываем активный чат в store
+        // Reset the active chat in the store
         setActiveDialogId(null)
-        // Перенаправляем на главную страницу
+        // Redirect to the main page
         navigate({ to: "/" })
       }
     } catch (error) {
       console.error("Failed to delete chat:", error)
-      // При ошибке можно показать toast или другое уведомление
+      // On error, could show a toast or other notification
     }
   }
 
@@ -69,7 +69,7 @@ export function NavChats() {
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>{t('chat.chats')}</SidebarGroupLabel>
       
-      {/* Чаты этой недели */}
+      {/* This week's chats */}
       {thisWeekChats.length > 0 && (
         <>
           <SidebarGroupLabel className="opacity-70">{t('chat.thisWeek')}</SidebarGroupLabel>
@@ -85,7 +85,7 @@ export function NavChats() {
         </>
       )}
       
-      {/* Чаты прошлых недель */}
+      {/* Previous weeks' chats */}
       {lastWeekChats.length > 0 && (
         <>
           <SidebarGroupLabel className="opacity-70">{t('chat.lastWeek')}</SidebarGroupLabel>

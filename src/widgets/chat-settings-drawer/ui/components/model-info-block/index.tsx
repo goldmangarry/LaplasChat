@@ -8,7 +8,7 @@ type ModelInfoBlockProps = {
 };
 
 
-// Получение отображаемого имени модели из API данных
+// Get display model name from API data
 const getModelDisplayName = (modelId: string) => {
 	const modelNames: Record<string, string> = {
 		"openai/gpt-5-chat": "OpenAI: GPT-5",
@@ -54,9 +54,11 @@ export const ModelInfoBlock = ({ settings }: ModelInfoBlockProps) => {
 				{getModelDisplayName(displayModelId)}
 			</h3>
 
-			<p className="text-center font-normal text-base leading-6 text-muted-foreground px-2">
-				{t(`modelDescriptions.${displayModelId}`, t("modelDescriptions.unavailable"))}
-			</p>
+			<div className="bg-[#f0eeff]/50 dark:bg-[#6c56f0]/10 rounded-lg px-3 py-2 mx-2">
+				<p className="text-center text-sm leading-5 text-muted-foreground">
+					{t(`modelDescriptions.${displayModelId}`, t("modelDescriptions.unavailable"))}
+				</p>
+			</div>
 		</div>
 	);
 };

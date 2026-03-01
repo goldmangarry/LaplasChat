@@ -35,7 +35,7 @@ export const ChatSettingsDrawer = ({
 	};
 
 	const handleClose = () => {
-		setLocalSettings(settings); // Сбрасываем локальные изменения
+		setLocalSettings(settings); // Reset local changes
 		onClose();
 	};
 	return (

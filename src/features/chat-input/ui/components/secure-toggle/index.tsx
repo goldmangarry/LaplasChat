@@ -15,7 +15,7 @@ export function SecureToggle({ isSecure, onToggle, disabled = false }: SecureTog
   };
 
   return (
-    <div onClick={handleToggle} className="flex cursor-pointer items-center gap-3 p-2 bg-background border border-border rounded-lg shadow-sm h-10 hover:bg-muted transition-colors">
+    <div onClick={handleToggle} className={`flex cursor-pointer items-center gap-3 p-2 rounded-lg shadow-sm h-10 transition-colors ${isSecure ? 'bg-[#f0eeff] dark:bg-[#6c56f0]/15 border border-[#6c56f0]/30' : 'bg-background border border-border hover:bg-muted'}`}>
       {/* Toggle Switch */}
       <Switch checked={isSecure} onCheckedChange={handleToggle} />
       <Label className="cursor-pointer">{t('chatInput.secureMode')}</Label>

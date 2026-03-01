@@ -4,6 +4,7 @@ export type UploadedFileInfo = {
 	download_url: string;
 	expires_at: string;
 	text_extracted: boolean;
+	content?: string;
 };
 
 export type ChatInputState = {

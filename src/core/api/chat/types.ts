@@ -28,6 +28,9 @@ export type SendMessageRequest = {
 	temperature: number;
 	dialog_id?: string;
 	file_ids?: string[];
+	secure_mode?: boolean;
+	secure_mode_prompt?: string;
+	ollama_model?: string;
 };
 
 export type SendMessageResponse = {
@@ -111,6 +114,7 @@ export type UploadedFile = {
 	download_url: string;
 	expires_at: string;
 	text_extracted: boolean;
+	content?: string;
 };
 
 export type UploadFilesResponse = {

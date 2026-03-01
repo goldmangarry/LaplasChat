@@ -10,9 +10,9 @@ export function SendButton({ onSend, disabled = false, loading = false }: SendBu
       disabled={disabled || loading}
       className={`
         flex items-center justify-center w-10 h-10 rounded-lg transition-all
-        ${disabled || loading 
-          ? 'bg-primary opacity-50 cursor-not-allowed' 
-          : 'bg-primary hover:bg-primary/90 active:scale-95'
+        ${disabled || loading
+          ? 'bg-[#6c56f0] opacity-50 cursor-not-allowed'
+          : 'bg-[#6c56f0] hover:bg-[#5b46e0] active:scale-95'
         }
         shadow-sm
       `}

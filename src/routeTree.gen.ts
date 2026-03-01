@@ -9,20 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as WorkflowRouteImport } from './routes/workflow'
-import { Route as LoginRouteImport } from './routes/login'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as LandingRouteImport } from './routes/landing'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ChatDialogIdRouteImport } from './routes/chat.$dialogId'
-import { Route as AuthOauthCallbackGoogleRouteImport } from './routes/auth.oauth.callback.google'
 
-const WorkflowRoute = WorkflowRouteImport.update({
-  id: '/workflow',
-  path: '/workflow',
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const LandingRoute = LandingRouteImport.update({
+  id: '/landing',
+  path: '/landing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -35,80 +34,55 @@ const ChatDialogIdRoute = ChatDialogIdRouteImport.update({
   path: '/chat/$dialogId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthOauthCallbackGoogleRoute = AuthOauthCallbackGoogleRouteImport.update({
-  id: '/auth/oauth/callback/google',
-  path: '/auth/oauth/callback/google',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/workflow': typeof WorkflowRoute
+  '/landing': typeof LandingRoute
+  '/onboarding': typeof OnboardingRoute
   '/chat/$dialogId': typeof ChatDialogIdRoute
-  '/auth/oauth/callback/google': typeof AuthOauthCallbackGoogleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/workflow': typeof WorkflowRoute
+  '/landing': typeof LandingRoute
+  '/onboarding': typeof OnboardingRoute
   '/chat/$dialogId': typeof ChatDialogIdRoute
-  '/auth/oauth/callback/google': typeof AuthOauthCallbackGoogleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/login': typeof LoginRoute
-  '/workflow': typeof WorkflowRoute
+  '/landing': typeof LandingRoute
+  '/onboarding': typeof OnboardingRoute
   '/chat/$dialogId': typeof ChatDialogIdRoute
-  '/auth/oauth/callback/google': typeof AuthOauthCallbackGoogleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/login'
-    | '/workflow'
-    | '/chat/$dialogId'
-    | '/auth/oauth/callback/google'
+  fullPaths: '/' | '/landing' | '/onboarding' | '/chat/$dialogId'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/login'
-    | '/workflow'
-    | '/chat/$dialogId'
-    | '/auth/oauth/callback/google'
-  id:
-    | '__root__'
-    | '/'
-    | '/login'
-    | '/workflow'
-    | '/chat/$dialogId'
-    | '/auth/oauth/callback/google'
+  to: '/' | '/landing' | '/onboarding' | '/chat/$dialogId'
+  id: '__root__' | '/' | '/landing' | '/onboarding' | '/chat/$dialogId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LoginRoute: typeof LoginRoute
-  WorkflowRoute: typeof WorkflowRoute
+  LandingRoute: typeof LandingRoute
+  OnboardingRoute: typeof OnboardingRoute
   ChatDialogIdRoute: typeof ChatDialogIdRoute
-  AuthOauthCallbackGoogleRoute: typeof AuthOauthCallbackGoogleRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/workflow': {
-      id: '/workflow'
-      path: '/workflow'
-      fullPath: '/workflow'
-      preLoaderRoute: typeof WorkflowRouteImport
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/landing': {
+      id: '/landing'
+      path: '/landing'
+      fullPath: '/landing'
+      preLoaderRoute: typeof LandingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -125,22 +99,14 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatDialogIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/oauth/callback/google': {
-      id: '/auth/oauth/callback/google'
-      path: '/auth/oauth/callback/google'
-      fullPath: '/auth/oauth/callback/google'
-      preLoaderRoute: typeof AuthOauthCallbackGoogleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LoginRoute: LoginRoute,
-  WorkflowRoute: WorkflowRoute,
+  LandingRoute: LandingRoute,
+  OnboardingRoute: OnboardingRoute,
   ChatDialogIdRoute: ChatDialogIdRoute,
-  AuthOauthCallbackGoogleRoute: AuthOauthCallbackGoogleRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

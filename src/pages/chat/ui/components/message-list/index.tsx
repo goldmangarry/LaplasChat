@@ -1,5 +1,5 @@
 import { useRef, useEffect } from "react";
-import { useChatMessages, usePendingMessages, usePendingSecureMessages } from "@/core/api/chat/hooks";
+import { useChatMessages, usePendingMessages } from "@/core/api/chat/hooks";
 import { useTranslation } from "react-i18next";
 import { UserMessage } from "./components/user-message";
 import { AssistantMessage } from "./components/assistant-message";
@@ -14,11 +14,12 @@ export const MessageList = ({ dialogId, onFactCheck }: MessageListProps) => {
   const { t } = useTranslation();
   const loadingRef = useRef<HTMLDivElement>(null);
   const messagesRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const allMessageRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const containerRef = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
   const prevMessagesLength = useRef(0);
   
-  // Получаем сообщения из React Query кеша
+  // Get messages from React Query cache
   const { 
     data: chatMessagesData, 
     error: messagesError,
@@ -26,19 +27,18 @@ export const MessageList = ({ dialogId, onFactCheck }: MessageListProps) => {
     isFetching: isFetchingMessages
   } = useChatMessages(dialogId);
 
-  // Получаем pending мутации для отображения оптимистичных обновлений
+  // Get pending mutations for displaying optimistic updates
   const pendingMessages = usePendingMessages(dialogId);
-  const pendingSecureMessages = usePendingSecureMessages(dialogId);
-  
-  const hasPendingMessage = pendingMessages.length > 0 || pendingSecureMessages.length > 0;
+
+  const hasPendingMessage = pendingMessages.length > 0;
   
   const messages = chatMessagesData?.messages || [];
   
-  // Показываем loader если есть pending мутации или идет фоновое обновление данных
-  // НО только если у нас уже есть сообщения (чтобы не показывать loader при первой загрузке)
+  // Show loader if there are pending mutations or background data refresh is in progress
+  // BUT only if we already have messages (to avoid showing loader on initial load)
   const shouldShowLoader = hasPendingMessage || (isFetchingMessages && messages.length > 0);
 
-  // Скролл к loader при его появлении
+  // Scroll to loader when it appears
   useEffect(() => {
     if (shouldShowLoader && loadingRef.current) {
       loadingRef.current.scrollIntoView({ 
@@ -48,7 +48,7 @@ export const MessageList = ({ dialogId, onFactCheck }: MessageListProps) => {
     }
   }, [shouldShowLoader]);
 
-  // Скролл вниз при первом появлении сообщений
+  // Scroll to bottom on first appearance of messages
   useEffect(() => {
     if (messages.length > 0 && isFirstRender.current && containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight;
@@ -57,26 +57,29 @@ export const MessageList = ({ dialogId, onFactCheck }: MessageListProps) => {
     }
   }, [messages.length > 0]);
 
-  // Скролл к новому сообщению ИИ при его появлении (только когда добавляется новое сообщение)
+  // Scroll to show beginning of AI response when it appears
   useEffect(() => {
-    // Проверяем, что это не первая загрузка и добавилось новое сообщение
+    // Verify this is not the initial load and a new message has been added
     if (isFirstRender.current || messages.length <= prevMessagesLength.current) {
       prevMessagesLength.current = messages.length;
       return;
     }
-    
-    // Найдем последнее сообщение от ассистента
+
     const lastMessage = messages[messages.length - 1];
     if (lastMessage?.role === 'assistant') {
-      const messageRef = messagesRefs.current[lastMessage.id || `message-${messages.length - 1}`];
-      if (messageRef) {
-        messageRef.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start'
-        });
-      }
+      // Wait for DOM to settle after React render, then scroll
+      requestAnimationFrame(() => {
+        const messageKey = lastMessage.id || `message-${messages.length - 1}`;
+        const messageRef = messagesRefs.current[messageKey];
+        if (messageRef) {
+          messageRef.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
     }
-    
+
     prevMessagesLength.current = messages.length;
   }, [messages]);
 
@@ -102,13 +105,14 @@ export const MessageList = ({ dialogId, onFactCheck }: MessageListProps) => {
 
   return (
     <div ref={containerRef} className="flex flex-col space-y-4 h-full overflow-y-auto sm:px-4 sm:py-4">
-      {/* Сообщения из кеша (включая оптимистичные) */}
+      {/* Messages from cache (including optimistic) */}
       {messages.map((message, index) => {
         const messageKey = message.id || `message-${index}`;
         return (
           <div
             key={messageKey}
             ref={(el) => {
+              allMessageRefs.current[messageKey] = el;
               if (message.role === "assistant") {
                 messagesRefs.current[messageKey] = el;
               }
@@ -129,7 +133,7 @@ export const MessageList = ({ dialogId, onFactCheck }: MessageListProps) => {
         );
       })}
       
-      {/* Loader для pending мутаций и фоновых запросов */}
+      {/* Loader for pending mutations and background requests */}
       {shouldShowLoader && (
         <div ref={loadingRef} className="flex justify-start">
           <LoadingMessage dialogId={dialogId} />

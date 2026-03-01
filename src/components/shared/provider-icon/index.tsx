@@ -1,6 +1,6 @@
 import type { ModelProvider } from "@/core/api/models/types";
 
-// Импорты иконок провайдеров
+// Provider icon imports
 import OpenAIIcon from "@/assets/icons/openai.svg";
 import PerplexityIcon from "@/assets/icons/perplexity.svg";
 import AnthropicIcon from "@/assets/icons/anthropic.svg";
@@ -10,6 +10,7 @@ import MetaIcon from "@/assets/icons/meta-color.svg";
 import MistralIcon from "@/assets/icons/mistral-color.svg";
 import DeepseekIcon from "@/assets/icons/deepseek-color.svg";
 import QwenIcon from "@/assets/icons/qwen-color.svg";
+import AINeutralIcon from "@/assets/icons/ai-neutral.svg";
 import { useTheme } from "@/core/theme";
 
 type ProviderIconProps = {
@@ -21,7 +22,7 @@ export const ProviderIcon = ({ provider, className = "w-4 h-4" }: ProviderIconPr
   const { theme } = useTheme();
 
   const getIconStyle = () => {
-    // Провайдеры, которые нуждаются в белом цвете для темной темы
+    // Providers that need white color in dark theme
     const needsWhiteInDark = ["openai", "perplexity"];
     
     if (needsWhiteInDark.includes(provider) && theme === "dark") {
@@ -49,10 +50,10 @@ export const ProviderIcon = ({ provider, className = "w-4 h-4" }: ProviderIconPr
         return DeepseekIcon;
       case "qwen":
         return QwenIcon;
-      case "grok":
+      case "x-ai":
         return GrokIcon;
       default:
-        return OpenAIIcon; // fallback
+        return AINeutralIcon;
     }
   };
 
