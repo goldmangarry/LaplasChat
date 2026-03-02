@@ -5,7 +5,6 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import type { ChatSettingsDrawerProps } from "../types";
 import { ChatSettingsHeader } from "./components/chat-settings-header";
 import { ChatSettingsPanel } from "./components/chat-settings-panel";
-import { ModelInfoBlock } from "./components/model-info-block";
 
 export const ChatSettingsDrawer = ({
 	isOpen,
@@ -35,22 +34,18 @@ export const ChatSettingsDrawer = ({
 	};
 
 	const handleClose = () => {
-		setLocalSettings(settings); // Reset local changes
+		setLocalSettings(settings);
 		onClose();
 	};
+
 	return (
 		<Sheet open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-			<SheetContent 
-				side="right" 
+			<SheetContent
+				side="right"
 				className="w-full sm:max-w-md p-0"
 				onOpenAutoFocus={(e) => e.preventDefault()}
 			>
 				<ChatSettingsHeader />
-				<ModelInfoBlock settings={settings} />
-
-				<div className="px-4">
-					<div className="h-px bg-border"></div>
-				</div>
 
 				<div className="pt-4 px-4">
 					<ChatSettingsPanel

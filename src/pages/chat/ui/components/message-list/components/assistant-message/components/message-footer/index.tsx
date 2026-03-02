@@ -1,13 +1,14 @@
-import { Copy, SearchCheck, Check } from "lucide-react";
+import { Copy, SearchCheck, Check, Workflow } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 
 type MessageFooterProps = {
   onCopy: () => void;
   onFactCheck: () => void;
+  onConvertToWorkflow?: () => void;
 };
 
-export const MessageFooter = ({ onCopy, onFactCheck }: MessageFooterProps) => {
+export const MessageFooter = ({ onCopy, onFactCheck, onConvertToWorkflow }: MessageFooterProps) => {
   const { t } = useTranslation();
   const [isCopied, setIsCopied] = useState(false);
 
@@ -53,6 +54,19 @@ export const MessageFooter = ({ onCopy, onFactCheck }: MessageFooterProps) => {
           {t('message.factCheck')}
         </span>
       </button>
+
+      {/* Convert to Workflow Button */}
+      {onConvertToWorkflow && (
+        <button
+          onClick={onConvertToWorkflow}
+          className="flex items-center gap-2 px-2 py-[10px] rounded-lg hover:bg-accent transition-colors text-foreground hover:text-muted-foreground"
+        >
+          <Workflow className="w-4 h-4" />
+          <span className="text-sm font-medium">
+            {t('workflow.convert.button')}
+          </span>
+        </button>
+      )}
     </div>
   );
 };

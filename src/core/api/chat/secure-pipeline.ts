@@ -1,5 +1,7 @@
-import { ollamaChatCompletion } from "@/core/ollama";
+import { ollamaChatCompletion, listOllamaModels } from "@/core/ollama";
+import { useSecurePipelineStatus } from "@/core/chat/secure-pipeline-status";
 import { sendChatCompletion } from "./completions";
+import { useApiKeyStore } from "@/core/api-key";
 
 type SecurePipelineParams = {
 	userMessage: string;
@@ -17,55 +19,6 @@ type SecurePipelineResult = {
 	mapping: Record<string, string>;
 };
 
-const ANONYMIZE_SYSTEM_PROMPT = `You are a strict PII/NER extraction engine. Extract ALL named entities and sensitive data from the text. You MUST catch every instance.
-
-CATEGORIES (extract ALL of these):
-- [PERSON_N] — any person name, first name, last name, patronymic, nickname, username
-- [COMPANY_N] — any company, organization, brand, startup, product name, service name, app name
-- [ADDRESS_N] — any address, city, street, country, region, building number
-- [PHONE_N] — any phone number
-- [EMAIL_N] — any email address
-- [AMOUNT_N] — any monetary amount with currency
-- [DATE_N] — any specific date (not relative like "yesterday")
-- [ACCOUNT_N] — any account number, card number, ID number, SSN, passport number
-- [URL_N] — any URL or website address
-- [DATA_N] — any other identifiable information not in the above categories
-
-RULES:
-1. Extract from ALL messages in the input
-2. Same value = same placeholder everywhere
-3. When in doubt — EXTRACT IT. It is better to over-extract than to miss something
-4. Product names and brand names ARE companies: Google, iPhone, Tesla, Slack, Notion — all are [COMPANY_N]
-5. Output ONLY valid JSON. No text before or after. No markdown.
-
-EXAMPLE INPUT:
-[user]: Привет, меня зовут Алексей Смирнов, я работаю в Яндексе. Мой email alex@yandex.ru
-
-EXAMPLE OUTPUT:
-{"mapping":{"[PERSON_1]":"Алексей Смирнов","[COMPANY_1]":"Яндексе","[EMAIL_1]":"alex@yandex.ru","[COMPANY_2]":"Яндексе"}}
-
-EXAMPLE INPUT:
-[user]: We use Slack and Notion at Acme Corp. Contact John at john@acme.com or +1-555-0123
-
-EXAMPLE OUTPUT:
-{"mapping":{"[COMPANY_1]":"Slack","[COMPANY_2]":"Notion","[COMPANY_3]":"Acme Corp","[PERSON_1]":"John","[EMAIL_1]":"john@acme.com","[PHONE_1]":"+1-555-0123"}}
-
-Now extract ALL entities from the following text. Output ONLY JSON:`;
-
-const DEANONYMIZE_SYSTEM_PROMPT = `You are a text restoration engine. Your ONLY task: replace every placeholder like [PERSON_1], [COMPANY_1], etc. with the original value from the mapping provided.
-
-RULES:
-- Replace ALL placeholders with their original values
-- Keep everything else EXACTLY as-is
-- Output ONLY the restored text, nothing else
-- No explanations, no markdown, no extra words
-
-EXAMPLE:
-Text: "Hello [PERSON_1], your order from [COMPANY_1] is ready."
-Mapping: {"[PERSON_1]": "John", "[COMPANY_1]": "Amazon"}
-Output: "Hello John, your order from Amazon is ready."
-
-Now restore the following text:`;
 
 const SECURE_GENERATION_SYSTEM_PROMPT = `The user's message uses privacy placeholders (like [PERSON_1], [COMPANY_1], etc.) to protect sensitive data. Respond naturally and use the SAME placeholders in your response. Do NOT try to guess the real values behind placeholders.
 
@@ -239,129 +192,158 @@ export async function sendSecureMessage(
 		apiKey,
 	} = params;
 
-	// ── Step 1: Anonymize ALL messages via local Ollama ──
-	// Build full conversation text so Ollama can detect PII across the entire context
-	const allTexts = [
-		...conversationHistory.map(
-			(m) => `[${m.role}]: ${m.content}`,
-		),
-		`[user]: ${userMessage}`,
-	].join("\n\n");
+	const setStep = useSecurePipelineStatus.getState().setStep;
+	const anonymizePrompt = useApiKeyStore.getState().anonymizePrompt;
 
-	let mapping: Record<string, string> = {};
-
-	console.group("[SecurePipeline] Step 1: Anonymization via Ollama");
-	console.log("Ollama model:", ollamaModel);
-	console.log("Original user message:", userMessage);
-	console.log("Conversation history length:", conversationHistory.length);
-	console.log("Full text sent to Ollama for PII detection:", allTexts);
+	// AbortController shared across the outer try/finally so we can cancel on timeout
+	const abortController = new AbortController();
 
 	try {
-		const anonymizeResponse = await ollamaChatCompletion(ollamaModel, [
-			{ role: "system", content: ANONYMIZE_SYSTEM_PROMPT },
-			{ role: "user", content: allTexts },
-		]);
-
-		console.log("Ollama raw response:", anonymizeResponse);
-
-		const parsed = parseMappingResponse(anonymizeResponse);
-		if (parsed && Object.keys(parsed).length > 0) {
-			mapping = parsed;
-		}
-
-		console.log("Extracted PII mapping:", mapping);
-	} catch (error) {
-		console.error("Anonymization failed:", error);
-		throw new Error(
-			"Secure mode: anonymization failed. Cannot send unprotected data. Check that Ollama is running and has the selected model.",
-		);
-	}
-	console.groupEnd();
-
-	// ── Step 2: Generate via commercial model (OpenRouter) ──
-	const messagesForApi: Array<{
-		role: "system" | "user" | "assistant";
-		content: string;
-	}> = [];
-
-	// Add system prompt for placeholder-aware generation
-	if (Object.keys(mapping).length > 0) {
-		messagesForApi.push({
-			role: "system",
-			content: SECURE_GENERATION_SYSTEM_PROMPT,
-		});
-	}
-
-	// Add ANONYMIZED conversation history
-	for (const msg of conversationHistory) {
-		messagesForApi.push({
-			role: msg.role as "user" | "assistant",
-			content: applyAnonymization(msg.content, mapping),
-		});
-	}
-
-	// Add the ANONYMIZED user message
-	const anonymizedUserMessage = applyAnonymization(userMessage, mapping);
-	messagesForApi.push({ role: "user", content: anonymizedUserMessage });
-
-	console.group("[SecurePipeline] Step 2: Sending to OpenRouter");
-	console.log("Messages sent to OpenRouter:", JSON.parse(JSON.stringify(messagesForApi)));
-	console.groupEnd();
-
-	const aiResponse = await sendChatCompletion({
-		messages: messagesForApi,
-		model: mainModel,
-		temperature,
-		maxTokens,
-		apiKey,
-	});
-
-	// ── Step 3: De-anonymize via local Ollama ──
-	let finalContent = aiResponse.content;
-
-	if (Object.keys(mapping).length > 0) {
-		try {
-			const deanonymizePrompt = `Text to restore:\n${aiResponse.content}\n\nMapping:\n${JSON.stringify(mapping, null, 2)}`;
-
-			finalContent = await ollamaChatCompletion(ollamaModel, [
-				{ role: "system", content: DEANONYMIZE_SYSTEM_PROMPT },
-				{ role: "user", content: deanonymizePrompt },
-			]);
-
-			// Verify all placeholders are gone; if not, do string replacement
-			const remainingPlaceholders = Object.keys(mapping).filter(
-				(p) => finalContent.includes(p),
+		// ── Preflight: verify model is installed (5s timeout → fails fast, no 2-min hang) ──
+		setStep("anonymizing");
+		const installedModels = await listOllamaModels().catch(() => []);
+		const modelExists = installedModels.some((m) => m.name === ollamaModel);
+		if (!modelExists) {
+			throw new Error(
+				`Ollama model "${ollamaModel}" is not installed. Select an installed model in the Secure Mode chip.`,
 			);
-			if (remainingPlaceholders.length > 0) {
-				finalContent = fallbackDeanonymize(finalContent, mapping);
-			}
-		} catch (error) {
-			console.error("De-anonymization failed, using fallback:", error);
-			finalContent = fallbackDeanonymize(aiResponse.content, mapping);
 		}
+
+		// ── Step 1: Anonymize the current user message via local Ollama ──
+		// Limit input to 5000 chars to cover full CVs / long documents while avoiding
+		// extreme model load. A hard 60s AbortController timeout cancels the actual XHR
+		// (unlike Promise.race which only rejects the Promise but leaves Ollama running).
+		const MAX_ANONYMIZE_CHARS = 5000;
+		const truncatedMessage = userMessage.length > MAX_ANONYMIZE_CHARS
+			? userMessage.slice(0, MAX_ANONYMIZE_CHARS)
+			: userMessage;
+		const allTexts = `[user]: ${truncatedMessage}`;
+
+		let mapping: Record<string, string> = {};
+
+		console.group("[SecurePipeline] Step 1: Anonymization via Ollama");
+		console.log("Ollama model:", ollamaModel);
+		console.log("Original user message:", userMessage);
+		console.log("Input chars sent to Ollama:", allTexts.length);
+		console.log("Full text sent to Ollama for PII detection:", allTexts);
+
+		try {
+			// 60s hard limit — aborts the actual Axios XHR so Ollama stops processing immediately
+			const ANONYMIZE_TIMEOUT_MS = 60_000;
+			const timeoutId = setTimeout(() => abortController.abort(), ANONYMIZE_TIMEOUT_MS);
+			let anonymizeResponse: string;
+			try {
+				anonymizeResponse = await ollamaChatCompletion(
+					ollamaModel,
+					[
+						{ role: "system", content: anonymizePrompt },
+						{ role: "user", content: allTexts },
+					],
+					{ signal: abortController.signal },
+				);
+			} finally {
+				clearTimeout(timeoutId);
+			}
+			if (abortController.signal.aborted) {
+				throw new Error(`Ollama anonymization timed out after ${ANONYMIZE_TIMEOUT_MS / 1000}s. Try a shorter message or a faster model.`);
+			}
+
+			console.log("Ollama raw response:", anonymizeResponse);
+
+			const parsed = parseMappingResponse(anonymizeResponse);
+			if (parsed && Object.keys(parsed).length > 0) {
+				mapping = parsed;
+			}
+
+			console.log("Extracted PII mapping:", mapping);
+		} catch (error) {
+			console.error("Anonymization failed:", error);
+			// Re-throw timeout/abort errors directly so the user sees the real reason
+			if (
+				error instanceof Error &&
+				(error.name === "CanceledError" || error.name === "AbortError" || error.message.includes("timed out"))
+			) {
+				throw error;
+			}
+			throw new Error(
+				"Secure mode: anonymization failed. Cannot send unprotected data. Check that Ollama is running and has the selected model.",
+			);
+		}
+		console.groupEnd();
+
+		// ── Step 2: Generate via commercial model (OpenRouter) ──
+		setStep("processing");
+		const messagesForApi: Array<{
+			role: "system" | "user" | "assistant";
+			content: string;
+		}> = [];
+
+		// Add system prompt for placeholder-aware generation
+		if (Object.keys(mapping).length > 0) {
+			messagesForApi.push({
+				role: "system",
+				content: SECURE_GENERATION_SYSTEM_PROMPT,
+			});
+		}
+
+		// Add ANONYMIZED conversation history
+		for (const msg of conversationHistory) {
+			messagesForApi.push({
+				role: msg.role as "user" | "assistant",
+				content: applyAnonymization(msg.content, mapping),
+			});
+		}
+
+		// Add the ANONYMIZED user message
+		const anonymizedUserMessage = applyAnonymization(userMessage, mapping);
+		messagesForApi.push({ role: "user", content: anonymizedUserMessage });
+
+		console.group("[SecurePipeline] Step 2: Sending to OpenRouter");
+		console.log("Messages sent to OpenRouter:", JSON.parse(JSON.stringify(messagesForApi)));
+		console.groupEnd();
+
+		const aiResponse = await sendChatCompletion({
+			messages: messagesForApi,
+			model: mainModel,
+			temperature,
+			maxTokens,
+			apiKey,
+		});
+
+		// ── Step 3: De-anonymize via fast string replacement ──
+		// Uses direct placeholder → original substitution instead of a second Ollama call.
+		// This is instant, 100% reliable, and avoids doubling the wait time.
+		setStep("deanonymizing");
+		const finalContent = Object.keys(mapping).length > 0
+			? fallbackDeanonymize(aiResponse.content, mapping)
+			: aiResponse.content;
+
+		console.group("[SecurePipeline] Step 3: De-anonymization result");
+		console.log("OpenRouter raw response:", aiResponse.content);
+		console.log("Final de-anonymized response:", finalContent);
+		console.groupEnd();
+
+		// Save debug info to window for easy console inspection
+		(window as unknown as Record<string, unknown>).__SECURE_PIPELINE_DEBUG__ = {
+			timestamp: new Date().toISOString(),
+			ollamaModel,
+			originalMessage: userMessage,
+			mapping,
+			anonymizedMessage: anonymizedUserMessage,
+			sentToOpenRouter: messagesForApi,
+			openRouterResponse: aiResponse.content,
+			finalResponse: finalContent,
+			mappingCount: Object.keys(mapping).length,
+		};
+
+		return {
+			content: finalContent,
+			cleanedMessage: anonymizedUserMessage,
+			mapping,
+		};
+	} finally {
+		// Abort any in-flight Ollama request on error or cancellation
+		abortController.abort();
+		setStep(null);
 	}
-
-	console.group("[SecurePipeline] Step 3: De-anonymization result");
-	console.log("OpenRouter raw response:", aiResponse.content);
-	console.log("Final de-anonymized response:", finalContent);
-	console.groupEnd();
-
-	// Save debug info to window for easy console inspection
-	(window as unknown as Record<string, unknown>).__SECURE_PIPELINE_DEBUG__ = {
-		timestamp: new Date().toISOString(),
-		ollamaModel,
-		originalMessage: userMessage,
-		mapping,
-		anonymizedMessage: anonymizedUserMessage,
-		sentToOpenRouter: messagesForApi,
-		openRouterResponse: aiResponse.content,
-		finalResponse: finalContent,
-		mappingCount: Object.keys(mapping).length,
-	};
-
-	return {
-		content: finalContent,
-		cleanedMessage: anonymizedUserMessage,
-		mapping,
-	};
 }

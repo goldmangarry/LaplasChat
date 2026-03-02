@@ -83,7 +83,7 @@ export async function deleteOllamaModel(name: string): Promise<void> {
 export async function ollamaChatCompletion(
 	model: string,
 	messages: Array<{ role: string; content: string }>,
-	options?: { temperature?: number },
+	options?: { temperature?: number; signal?: AbortSignal },
 ): Promise<string> {
 	const response = await axios.post(
 		`${OLLAMA_BASE}/v1/chat/completions`,
@@ -93,7 +93,7 @@ export async function ollamaChatCompletion(
 			temperature: options?.temperature ?? 0.1,
 			stream: false,
 		},
-		{ timeout: 120000 },
+		{ timeout: 120000, signal: options?.signal },
 	);
 
 	const content = response.data.choices?.[0]?.message?.content;

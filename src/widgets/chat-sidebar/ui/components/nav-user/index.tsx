@@ -47,13 +47,14 @@ import { Label } from "@/components/ui/label"
 import { checkOllamaHealth, listOllamaModels, pullOllamaModel, deleteOllamaModel } from "@/core/ollama"
 import { RECOMMENDED_MODELS, DEFAULT_OLLAMA_MODEL, formatBytes, getOllamaDownloadUrl, getOllamaPlatformLabel } from "@/core/ollama/types"
 import type { OllamaModel, PullProgress } from "@/core/ollama/types"
+import { useOllamaModalStore } from "@/core/ollama/modal-store"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
   const { t } = useTranslation()
   const { apiKey, setApiKey, clearApiKey, ollamaModel, setOllamaModel } = useApiKeyStore()
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false)
-  const [isOllamaModalOpen, setIsOllamaModalOpen] = useState(false)
+  const { isOpen: isOllamaModalOpen, open: openOllamaModal, close: closeOllamaModal } = useOllamaModalStore()
   const [newApiKey, setNewApiKey] = useState("")
 
   // Ollama state
@@ -155,12 +156,12 @@ export function NavUser() {
 
   const handleOpenOllamaModal = () => {
     setSelectedModel(ollamaModel || DEFAULT_OLLAMA_MODEL)
-    setIsOllamaModalOpen(true)
+    openOllamaModal()
   }
 
   const handleSaveOllamaModel = () => {
     setOllamaModel(selectedModel)
-    setIsOllamaModalOpen(false)
+    closeOllamaModal()
   }
 
   const maskedKey = apiKey
@@ -275,7 +276,7 @@ export function NavUser() {
       </Dialog>
 
       {/* Ollama Model Selector Dialog */}
-      <Dialog open={isOllamaModalOpen} onOpenChange={setIsOllamaModalOpen}>
+      <Dialog open={isOllamaModalOpen} onOpenChange={(open) => !open && closeOllamaModal()}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{t('ollama.selectModel')}</DialogTitle>

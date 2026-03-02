@@ -2,9 +2,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Loader2 } from "lucide-react";
 import { useSendMessage } from "@/core/api/chat/hooks";
 import { useApiKeyStore } from "@/core/api-key";
 import { useChatStore } from "@/core/chat/store";
+import { useSecurePipelineStatus } from "@/core/chat/secure-pipeline-status";
 import { useChatInputStore } from "../model/store";
 import { DisableSecureModeModal } from "./components/disable-secure-mode-modal";
 import { MobileOptionsMenu } from "./components/mobile-options-menu";
@@ -42,6 +44,7 @@ export function ChatInput() {
 	const isSecure = settings.has_encrypted_messages;
 
 	const sendMessageMutation = useSendMessage();
+	const { step: pipelineStep } = useSecurePipelineStatus();
 
 	const isLoading = sendMessageMutation.isPending;
 
@@ -115,8 +118,11 @@ export function ChatInput() {
 				}
 			} catch (error) {
 				console.error("Failed to send message:", error);
+				// Restore the message so the user can retry
+				setMessage(trimmedMessage);
 				if (isNewChat) {
 					setActiveDialogId(null);
+					queryClient.removeQueries({ queryKey: ["chat", "messages", currentDialogId] });
 					navigate({ to: "/", replace: true } as any);
 				}
 			}
@@ -165,6 +171,14 @@ export function ChatInput() {
 					/>
 				</div>
 
+				{/* Secure Mode Pipeline Status */}
+				{isSecure && isLoading && pipelineStep && (
+					<div className="flex items-center gap-2 px-4 py-2 bg-[#f0eeff] dark:bg-[#6c56f0]/10 border-x border-border text-xs text-[#6c56f0] dark:text-[#a78bfa]">
+						<Loader2 className="w-3.5 h-3.5 animate-spin shrink-0" />
+						<span>{t(`secureMode.step.${pipelineStep}`)}</span>
+					</div>
+				)}
+
 				{/* Bottom Controls */}
 				<div className="flex items-center justify-between p-4 bg-background border border-border border-t-0 rounded-b-xl">
 					{/* Desktop Controls */}
@@ -186,6 +200,17 @@ export function ChatInput() {
 							onToggle={setWebSearchEnabled}
 							disabled={isLoading}
 						/>
+						{isSecure && message.length > 0 && (
+							<div className={`flex items-center h-10 px-3 rounded-xl border text-sm font-medium tabular-nums select-none transition-colors ${
+								message.length > 5000
+									? "border-destructive/40 text-destructive bg-destructive/10"
+									: message.length > 4000
+										? "border-amber-400/40 text-amber-500 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10"
+										: "border-border text-muted-foreground bg-background"
+							}`}>
+								{message.length.toLocaleString()} / 5 000
+							</div>
+						)}
 					</div>
 
 					{/* Mobile Controls */}

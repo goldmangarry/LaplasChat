@@ -44,7 +44,10 @@
 		"webSearch": "Web Search",
 		"webSearchTooltip": "Search the web for current information and real-time data to enhance responses with up-to-date facts",
 		"attachFile": "Attach File",
-		"deepthink": "Deepthink"
+		"deepthink": "Deepthink",
+		"selectAnonymizationModel": "Anonymization model",
+		"noModelsInstalled": "No models installed. Download one in Settings.",
+		"secureModeCharHint": "Best within 5,000 chars"
 	},
 	"suggestions": {
 		"aiDataCollection": "What data do AI companies collect from your conversations, and who has access?",
@@ -76,7 +79,8 @@
 		"copiedCodeToClipboard": "Copied code to clipboard",
 		"settings": "Settings",
 		"apiKey": "API Key",
-		"secureModePrompt": "Secure Mode Prompt"
+		"secureModePrompt": "Secure Mode Prompt",
+		"loading": "Loading..."
 	},
 	"providers": {
 		"openai": "OpenAI",
@@ -150,7 +154,17 @@
 	"secureMode": {
 		"title": "You have entered secure mode",
 		"description": "Now all your messages undergo local encryption.\nNames, addresses and other personal data are automatically hidden.\nNo data is transmitted outside the platform.",
-		"understood": "Got it"
+		"understood": "Got it",
+		"step": {
+			"anonymizing": "Anonymizing your message...",
+			"processing": "Sending to AI model...",
+			"deanonymizing": "Restoring response..."
+		},
+		"editPromptTitle": "Anonymization Prompt",
+		"editPromptDescription": "This prompt is sent to the local Ollama model to detect and replace sensitive data (PII) before sending to the AI. Changes are saved to your browser.",
+		"editPromptSave": "Save",
+		"editPromptReset": "Reset to Default",
+		"editPromptCancel": "Cancel"
 	},
 	"disableSecureMode": {
 		"title": "Exit secure mode",
@@ -198,6 +212,7 @@
 		"modelHint": "This local model handles encryption and decryption of your private data. It runs entirely on your machine via Ollama.",
 		"refresh": "Refresh",
 		"installHint": "Ollama is required for Secure Mode. Download and install it to enable local AI anonymization.",
-		"installSteps": "After installing, launch Ollama and click \"Refresh\" above to connect."
+		"installSteps": "After installing, launch Ollama and click \"Refresh\" above to connect.",
+		"installMoreModels": "Install more models"
 	}
 }
