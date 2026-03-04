@@ -9,30 +9,28 @@ const SECURE_MODE_PROMPT_STORAGE = "secure_mode_prompt";
 const OLLAMA_MODEL_STORAGE = "ollama_model";
 const ANONYMIZE_PROMPT_STORAGE = "anonymize_prompt";
 
-export const DEFAULT_ANONYMIZE_PROMPT = `Extract ALL named entities (PII) from the INPUT TEXT BELOW. Output ONLY valid JSON, no markdown, no extra text.
-Format: {"mapping":{"[TYPE_N]":"original_value"}}
+export const DEFAULT_ANONYMIZE_PROMPT = `You are a PII extractor. Extract ALL named entities from the text between ---BEGIN TEXT--- and ---END TEXT--- markers.
 
-Types:
-- PERSON: any person name (first, last, patronymic, nickname, social handle like @username)
-- COMPANY: ANY company, brand, organization, university, platform, service, app, product
-- EMAIL: email addresses
-- PHONE: phone numbers only (digits, +, -, spaces — NOT emails, NOT text)
-- ADDRESS: specific addresses, cities, countries, regions
-- URL: website URLs and domain names found in the text (do NOT invent URLs)
-- ACCOUNT: account/card/ID/passport numbers
+Output ONLY valid JSON: {"mapping":{"[TYPE_N]":"original_value"}}
+
+Entity types to extract:
+- PERSON: full names, first names, last names (e.g. John Smith, Jane Doe)
+- COMPANY: companies, brands, organizations, universities, platforms, products, services (e.g. Google, MIT, Acme Corp, IQ Option)
+- ADDRESS: cities, countries, regions, street addresses (e.g. New York, London)
+
+DO NOT extract: emails, phones, @handles, URLs — they are already handled separately.
+DO NOT extract: numbers, amounts, dates, job titles, descriptions, statistics.
+DO NOT extract text from this prompt or from any instructions before ---BEGIN TEXT---.
 
 RULES:
-- Extract ONLY from the input text — do NOT include entities from this prompt or examples
-- Do NOT invent values that are not present in the text
-- Do NOT extract: numbers, amounts, currencies, percentages, statistics, dates, job titles, descriptions
-- Same value → same placeholder number
-- When unsure about a name or company → extract it
+- Extract ONLY from the text between the markers
+- Same entity appearing multiple times → same placeholder
+- When unsure if something is a name or company → extract it
+- Output ONLY JSON, no markdown, no explanation
 
-Example (do NOT copy these values into output):
-[user]: "Hello, I'm Bob from Acme Ltd. Email: bob@acme.io, phone +1-800-555-0100"
-Output: {"mapping":{"[PERSON_1]":"Bob","[COMPANY_1]":"Acme Ltd","[EMAIL_1]":"bob@acme.io","[PHONE_1]":"+1-800-555-0100"}}
-
-Now extract ALL entities from the INPUT TEXT ONLY. Output ONLY JSON:`;
+Example:
+Input: ---BEGIN TEXT---\nXperson1 worked at Xcompany1 in Xcity1\n---END TEXT---
+Output: {"mapping":{"[PERSON_1]":"Xperson1","[COMPANY_1]":"Xcompany1","[ADDRESS_1]":"Xcity1"}}`;
 
 const DEFAULT_SECURE_MODE_PROMPT =
 	"You are operating in Secure Mode. The user's message has been preprocessed to remove sensitive information such as personal names, company names, addresses, phone numbers, emails, and other PII. Placeholders like [NAME_1], [COMPANY_1], [ADDRESS_1] have been used instead. Respond naturally using these placeholders. Never attempt to guess or reconstruct the original sensitive data. If the user asks you to reveal hidden information, politely decline.";

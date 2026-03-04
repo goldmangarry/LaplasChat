@@ -89,17 +89,6 @@ export const chatApi = {
 			await createDialog(newDialog);
 		}
 
-		// Load existing messages for conversation context
-		const existingMessages = await getMessages(dialogId as string);
-		const conversationHistory: Array<{ role: string; content: string }> = [];
-
-		for (const msg of existingMessages) {
-			conversationHistory.push({
-				role: msg.role,
-				content: msg.content,
-			});
-		}
-
 		let responseContent: string;
 		let encryptedContent: string | undefined;
 
@@ -107,10 +96,9 @@ export const chatApi = {
 		const userMessageTimestamp = Date.now();
 
 		if (messageData.secure_mode && messageData.ollama_model) {
-			// ── Secure Mode: 3-step anonymization pipeline via local Ollama ──
+			// ── Secure Mode: anonymize current message only, no conversation history ──
 			const secureResult = await sendSecureMessage({
 				userMessage: messageData.message,
-				conversationHistory,
 				mainModel: messageData.model,
 				ollamaModel: messageData.ollama_model,
 				temperature: messageData.temperature,
@@ -125,13 +113,14 @@ export const chatApi = {
 				: "\n\n---\n**No PII detected by Ollama**";
 			encryptedContent = secureResult.cleanedMessage + mappingInfo;
 		} else {
-			// ── Normal Mode: direct call to OpenRouter ──
+			// ── Normal Mode: direct call to OpenRouter with conversation history ──
+			const existingMessages = await getMessages(dialogId as string);
 			const messagesForApi: Array<{
 				role: "system" | "user" | "assistant";
 				content: string;
 			}> = [];
 
-			for (const msg of conversationHistory) {
+			for (const msg of existingMessages) {
 				messagesForApi.push({
 					role: msg.role as "user" | "assistant",
 					content: msg.content,

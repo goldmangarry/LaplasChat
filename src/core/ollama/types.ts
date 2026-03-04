@@ -24,6 +24,34 @@ export type RecommendedModel = {
 
 export const RECOMMENDED_MODELS: RecommendedModel[] = [
 	{
+		id: "qwen2.5:3b",
+		name: "Qwen 2.5 3B",
+		params: "3B",
+		sizeBytes: 2_000_000_000,
+		description: "Best for anonymization: structured JSON, multilingual",
+	},
+	{
+		id: "gemma3:4b",
+		name: "Gemma 3 4B",
+		params: "4B",
+		sizeBytes: 3_000_000_000,
+		description: "Strong NER accuracy, good alternative",
+	},
+	{
+		id: "phi4-mini",
+		name: "Phi-4 Mini",
+		params: "3.8B",
+		sizeBytes: 2_500_000_000,
+		description: "Best quality/size, strong reasoning",
+	},
+	{
+		id: "llama3.2:3b",
+		name: "Llama 3.2 3B",
+		params: "3B",
+		sizeBytes: 2_000_000_000,
+		description: "Strong general-purpose, fast",
+	},
+	{
 		id: "gemma3:1b",
 		name: "Gemma 3 1B",
 		params: "1B",
@@ -36,34 +64,6 @@ export const RECOMMENDED_MODELS: RecommendedModel[] = [
 		params: "1B",
 		sizeBytes: 1_300_000_000,
 		description: "Compact and fast general-purpose",
-	},
-	{
-		id: "gemma2:2b",
-		name: "Gemma 2 2B",
-		params: "2B",
-		sizeBytes: 1_600_000_000,
-		description: "Good accuracy for its size",
-	},
-	{
-		id: "phi4-mini",
-		name: "Phi-4 Mini",
-		params: "3.8B",
-		sizeBytes: 2_500_000_000,
-		description: "Best quality/size, strong reasoning",
-	},
-	{
-		id: "qwen2.5:3b",
-		name: "Qwen 2.5 3B",
-		params: "3B",
-		sizeBytes: 2_000_000_000,
-		description: "Structured output, multilingual",
-	},
-	{
-		id: "llama3.2:3b",
-		name: "Llama 3.2 3B",
-		params: "3B",
-		sizeBytes: 2_000_000_000,
-		description: "Strong general-purpose, fast",
 	},
 ];
 
