@@ -10,18 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
-import { Route as LandingRouteImport } from './routes/landing'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ChatDialogIdRouteImport } from './routes/chat.$dialogId'
 
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LandingRoute = LandingRouteImport.update({
-  id: '/landing',
-  path: '/landing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,34 +31,30 @@ const ChatDialogIdRoute = ChatDialogIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/landing': typeof LandingRoute
   '/onboarding': typeof OnboardingRoute
   '/chat/$dialogId': typeof ChatDialogIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/landing': typeof LandingRoute
   '/onboarding': typeof OnboardingRoute
   '/chat/$dialogId': typeof ChatDialogIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/landing': typeof LandingRoute
   '/onboarding': typeof OnboardingRoute
   '/chat/$dialogId': typeof ChatDialogIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/landing' | '/onboarding' | '/chat/$dialogId'
+  fullPaths: '/' | '/onboarding' | '/chat/$dialogId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/landing' | '/onboarding' | '/chat/$dialogId'
-  id: '__root__' | '/' | '/landing' | '/onboarding' | '/chat/$dialogId'
+  to: '/' | '/onboarding' | '/chat/$dialogId'
+  id: '__root__' | '/' | '/onboarding' | '/chat/$dialogId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LandingRoute: typeof LandingRoute
   OnboardingRoute: typeof OnboardingRoute
   ChatDialogIdRoute: typeof ChatDialogIdRoute
 }
@@ -76,13 +66,6 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/landing': {
-      id: '/landing'
-      path: '/landing'
-      fullPath: '/landing'
-      preLoaderRoute: typeof LandingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,7 +87,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LandingRoute: LandingRoute,
   OnboardingRoute: OnboardingRoute,
   ChatDialogIdRoute: ChatDialogIdRoute,
 }

@@ -7,7 +7,7 @@ import {
 import { SidebarProvider } from "@/components/ui/sidebar";
 import "./index.css";
 
-const PUBLIC_ROUTES = ["/onboarding", "/landing"];
+const PUBLIC_ROUTES = ["/onboarding"];
 
 function RootComponent() {
 	const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -28,8 +28,7 @@ export const Route = createRootRoute({
 	beforeLoad: ({ location }) => {
 		const apiKey = localStorage.getItem("openrouter_api_key");
 		if (!apiKey && !PUBLIC_ROUTES.includes(location.pathname)) {
-			const isDesktop = "__TAURI_INTERNALS__" in window;
-			throw redirect({ to: isDesktop ? "/onboarding" : "/landing" });
+			throw redirect({ to: "/onboarding" });
 		}
 	},
 	component: RootComponent,
