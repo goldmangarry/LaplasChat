@@ -1,69 +1,109 @@
-# LaplasChat
+<p align="center">
+  <img src="public/logo.svg" alt="LaplasChat" width="80" height="80" />
+</p>
 
-Open source AI chat application with multi-model support and built-in privacy protection.
+<h1 align="center">LaplasChat</h1>
+
+<p align="center">
+  <strong>Open source AI chat with privacy protection. One app for ChatGPT, Claude, Gemini, and 20+ models.</strong>
+</p>
+
+<p align="center">
+  <a href="https://github.com/goldmangarry/LaplasChat/releases"><img src="https://img.shields.io/github/v/release/goldmangarry/LaplasChat?style=flat-square" alt="Release" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/goldmangarry/LaplasChat?style=flat-square" alt="License" /></a>
+  <a href="https://github.com/goldmangarry/LaplasChat/stargazers"><img src="https://img.shields.io/github/stars/goldmangarry/LaplasChat?style=flat-square" alt="Stars" /></a>
+</p>
+
+---
+
+## Download
+
+| Platform | Download |
+|----------|----------|
+| Windows  | [Download .exe](https://github.com/goldmangarry/LaplasChat/releases/latest) |
+| macOS (Apple Silicon) | [Download .dmg](https://github.com/goldmangarry/LaplasChat/releases/latest) |
+| macOS (Intel) | [Download .dmg](https://github.com/goldmangarry/LaplasChat/releases/latest) |
+| Web (self-hosted) | See [Quick Start](#quick-start) below |
 
 ## Features
 
-- **Multi-Model Support** — Access 20+ AI models (GPT-5, Claude, Gemini, Llama, DeepSeek, etc.) through OpenRouter or direct API keys
-- **Secure Mode** — Local data anonymization via Ollama before sending to AI providers
-- **Fact Checking** — Verify AI responses using Perplexity Sonar
-- **Web Search** — Enhance responses with real-time web data
-- **Deepthink** — Extended reasoning for complex questions
-- **Dark/Light Theme** — Toggle between themes
-- **Responsive UI** — Built with shadcn/ui and Tailwind CSS 4
+- **20+ AI Models** — GPT-4o, Claude, Gemini, Llama, DeepSeek, and more via OpenRouter or direct API keys
+- **Secure Mode** — Local data anonymization through Ollama before sending to AI providers. Your personal data never leaves your machine
+- **Fact Checking** — Verify AI responses with Perplexity Sonar and real-time web search
+- **Desktop App** — Native Windows and macOS app via Tauri (lightweight ~10 MB)
+- **No Backend** — All API calls go directly from your device. No middleman server
+- **Privacy First** — API keys stored locally, chat history in local IndexedDB. Nothing is sent anywhere except the AI provider you choose
 
-## Tech Stack
+## How Secure Mode Works
 
-- **Frontend**: React 19 + TypeScript 5.8 + Vite 7
-- **UI**: shadcn/ui + Tailwind CSS 4
-- **Routing**: TanStack Router (file-based)
-- **State**: Zustand (client) + TanStack Query (server)
-- **Storage**: IndexedDB (local chat history)
-- **HTTP**: Axios
-- **i18n**: i18next
+When enabled, your messages go through a local Ollama model **on your machine** before being sent to any AI provider:
+
+1. **Anonymize** — Local LLM extracts personal data (names, emails, addresses, companies) and replaces them with placeholders
+2. **Send** — Only the anonymized message reaches the AI provider
+3. **De-anonymize** — The response is restored with your original data locally
+
+Your sensitive information never leaves your device.
 
 ## Quick Start
 
-### Prerequisites
+### Desktop App
 
-- Node.js 20+
-- Yarn
-- An [OpenRouter API key](https://openrouter.ai/keys)
+1. Download the installer for your platform from [Releases](https://github.com/goldmangarry/LaplasChat/releases/latest)
+2. Install and launch
+3. Enter your [OpenRouter API key](https://openrouter.ai/keys) on the onboarding screen
+4. Start chatting
 
-### Development
+### Web (Development)
 
 ```bash
-# Clone the repository
-git clone https://github.com/nicknash/laplaschat.git
-cd laplaschat
-
-# Install dependencies
+git clone https://github.com/goldmangarry/LaplasChat.git
+cd LaplasChat
 yarn install
-
-# Start development server
 yarn dev
 ```
 
-Open http://localhost:5173 and enter your OpenRouter API key on the onboarding screen.
-
-### Production Build
-
-```bash
-yarn build
-yarn preview
-```
+Open http://localhost:5173 and enter your OpenRouter API key.
 
 ### Docker
 
 ```bash
-# Build the image
 docker build -t laplaschat .
-
-# Run the container
 docker run -p 3000:80 laplaschat
 ```
 
-Open http://localhost:3000.
+### Desktop Development
+
+Requires [Rust](https://rustup.rs/) and [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) (Windows) or Xcode Command Line Tools (macOS).
+
+```bash
+yarn install
+npm run tauri:dev
+```
+
+## API Keys
+
+No backend server required. All API calls go directly from your device:
+
+| Provider | Purpose |
+|----------|---------|
+| [OpenRouter](https://openrouter.ai/keys) | Primary — single key for 20+ models |
+| [OpenAI](https://platform.openai.com/api-keys) | Optional — direct GPT access |
+| [Anthropic](https://console.anthropic.com/) | Optional — direct Claude access |
+| [Google](https://aistudio.google.com/apikey) | Optional — direct Gemini access |
+
+Keys are stored in `localStorage` and never sent to any server except the respective API provider.
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 19 · TypeScript 5.8 · Vite 7 |
+| UI | shadcn/ui · Tailwind CSS 4 |
+| State | Zustand (client) · TanStack Query (server) |
+| Routing | TanStack Router (file-based) |
+| Storage | IndexedDB (chat history) · localStorage (config) |
+| Desktop | Tauri v2 (Rust) |
+| i18n | i18next |
 
 ## Project Structure
 
@@ -77,55 +117,18 @@ src/
 │   ├── storage/    # IndexedDB chat storage
 │   └── theme/      # Theme management
 ├── pages/          # Route-level components
-│   ├── main/       # Main chat page
-│   ├── chat/       # Chat dialog page
-│   ├── landing/    # Landing page
-│   └── onboarding/ # API key onboarding
 ├── widgets/        # Complex reusable components
-│   └── chat-sidebar/
 ├── features/       # Business feature components
-│   └── chat-input/
 ├── components/     # UI components (shadcn/ui + shared)
 ├── routes/         # TanStack Router file-based routes
 └── shared/         # Shared utilities & i18n
-    ├── lib/
-    └── locales/    # en.json
+src-tauri/          # Tauri desktop app shell (Rust)
 ```
-
-## Architecture
-
-The project follows a 5-layer architecture:
-
-1. **Core** — Domain logic, API clients, stores (framework-independent)
-2. **Pages** — Route-level components
-3. **Widgets** — Complex reusable business components
-4. **Features** — Self-contained business functions
-5. **Components** — Simple UI elements (shadcn/ui)
-
-### API Keys
-
-No backend server is required. All API calls go directly from the browser:
-
-- **OpenRouter** (primary) — Single key for access to all models
-- **OpenAI** (optional) — Direct access to OpenAI models
-- **Anthropic** (optional) — Direct access to Claude models
-- **Google** (optional) — Direct access to Gemini models
-
-Keys are stored in `localStorage` and never sent to any server except the respective API providers.
-
-### Secure Mode
-
-When enabled, messages are processed through a local Ollama model before being sent to AI providers. Personal data (names, addresses, companies) is replaced with placeholders locally and never leaves your machine.
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/my-feature`
-3. Follow existing code conventions (TypeScript strict, `type` over `interface`, no `enum`)
-4. Use i18n translation keys for all text — no hardcoded strings
-5. Run `yarn lint` and `yarn build` before committing
-6. Submit a pull request
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
-MIT
+[MIT](LICENSE)

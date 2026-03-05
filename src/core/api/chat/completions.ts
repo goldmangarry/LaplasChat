@@ -40,7 +40,7 @@ export async function sendChatCompletion(
 			headers: {
 				Authorization: `Bearer ${cleanApiKey}`,
 				"Content-Type": "application/json",
-				"HTTP-Referer": window.location.origin,
+				"HTTP-Referer": "https://laplaschat.com",
 				"X-Title": "LaplasChat",
 			},
 			timeout: 300000, // 5 minutes for long responses
@@ -82,7 +82,7 @@ export async function sendFactCheck(
 			headers: {
 				Authorization: `Bearer ${apiKey}`,
 				"Content-Type": "application/json",
-				"HTTP-Referer": window.location.origin,
+				"HTTP-Referer": "https://laplaschat.com",
 				"X-Title": "LaplasChat",
 			},
 			timeout: 120000,

@@ -28,7 +28,8 @@ export const Route = createRootRoute({
 	beforeLoad: ({ location }) => {
 		const apiKey = localStorage.getItem("openrouter_api_key");
 		if (!apiKey && !PUBLIC_ROUTES.includes(location.pathname)) {
-			throw redirect({ to: "/landing" });
+			const isDesktop = "__TAURI_INTERNALS__" in window;
+			throw redirect({ to: isDesktop ? "/onboarding" : "/landing" });
 		}
 	},
 	component: RootComponent,

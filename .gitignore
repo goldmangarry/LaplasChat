@@ -38,3 +38,6 @@ package-lock.json
 
 # Roo
 .roo/
+
+# Tauri
+src-tauri/target/

@@ -6,7 +6,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/goldmangarry/laplasai.git"
+		"url": "https://github.com/goldmangarry/LaplasChat.git"
 	},
 	"scripts": {
 		"dev": "vite",
@@ -17,7 +17,9 @@
 		"format": "biome format .",
 		"format:fix": "biome format --write .",
 		"check": "biome check .",
-		"check:fix": "biome check --write ."
+		"check:fix": "biome check --write .",
+		"tauri:dev": "tauri dev",
+		"tauri:build": "tauri build"
 	},
 	"dependencies": {
 		"@radix-ui/react-avatar": "^1.1.10",
@@ -59,6 +61,7 @@
 		"@biomejs/biome": "2.1.4",
 		"@tanstack/router-cli": "^1.130.2",
 		"@tanstack/router-plugin": "^1.130.2",
+		"@tauri-apps/cli": "^2.10.1",
 		"@types/axios": "^0.14.4",
 		"@types/lodash.debounce": "^4.0.9",
 		"@types/node": "^24.2.1",

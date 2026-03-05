@@ -1,0 +1,11 @@
+{
+  "identifier": "default",
+  "description": "Default permissions for LaplasChat",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:window:default",
+    "core:window:allow-set-title",
+    "opener:default"
+  ]
+}

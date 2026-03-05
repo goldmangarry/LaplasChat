@@ -69,7 +69,6 @@ const ResearchCard = ({
 	title,
 	conclusion,
 	details,
-	index,
 }: (typeof RESEARCH_CARDS)[number] & { index: number }) => {
 	const [isOpen, setIsOpen] = useState(false);
 
