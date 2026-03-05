@@ -125,6 +125,16 @@ src/
 src-tauri/          # Tauri desktop app shell (Rust)
 ```
 
+## First Contributors
+
+| | |
+|---|---|
+| <img src="https://github.com/Anyastar1111.png" width="40" /> | [Anna](https://github.com/Anyastar1111) |
+| <img src="https://github.com/elbek45.png" width="40" /> | [Elbek](https://github.com/elbek45) |
+| <img src="https://github.com/Kleepers.png" width="40" /> | [Vlad](https://github.com/Kleepers) |
+| <img src="https://github.com/shanhoza.png" width="40" /> | [Vitaliy](https://github.com/shanhoza) |
+| <img src="https://github.com/goldmangarry.png" width="40" /> | [Igor](https://github.com/goldmangarry) |
+
 ## Contributing
 
 We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
