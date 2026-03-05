@@ -9,9 +9,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/goldmangarry/LaplasChat/releases"><img src="https://img.shields.io/github/v/release/goldmangarry/LaplasChat?style=flat-square" alt="Release" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/goldmangarry/LaplasChat?style=flat-square" alt="License" /></a>
-  <a href="https://github.com/goldmangarry/LaplasChat/stargazers"><img src="https://img.shields.io/github/stars/goldmangarry/LaplasChat?style=flat-square" alt="Stars" /></a>
+  <a href="https://github.com/goldmangarry/LaplasChat/releases"><img src="https://img.shields.io/github/v/release/goldmangarry/LaplasChat?style=flat-square&color=6c56f0" alt="Release" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License" /></a>
+  <a href="https://github.com/goldmangarry/LaplasChat/stargazers"><img src="https://img.shields.io/github/stars/goldmangarry/LaplasChat?style=flat-square&color=6c56f0" alt="Stars" /></a>
 </p>
 
 ---
