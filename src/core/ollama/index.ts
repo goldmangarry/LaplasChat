@@ -1,11 +1,13 @@
 import axios from "axios";
 import type { OllamaModel, PullProgress } from "./types";
+import { useApiKeyStore } from "@/core/api-key";
 
-const OLLAMA_BASE = "http://localhost:11434";
+const getOllamaBase = () =>
+	useApiKeyStore.getState().ollamaBaseUrl || "http://localhost:11434";
 
 export async function checkOllamaHealth(): Promise<boolean> {
 	try {
-		const response = await axios.get(OLLAMA_BASE, { timeout: 3000 });
+		const response = await axios.get(getOllamaBase(), { timeout: 3000 });
 		return response.status === 200;
 	} catch {
 		return false;
@@ -14,7 +16,7 @@ export async function checkOllamaHealth(): Promise<boolean> {
 
 export async function listOllamaModels(): Promise<OllamaModel[]> {
 	const response = await axios.get<{ models: OllamaModel[] }>(
-		`${OLLAMA_BASE}/api/tags`,
+		`${getOllamaBase()}/api/tags`,
 		{ timeout: 5000 },
 	);
 	return response.data.models || [];
@@ -24,7 +26,7 @@ export async function pullOllamaModel(
 	name: string,
 	onProgress?: (progress: PullProgress) => void,
 ): Promise<void> {
-	const response = await fetch(`${OLLAMA_BASE}/api/pull`, {
+	const response = await fetch(`${getOllamaBase()}/api/pull`, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({ name, stream: true }),
@@ -74,7 +76,7 @@ export async function pullOllamaModel(
 }
 
 export async function deleteOllamaModel(name: string): Promise<void> {
-	await axios.delete(`${OLLAMA_BASE}/api/delete`, {
+	await axios.delete(`${getOllamaBase()}/api/delete`, {
 		data: { name },
 		timeout: 10000,
 	});
@@ -86,7 +88,7 @@ export async function ollamaChatCompletion(
 	options?: { temperature?: number; signal?: AbortSignal },
 ): Promise<string> {
 	const response = await axios.post(
-		`${OLLAMA_BASE}/v1/chat/completions`,
+		`${getOllamaBase()}/v1/chat/completions`,
 		{
 			model,
 			messages,

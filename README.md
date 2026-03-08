@@ -44,6 +44,21 @@ When enabled, your messages go through a local Ollama model **on your machine** 
 
 Your sensitive information never leaves your device.
 
+### Remote Ollama Server
+
+By default, LaplasChat connects to Ollama at `http://localhost:11434`. You can point it to a remote Ollama instance (e.g. a GPU server) via **Settings > Anonymization Model > Ollama Server URL** or during onboarding.
+
+If your Ollama server runs on a different machine, make sure it listens on `0.0.0.0`:
+
+```bash
+# On the remote server
+OLLAMA_HOST=0.0.0.0:11434 ollama serve
+```
+
+Then enter the server URL in LaplasChat, for example `http://192.168.1.100:11434`.
+
+> **Note:** For the Tauri desktop app, connections to remote Ollama servers (non-localhost) require updating the CSP in `src-tauri/tauri.conf.json` to allow the target host.
+
 ## Quick Start
 
 ### Desktop App

@@ -8,6 +8,9 @@ const GOOGLE_API_KEY_STORAGE = "google_api_key";
 const SECURE_MODE_PROMPT_STORAGE = "secure_mode_prompt";
 const OLLAMA_MODEL_STORAGE = "ollama_model";
 const ANONYMIZE_PROMPT_STORAGE = "anonymize_prompt";
+const OLLAMA_BASE_URL_STORAGE = "ollama_base_url";
+
+export const DEFAULT_OLLAMA_BASE_URL = "http://localhost:11434";
 
 export const DEFAULT_ANONYMIZE_PROMPT = `You are a PII extractor. Extract ALL named entities from the text between ---BEGIN TEXT--- and ---END TEXT--- markers.
 
@@ -55,6 +58,9 @@ type ApiKeyStore = {
 	getSecureModePrompt: () => string;
 	setOllamaModel: (model: string) => void;
 	getOllamaModel: () => string;
+	ollamaBaseUrl: string;
+	setOllamaBaseUrl: (url: string) => void;
+	getOllamaBaseUrl: () => string;
 	anonymizePrompt: string;
 	setAnonymizePrompt: (prompt: string) => void;
 };
@@ -69,6 +75,8 @@ export const useApiKeyStore = create<ApiKeyStore>((set, get) => ({
 		DEFAULT_SECURE_MODE_PROMPT,
 	ollamaModel:
 		localStorage.getItem(OLLAMA_MODEL_STORAGE) || DEFAULT_OLLAMA_MODEL,
+	ollamaBaseUrl:
+		localStorage.getItem(OLLAMA_BASE_URL_STORAGE) || DEFAULT_OLLAMA_BASE_URL,
 	anonymizePrompt:
 		localStorage.getItem(ANONYMIZE_PROMPT_STORAGE) || DEFAULT_ANONYMIZE_PROMPT,
 
@@ -144,6 +152,21 @@ export const useApiKeyStore = create<ApiKeyStore>((set, get) => ({
 
 	getOllamaModel: () => {
 		return get().ollamaModel;
+	},
+
+	setOllamaBaseUrl: (url: string) => {
+		const trimmed = url.replace(/\/+$/, "");
+		if (trimmed) {
+			localStorage.setItem(OLLAMA_BASE_URL_STORAGE, trimmed);
+			set({ ollamaBaseUrl: trimmed });
+		} else {
+			localStorage.removeItem(OLLAMA_BASE_URL_STORAGE);
+			set({ ollamaBaseUrl: DEFAULT_OLLAMA_BASE_URL });
+		}
+	},
+
+	getOllamaBaseUrl: () => {
+		return get().ollamaBaseUrl || DEFAULT_OLLAMA_BASE_URL;
 	},
 
 	setAnonymizePrompt: (prompt: string) => {

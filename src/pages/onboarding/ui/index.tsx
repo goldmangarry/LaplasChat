@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { useApiKeyStore } from "@/core/api-key"
+import { useApiKeyStore, DEFAULT_OLLAMA_BASE_URL } from "@/core/api-key"
 import { checkOllamaHealth, listOllamaModels, pullOllamaModel, deleteOllamaModel } from "@/core/ollama"
 import { RECOMMENDED_MODELS, DEFAULT_OLLAMA_MODEL, formatBytes, getOllamaDownloadUrl, getOllamaPlatformLabel } from "@/core/ollama/types"
 import type { OllamaModel, PullProgress } from "@/core/ollama/types"
@@ -21,6 +21,8 @@ export function OnboardingPage() {
 		setOpenaiApiKey,
 		setAnthropicApiKey,
 		setGoogleApiKey,
+		ollamaBaseUrl,
+		setOllamaBaseUrl,
 	} = useApiKeyStore()
 	const [key, setKey] = useState("")
 	const [showKey, setShowKey] = useState(false)
@@ -41,6 +43,7 @@ export function OnboardingPage() {
 	const [pullingModel, setPullingModel] = useState<string | null>(null)
 	const [pullState, setPullState] = useState<PullProgress | null>(null)
 	const [deletingModel, setDeletingModel] = useState<string | null>(null)
+	const [ollamaUrl, setOllamaUrl] = useState(ollamaBaseUrl)
 
 	const checkOllama = useCallback(async () => {
 		setOllamaChecking(true)
@@ -253,6 +256,47 @@ export function OnboardingPage() {
 										<p className="text-xs text-muted-foreground">
 											{t("onboarding.secureModeDescription")}
 										</p>
+
+										{/* Ollama URL */}
+										<div className="space-y-1.5">
+											<Label htmlFor="ollama-url-onboarding" className="text-sm">{t("ollama.serverUrl")}</Label>
+											<div className="flex gap-2">
+												<Input
+													id="ollama-url-onboarding"
+													type="text"
+													placeholder={DEFAULT_OLLAMA_BASE_URL}
+													value={ollamaUrl}
+													onChange={(e) => setOllamaUrl(e.target.value)}
+													className="flex-1 font-mono text-xs"
+												/>
+												<Button
+													type="button"
+													variant="outline"
+													size="sm"
+													onClick={() => {
+														setOllamaBaseUrl(ollamaUrl)
+														checkOllama()
+													}}
+													disabled={ollamaUrl === ollamaBaseUrl}
+													className="h-9"
+												>
+													{t("ollama.apply")}
+												</Button>
+											</div>
+											{ollamaUrl !== DEFAULT_OLLAMA_BASE_URL && (
+												<button
+													type="button"
+													onClick={() => {
+														setOllamaUrl(DEFAULT_OLLAMA_BASE_URL)
+														setOllamaBaseUrl(DEFAULT_OLLAMA_BASE_URL)
+														checkOllama()
+													}}
+													className="text-xs text-muted-foreground underline hover:text-foreground"
+												>
+													{t("ollama.resetUrl")}
+												</button>
+											)}
+										</div>
 
 										{/* Ollama Status */}
 										<div className="flex items-center justify-between">

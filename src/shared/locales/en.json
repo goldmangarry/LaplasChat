@@ -213,6 +213,9 @@
 		"refresh": "Refresh",
 		"installHint": "Ollama is required for Secure Mode. Download and install it to enable local AI anonymization.",
 		"installSteps": "After installing, launch Ollama and click \"Refresh\" above to connect.",
-		"installMoreModels": "Install more models"
+		"installMoreModels": "Install more models",
+		"serverUrl": "Ollama Server URL",
+		"apply": "Apply",
+		"resetUrl": "Reset to default (localhost)"
 	}
 }
