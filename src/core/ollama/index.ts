@@ -5,9 +5,14 @@ import { useApiKeyStore } from "@/core/api-key";
 const getOllamaBase = () =>
 	useApiKeyStore.getState().ollamaBaseUrl || "http://localhost:11434";
 
+const getAuthHeaders = (): Record<string, string> => {
+	const key = useApiKeyStore.getState().ollamaApiKey;
+	return key ? { Authorization: `Bearer ${key}` } : {};
+};
+
 export async function checkOllamaHealth(): Promise<boolean> {
 	try {
-		const response = await axios.get(getOllamaBase(), { timeout: 3000 });
+		const response = await axios.get(getOllamaBase(), { timeout: 3000, headers: getAuthHeaders() });
 		return response.status === 200;
 	} catch {
 		return false;
@@ -17,7 +22,7 @@ export async function checkOllamaHealth(): Promise<boolean> {
 export async function listOllamaModels(): Promise<OllamaModel[]> {
 	const response = await axios.get<{ models: OllamaModel[] }>(
 		`${getOllamaBase()}/api/tags`,
-		{ timeout: 5000 },
+		{ timeout: 5000, headers: getAuthHeaders() },
 	);
 	return response.data.models || [];
 }
@@ -28,7 +33,7 @@ export async function pullOllamaModel(
 ): Promise<void> {
 	const response = await fetch(`${getOllamaBase()}/api/pull`, {
 		method: "POST",
-		headers: { "Content-Type": "application/json" },
+		headers: { "Content-Type": "application/json", ...getAuthHeaders() },
 		body: JSON.stringify({ name, stream: true }),
 	});
 
@@ -79,6 +84,7 @@ export async function deleteOllamaModel(name: string): Promise<void> {
 	await axios.delete(`${getOllamaBase()}/api/delete`, {
 		data: { name },
 		timeout: 10000,
+		headers: getAuthHeaders(),
 	});
 }
 
@@ -95,7 +101,7 @@ export async function ollamaChatCompletion(
 			temperature: options?.temperature ?? 0.1,
 			stream: false,
 		},
-		{ timeout: 120000, signal: options?.signal },
+		{ timeout: 120000, signal: options?.signal, headers: getAuthHeaders() },
 	);
 
 	const content = response.data.choices?.[0]?.message?.content;

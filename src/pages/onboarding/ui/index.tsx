@@ -23,6 +23,8 @@ export function OnboardingPage() {
 		setGoogleApiKey,
 		ollamaBaseUrl,
 		setOllamaBaseUrl,
+		ollamaApiKey,
+		setOllamaApiKey,
 	} = useApiKeyStore()
 	const [key, setKey] = useState("")
 	const [showKey, setShowKey] = useState(false)
@@ -44,6 +46,7 @@ export function OnboardingPage() {
 	const [pullState, setPullState] = useState<PullProgress | null>(null)
 	const [deletingModel, setDeletingModel] = useState<string | null>(null)
 	const [ollamaUrl, setOllamaUrl] = useState(ollamaBaseUrl)
+	const [ollamaKey, setOllamaKey] = useState(ollamaApiKey || "")
 
 	const checkOllama = useCallback(async () => {
 		setOllamaChecking(true)
@@ -275,9 +278,10 @@ export function OnboardingPage() {
 													size="sm"
 													onClick={() => {
 														setOllamaBaseUrl(ollamaUrl)
+														setOllamaApiKey(ollamaKey)
 														checkOllama()
 													}}
-													disabled={ollamaUrl === ollamaBaseUrl}
+													disabled={ollamaUrl === ollamaBaseUrl && ollamaKey === (ollamaApiKey || "")}
 													className="h-9"
 												>
 													{t("ollama.apply")}
@@ -289,6 +293,8 @@ export function OnboardingPage() {
 													onClick={() => {
 														setOllamaUrl(DEFAULT_OLLAMA_BASE_URL)
 														setOllamaBaseUrl(DEFAULT_OLLAMA_BASE_URL)
+														setOllamaKey("")
+														setOllamaApiKey("")
 														checkOllama()
 													}}
 													className="text-xs text-muted-foreground underline hover:text-foreground"
@@ -296,6 +302,15 @@ export function OnboardingPage() {
 													{t("ollama.resetUrl")}
 												</button>
 											)}
+											<Input
+												id="ollama-api-key-onboarding"
+												type="password"
+												placeholder={t("ollama.apiKeyPlaceholder")}
+												value={ollamaKey}
+												onChange={(e) => setOllamaKey(e.target.value)}
+												className="font-mono text-xs"
+											/>
+											<p className="text-[11px] text-muted-foreground">{t("ollama.apiKeyHint")}</p>
 										</div>
 
 										{/* Ollama Status */}

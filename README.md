@@ -48,14 +48,14 @@ Your sensitive information never leaves your device.
 
 By default, LaplasChat connects to Ollama at `http://localhost:11434`. You can point it to a remote Ollama instance (e.g. a GPU server) via **Settings > Anonymization Model > Ollama Server URL** or during onboarding.
 
-If your Ollama server runs on a different machine, make sure it listens on `0.0.0.0`:
+If your Ollama server runs on a different machine, make sure it listens on `0.0.0.0` and is protected with an API key:
 
 ```bash
 # On the remote server
-OLLAMA_HOST=0.0.0.0:11434 ollama serve
+OLLAMA_HOST=0.0.0.0:11434 OLLAMA_API_KEY=your-secret-key ollama serve
 ```
 
-Then enter the server URL in LaplasChat, for example `http://192.168.1.100:11434`.
+Then in LaplasChat, enter the server URL (e.g. `http://192.168.1.100:11434`) and the API key you chose. The key is sent as a `Bearer` token in the `Authorization` header on every request to Ollama.
 
 > **Note:** For the Tauri desktop app, connections to remote Ollama servers (non-localhost) require updating the CSP in `src-tauri/tauri.conf.json` to allow the target host.
 

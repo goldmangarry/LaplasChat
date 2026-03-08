@@ -9,6 +9,7 @@ const SECURE_MODE_PROMPT_STORAGE = "secure_mode_prompt";
 const OLLAMA_MODEL_STORAGE = "ollama_model";
 const ANONYMIZE_PROMPT_STORAGE = "anonymize_prompt";
 const OLLAMA_BASE_URL_STORAGE = "ollama_base_url";
+const OLLAMA_API_KEY_STORAGE = "ollama_api_key";
 
 export const DEFAULT_OLLAMA_BASE_URL = "http://localhost:11434";
 
@@ -61,6 +62,8 @@ type ApiKeyStore = {
 	ollamaBaseUrl: string;
 	setOllamaBaseUrl: (url: string) => void;
 	getOllamaBaseUrl: () => string;
+	ollamaApiKey: string | null;
+	setOllamaApiKey: (key: string) => void;
 	anonymizePrompt: string;
 	setAnonymizePrompt: (prompt: string) => void;
 };
@@ -77,6 +80,7 @@ export const useApiKeyStore = create<ApiKeyStore>((set, get) => ({
 		localStorage.getItem(OLLAMA_MODEL_STORAGE) || DEFAULT_OLLAMA_MODEL,
 	ollamaBaseUrl:
 		localStorage.getItem(OLLAMA_BASE_URL_STORAGE) || DEFAULT_OLLAMA_BASE_URL,
+	ollamaApiKey: localStorage.getItem(OLLAMA_API_KEY_STORAGE),
 	anonymizePrompt:
 		localStorage.getItem(ANONYMIZE_PROMPT_STORAGE) || DEFAULT_ANONYMIZE_PROMPT,
 
@@ -167,6 +171,15 @@ export const useApiKeyStore = create<ApiKeyStore>((set, get) => ({
 
 	getOllamaBaseUrl: () => {
 		return get().ollamaBaseUrl || DEFAULT_OLLAMA_BASE_URL;
+	},
+
+	setOllamaApiKey: (key: string) => {
+		if (key) {
+			localStorage.setItem(OLLAMA_API_KEY_STORAGE, key);
+		} else {
+			localStorage.removeItem(OLLAMA_API_KEY_STORAGE);
+		}
+		set({ ollamaApiKey: key || null });
 	},
 
 	setAnonymizePrompt: (prompt: string) => {

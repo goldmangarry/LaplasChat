@@ -215,6 +215,8 @@
 		"installSteps": "After installing, launch Ollama and click \"Refresh\" above to connect.",
 		"installMoreModels": "Install more models",
 		"serverUrl": "Ollama Server URL",
+		"apiKeyPlaceholder": "API key (optional)",
+		"apiKeyHint": "Required when your Ollama server is protected with OLLAMA_API_KEY. Leave empty for local setups.",
 		"apply": "Apply",
 		"resetUrl": "Reset to default (localhost)"
 	}
