@@ -32,7 +32,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { ThemeToggle } from "@/components/shared/theme-toggle"
-import { useApiKeyStore } from "@/core/api-key"
+import { useApiKeyStore, DEFAULT_OLLAMA_BASE_URL } from "@/core/api-key"
 import {
   Dialog,
   DialogContent,
@@ -52,7 +52,7 @@ import { useOllamaModalStore } from "@/core/ollama/modal-store"
 export function NavUser() {
   const { isMobile } = useSidebar()
   const { t } = useTranslation()
-  const { apiKey, setApiKey, clearApiKey, ollamaModel, setOllamaModel } = useApiKeyStore()
+  const { apiKey, setApiKey, clearApiKey, ollamaModel, setOllamaModel, ollamaBaseUrl, setOllamaBaseUrl, ollamaApiKey, setOllamaApiKey } = useApiKeyStore()
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false)
   const { isOpen: isOllamaModalOpen, open: openOllamaModal, close: closeOllamaModal } = useOllamaModalStore()
   const [newApiKey, setNewApiKey] = useState("")
@@ -65,6 +65,8 @@ export function NavUser() {
   const [pullingModel, setPullingModel] = useState<string | null>(null)
   const [pullState, setPullState] = useState<PullProgress | null>(null)
   const [deletingModel, setDeletingModel] = useState<string | null>(null)
+  const [ollamaUrl, setOllamaUrl] = useState(ollamaBaseUrl)
+  const [ollamaKey, setOllamaKey] = useState(ollamaApiKey || "")
 
   const checkOllama = useCallback(async () => {
     setOllamaChecking(true)
@@ -156,7 +158,15 @@ export function NavUser() {
 
   const handleOpenOllamaModal = () => {
     setSelectedModel(ollamaModel || DEFAULT_OLLAMA_MODEL)
+    setOllamaUrl(ollamaBaseUrl)
+    setOllamaKey(ollamaApiKey || "")
     openOllamaModal()
+  }
+
+  const handleSaveOllamaUrl = () => {
+    setOllamaBaseUrl(ollamaUrl)
+    setOllamaApiKey(ollamaKey)
+    checkOllama()
   }
 
   const handleSaveOllamaModel = () => {
@@ -284,6 +294,54 @@ export function NavUser() {
               {t('ollama.modelHint')}
             </DialogDescription>
           </DialogHeader>
+
+          {/* Ollama URL */}
+          <div className="space-y-1.5">
+            <Label htmlFor="ollama-url" className="text-sm">{t("ollama.serverUrl")}</Label>
+            <div className="flex gap-2">
+              <Input
+                id="ollama-url"
+                type="text"
+                placeholder={DEFAULT_OLLAMA_BASE_URL}
+                value={ollamaUrl}
+                onChange={(e) => setOllamaUrl(e.target.value)}
+                className="flex-1 font-mono text-xs"
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSaveOllamaUrl}
+                disabled={ollamaUrl === ollamaBaseUrl && ollamaKey === (ollamaApiKey || "")}
+                className="h-9"
+              >
+                {t("ollama.apply")}
+              </Button>
+            </div>
+            <Input
+              id="ollama-api-key"
+              type="password"
+              placeholder={t("ollama.apiKeyPlaceholder")}
+              value={ollamaKey}
+              onChange={(e) => setOllamaKey(e.target.value)}
+              className="font-mono text-xs"
+            />
+            <p className="text-[11px] text-muted-foreground">{t("ollama.apiKeyHint")}</p>
+            {ollamaUrl !== DEFAULT_OLLAMA_BASE_URL && (
+              <button
+                type="button"
+                onClick={() => {
+                  setOllamaUrl(DEFAULT_OLLAMA_BASE_URL)
+                  setOllamaBaseUrl(DEFAULT_OLLAMA_BASE_URL)
+                  setOllamaKey("")
+                  setOllamaApiKey("")
+                  checkOllama()
+                }}
+                className="text-xs text-muted-foreground underline hover:text-foreground"
+              >
+                {t("ollama.resetUrl")}
+              </button>
+            )}
+          </div>
 
           {/* Ollama Status */}
           <div className="flex items-center justify-between">
