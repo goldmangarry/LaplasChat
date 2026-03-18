@@ -87,10 +87,10 @@ export function detectPlatform(): OllamaPlatform {
 }
 
 const OLLAMA_DOWNLOAD_URLS: Record<OllamaPlatform, string> = {
-	windows: "https://github.com/ollama/ollama/releases/",
-	mac: "https://github.com/ollama/ollama/releases/",
-	linux: "https://github.com/ollama/ollama/releases/",
-	unknown: "https://github.com/ollama/ollama/releases/",
+	windows: "https://ollama.com/download/windows",
+	mac: "https://ollama.com/download/mac",
+	linux: "https://ollama.com/download/linux",
+	unknown: "https://ollama.com/download",
 };
 
 const OLLAMA_PLATFORM_LABELS: Record<OllamaPlatform, string> = {
