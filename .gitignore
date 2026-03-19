@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 .env
+.env.local
+*.p12
+*.pfx
+certificate-base64.txt
 
 # Editor directories and files
 .vscode/*
