@@ -73,6 +73,11 @@ jobs:
             --apple-id "$APPLE_ID" \
             --password "$APPLE_PASSWORD" \
             --team-id "$APPLE_TEAM_ID"
+          echo "--- Checking log of previous submission ---"
+          xcrun notarytool log 63fcc5b0-00ae-4f77-97dd-c8531bf23045 \
+            --apple-id "$APPLE_ID" \
+            --password "$APPLE_PASSWORD" \
+            --team-id "$APPLE_TEAM_ID" || true
       
       - name: Build and release
         uses: tauri-apps/tauri-action@v0
