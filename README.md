@@ -66,9 +66,10 @@ Then in LaplasChat, enter the server URL (e.g. `http://192.168.1.100:11434`) and
 ### Desktop App
 
 1. Download the installer for your platform from [Releases](https://github.com/goldmangarry/LaplasChat/releases/latest)
-2. Install and launch
-3. Enter your [OpenRouter API key](https://openrouter.ai/keys) on the onboarding screen
-4. Start chatting
+2. **macOS:** Open the .dmg and drag to Applications. ✅ **Fully signed and notarized** — no Gatekeeper warnings.
+3. **Windows:** Run the .exe installer.
+4. Enter your [OpenRouter API key](https://openrouter.ai/keys) on the onboarding screen
+5. Start chatting
 
 ### Web (Development)
 
